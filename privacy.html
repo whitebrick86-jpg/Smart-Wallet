@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Wallet — Privacy</title>
+    <link rel="icon" type="image/png" data-sw-logo="favicon" href="./icons/smart-wallet.png?v=32" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0a1324;
+        --ink: #f4f1fa;
+        --muted: #a8a0b8;
+        --link: #3b82f6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.5;
+        padding: 24px 18px 48px;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.35rem;
+        margin: 0 0 8px;
+        font-weight: 600;
+      }
+      h2 {
+        font-size: 1.05rem;
+        margin: 1.4rem 0 0.5rem;
+        font-weight: 600;
+      }
+      p,
+      li {
+        color: var(--muted);
+        font-size: 0.92rem;
+        font-weight: 400;
+      }
+      a {
+        color: var(--link);
+        font-weight: 400;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      a:hover {
+        color: #60a5fa;
+      }
+      .meta {
+        font-size: 0.8rem;
+        opacity: 0.85;
+        font-weight: 400;
+      }
+      ul {
+        padding-left: 1.2rem;
+      }
+      .links-row {
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Smart Wallet — Privacy</h1>
+      <p class="meta">Last updated: 2026-08-08 · Non-custodial browser wallet</p>
+
+      <h2>What we do not collect</h2>
+      <ul>
+        <li>We do not upload your seed phrase or private keys to a Smart Wallet cloud.</li>
+        <li>We do not require a Smart Wallet account for core wallet use.</li>
+        <li>We do not sell your personal information for advertising.</li>
+      </ul>
+
+      <h2>What stays on your device</h2>
+      <p>
+        Addresses, encrypted vault data (when password is on), settings (including an optional
+        Helius/Solana RPC key you paste), and local caches are stored in your browser profile
+        via extension storage.
+      </p>
+
+      <h2>Network requests</h2>
+      <p>
+        Your browser contacts blockchain RPCs, optional Helius (if you enable it), price APIs
+        (e.g. Jupiter, CoinGecko), WalletConnect/Reown when you use WC, and explorers when you
+        open links. Those parties may see public addresses and normal web request metadata (such
+        as IP address).
+      </p>
+
+      <h2>Permissions (plain language)</h2>
+      <ul>
+        <li>Storage — local wallet state</li>
+        <li>Clipboard — copy address; paste-safety checks on Send/Bridge</li>
+        <li>Websites / scripting — inject a standard wallet provider so dApps can connect and request signatures</li>
+        <li>Tabs — open or focus the wallet for approvals and Ledger</li>
+        <li>Alarms — auto-lock</li>
+        <li>Offscreen — local signing helper</li>
+        <li>HID — Ledger hardware over USB</li>
+      </ul>
+
+      <h2>Full policy, fees &amp; contact</h2>
+      <p class="links-row">
+        <a
+          href="https://github.com/Greenwolf30/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Privacy Policy</a
+        >
+        ·
+        <a
+          href="https://github.com/Greenwolf30/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Fee disclosure</a
+        >
+        ·
+        <a
+          href="https://github.com/Greenwolf30/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/CONTACTS.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Contact</a
+        >
+        ·
+        <a
+          href="https://github.com/Greenwolf30/Smart-Wallet"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Documentation</a
+        >
+      </p>
+    </main>
+    <script src="./ui/ui-logo.js"></script>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+Smart Wallet — Chrome Web Store listing copy
+============================================
+Use this file for the developer dashboard (listing text + permission justifications).
+Do not treat it as a second privacy/fee/host policy — those live in dedicated docs:
+
+  Privacy policy:  Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md
+  Fees:            Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md
+  Host access:     Chrome-extension-store-for-reviewers/HOST-PERMISSIONS.md
+  Contact emails:  Chrome-extension-store-for-reviewers/CONTACTS.md
+  Reviewer pack:   Chrome-extension-store-for-reviewers/
+
+--------------------------------------------------------------------------------
+DASHBOARD FIELDS
+--------------------------------------------------------------------------------
+Privacy policy URL:
+https://github.com/Greenwolf30/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md
+
+Homepage:
+https://github.com/Greenwolf30/Smart-Wallet
+
+Support / docs:
+https://github.com/Greenwolf30/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/CONTACTS.md
+
+Reviewer document pack:
+https://github.com/Greenwolf30/Smart-Wallet/tree/main/Chrome-extension-store-for-reviewers
+
+--------------------------------------------------------------------------------
+SINGLE PURPOSE
+--------------------------------------------------------------------------------
+Provide a non-custodial multi-chain cryptocurrency wallet in the browser:
+create/import accounts, view balances, send/swap/bridge, and connect to web
+dApps via standard wallet APIs, with optional Ledger hardware support.
+
+--------------------------------------------------------------------------------
+SHORT DESCRIPTION
+--------------------------------------------------------------------------------
+Non-custodial multi-chain crypto wallet. Solana, Ethereum & more. dApp connect, Ledger, local keys, optional Helius history.
+
+--------------------------------------------------------------------------------
+DETAILED DESCRIPTION
+--------------------------------------------------------------------------------
+Smart Wallet is a non-custodial browser wallet for Solana, Ethereum (and EVM
+chains such as Base, Polygon, BNB Smart Chain), Bitcoin, and Sui.
+
+• Create or import software wallets (seed / private key)
+• Software keys always encrypted at rest; optional software password (or device wrap when off)
+• Connect Ledger (Solana + EVM) — keys stay on the device
+• View balances and holdings; send, receive, in-wallet swap and bridge
+• Connect to websites using Solana Wallet Standard and EVM (EIP-1193)
+• WalletConnect (user provides a free Reown Project ID when needed)
+• Optional Helius API key for more reliable Solana History
+  (Accounts → Advanced – RPC)
+
+Platform fees apply only to in-wallet Swap and Bridge; see Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md.
+Privacy practices: Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md. Not financial advice; crypto involves risk of loss.
+
+--------------------------------------------------------------------------------
+PERMISSION JUSTIFICATION (developer dashboard)
+--------------------------------------------------------------------------------
+Paste into the permission justification fields as needed.
+
+Smart Wallet is a general-purpose crypto wallet. Named host permissions cover
+stock RPCs, price/swap/bridge APIs, and WalletConnect relays. Optional
+https://*/* and wss://*/* are not granted at install; they exist so a user-pasted
+Advanced/custom RPC origin can be requested at runtime. Smart Wallet requests
+only that exact origin. HTTPS is used for JSON-RPC; WSS is used for optional
+subscriptions. This is not general browsing, page injection, cookies, tracking,
+or advertising. Denying the optional prompt leaves built-in RPCs available.
+Content scripts inject only a standard wallet provider on an allowlisted set of
+dApp hosts. Localhost and 127.0.0.1 are not in the production package.
+Full explanation: Chrome-extension-store-for-reviewers/HOST-PERMISSIONS.md.
+
+• storage — local wallet state and settings
+• clipboardWrite / clipboardRead — copy addresses; paste-safety on Send/Bridge
+• scripting — inject provider on allowlisted dApps only
+• tabs — open or focus wallet for approvals and Ledger
+• alarms — auto-lock when password protection is on
+• offscreen — local signing helpers
+• hid — Ledger hardware over USB
+
+No seed phrases or private keys are sent to Smart Wallet servers.
+
+--------------------------------------------------------------------------------
+SCREENSHOTS (prepare before submit)
+--------------------------------------------------------------------------------
+Recommended sizes: 1280x800 or 640x400 PNG
+1. Home / total balance
+2. Send
+3. Swap (platform fee line visible)
+4. Settings (Privacy / Contact / Fee disclosure links visible)
+5. History (optional)
+
+--------------------------------------------------------------------------------
+PACKAGE
+--------------------------------------------------------------------------------
+powershell -ExecutionPolicy Bypass -File .\build-store-package.ps1
+→ dist-store\Smart-Wallet-chrome-store.zip
