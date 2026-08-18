@@ -5,18 +5,18 @@
 Non-custodial multi-chain **Chrome / Opera MV3** browser wallet.
 
 - Solana, Ethereum (and EVM: Base, Polygon, BNB, Robinhood ETH), Bitcoin, Sui  
-- Local keys always encrypted at rest · optional software password · Ledger (Solana + EVM)  
-- dApp connect (Wallet Standard / EIP-1193) · WalletConnect · optional Helius History  
+- Local keys always encrypted at rest Â· optional software password Â· Ledger (Solana + EVM)  
+- dApp connect (Wallet Standard / EIP-1193) Â· WalletConnect Â· optional Helius History  
 
-**Docs & privacy:** [github.com/Greenwolf30/Smart-Wallet](https://github.com/Greenwolf30/Smart-Wallet)
+**Docs & privacy:** [github.com/whitebrick86-jpg/Smart-Wallet](https://github.com/whitebrick86-jpg/Smart-Wallet)
 
 ## Load unpacked (development)
 
-1. Open `chrome://extensions` → Developer mode  
-2. **Load unpacked** → select this folder (contains `manifest.json`)  
+1. Open `chrome://extensions` â†’ Developer mode  
+2. **Load unpacked** â†’ select this folder (contains `manifest.json`)  
 3. Pin Smart Wallet  
 
-Do **not** remove the extension to update — overwrite files, then **Reload**.
+Do **not** remove the extension to update â€” overwrite files, then **Reload**.
 
 ## Chrome Web Store package
 
@@ -34,26 +34,26 @@ Output: `dist-store\Smart-Wallet-chrome-store.zip`
 1. [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)  
 2. Upload the zip  
 3. Privacy policy URL:  
-   `https://github.com/Greenwolf30/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md`  
+   `https://github.com/whitebrick86-jpg/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md`  
 4. Copy listing text from `STORE-LISTING.txt`  
-5. Add screenshots · submit for review  
+5. Add screenshots Â· submit for review  
 
-Listing copy: `STORE-LISTING.txt`. Full user docs: `DOCUMENTATION.txt` (fees: §18; dApp inject allowlist: §14.2).
+Listing copy: `STORE-LISTING.txt`. Full user docs: `DOCUMENTATION.txt` (fees: Â§18; dApp inject allowlist: Â§14.2).
 
 ## Optional: better Solana History
 
 1. Free key: [dashboard.helius.dev](https://dashboard.helius.dev)  
-2. Accounts → **Advanced – RPC** → paste key → Save  
-3. History → Solana → Refresh  
+2. Accounts â†’ **Advanced â€“ RPC** â†’ paste key â†’ Save  
+3. History â†’ Solana â†’ Refresh  
 
 Live balances / price pings do not require Helius.
 
 ## Privacy (in-extension)
 
-Open **Settings → Privacy** (in-extension privacy page / `Chrome-extension-store-for-reviewers/privacy.html`) or the full policy on GitHub.
+Open **Settings â†’ Privacy** (in-extension privacy page / `Chrome-extension-store-for-reviewers/privacy.html`) or the full policy on GitHub.
 
 ## Local page mode (optional)
 
-`serve.py` / `start.ps1` for a local tab + `.env` Helius — **not** required for the extension.
+`serve.py` / `start.ps1` for a local tab + `.env` Helius â€” **not** required for the extension.
 
 Never commit `.env` or personal API keys.

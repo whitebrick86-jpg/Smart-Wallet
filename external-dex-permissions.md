@@ -227,4 +227,4 @@ Smart Wallet **already** does residual revoke for **internal software** LiFi swa
 
 ---
 
-*Document: external DEX permissions audit. Public docs repo: Greenwolf30/Smart-Wallet (documentation only, not extension source).*
+*Document: external DEX permissions audit. Public docs repo: whitebrick86-jpg/Smart-Wallet (documentation only, not extension source).*

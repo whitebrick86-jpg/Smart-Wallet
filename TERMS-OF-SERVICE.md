@@ -1,4 +1,4 @@
-# Smart Wallet — Terms of Service
+# Smart Wallet â€” Terms of Service
 
 **Last Updated:** August 12, 2026
 
@@ -364,7 +364,7 @@ Questions regarding these Terms may be directed to:
 
 
 **Official Repository:**  
-[https://github.com/Greenwolf30/Smart-Wallet](https://github.com/Greenwolf30/Smart-Wallet)
+[https://github.com/whitebrick86-jpg/Smart-Wallet](https://github.com/whitebrick86-jpg/Smart-Wallet)
 
 ---
 

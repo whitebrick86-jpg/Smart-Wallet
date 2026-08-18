@@ -1,23 +1,23 @@
-Smart Wallet — install / update / Chrome Web Store package
+Smart Wallet â€” install / update / Chrome Web Store package
 ==========================================================
 
 LOAD UNPACKED (development)
-1. chrome://extensions → turn on Developer mode
-2. Load unpacked → select the folder that contains manifest.json
+1. chrome://extensions â†’ turn on Developer mode
+2. Load unpacked â†’ select the folder that contains manifest.json
 3. Pin Smart Wallet
 4. Allow HID if Chrome asks (Ledger)
 
 UPDATE WITHOUT LOSING WALLETS
 1. Unzip / copy new files OVER your existing install folder (overwrite)
-2. chrome://extensions → Smart Wallet → Reload (do NOT Remove)
+2. chrome://extensions â†’ Smart Wallet â†’ Reload (do NOT Remove)
 3. Refresh open dApp tabs and reconnect if needed
 
 CHROME WEB STORE PACKAGE
   powershell -ExecutionPolicy Bypass -File .\build-store-package.ps1
-  → dist-store\Smart-Wallet-chrome-store.zip
+  â†’ dist-store\Smart-Wallet-chrome-store.zip
 
   Privacy policy URL (paste in store form):
-  https://github.com/Greenwolf30/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md
+  https://github.com/whitebrick86-jpg/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md
 
   Listing copy: STORE-LISTING.txt
   Full readiness notes: GitHub CHROME-WEB-STORE-READINESS.md
@@ -26,9 +26,9 @@ CHROME WEB STORE PACKAGE
   This script only builds the zip.
 
 OPTIONAL: BETTER SOLANA HISTORY
-  Accounts → Advanced – RPC → paste free Helius API key → Save
-  History → Solana → Refresh
+  Accounts â†’ Advanced â€“ RPC â†’ paste free Helius API key â†’ Save
+  History â†’ Solana â†’ Refresh
   (Does not change Home price/balance pings.)
 
 PRIVACY / DOCS (in app)
-  Settings → Privacy · Privacy Policy · Documentation
+  Settings â†’ Privacy Â· Privacy Policy Â· Documentation

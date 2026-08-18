@@ -1,4 +1,4 @@
-# Smart Wallet — Contact
+# Smart Wallet â€” Contact
 
 **Product:** Smart Wallet (Chrome / Opera MV3 browser wallet)  
 **Last updated:** 2026-08-08  
@@ -18,7 +18,7 @@ Use these addresses for product questions, support, and privacy inquiries relate
 
 ## GitHub
 
-- **Documentation repository:** [github.com/Greenwolf30/Smart-Wallet](https://github.com/Greenwolf30/Smart-Wallet)  
+- **Documentation repository:** [github.com/whitebrick86-jpg/Smart-Wallet](https://github.com/whitebrick86-jpg/Smart-Wallet)  
 - **Issues:** open an issue on that repository for public docs feedback  
 
 ---
