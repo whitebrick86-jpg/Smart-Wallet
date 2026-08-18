@@ -1,0 +1,191 @@
+================================================================================
+HOW TO USE LEDGER IN SMART WALLET (MULTI WALLET + MULTI CHAIN)
+================================================================================
+Docs snapshot: wallet 0.11.90+
+
+
+BEFORE YOU START
+  • Fully quit Ledger Live
+  • Use USB (not Bluetooth)
+  • Unlock the Nano
+
+
+--------------------------------------------------------------------------------
+DERIVATION COUNT (BADGE L0, L1, L2, L3…)
+--------------------------------------------------------------------------------
+Ledger wallets are counted with derivation index starting at ZERO.
+The Connect field, path, and avatar badge all use the same number:
+
+  Derivation #   Badge   Solana path        EVM path (after Link EVM)
+  ------------   -----   -----------------  -------------------------
+  0              L0      44'/501'/0'        44'/60'/0'/0/0
+  1              L1      44'/501'/1'        44'/60'/0'/0/1
+  2              L2      44'/501'/2'        44'/60'/0'/0/2
+  3              L3      44'/501'/3'        44'/60'/0'/0/3
+  …              L…      44'/501'/N'        44'/60'/0'/0/N
+
+  L0 = first wallet
+  L1 = second wallet
+  L2 = third wallet
+  L3 = fourth wallet
+
+Do NOT use “2” for the second wallet — that is L2 (third). Second = L1 (field 1).
+Same Derivation # / same badge letter-number → same addresses after delete+reconnect.
+
+
+--------------------------------------------------------------------------------
+PART A — SOLANA (Connect Ledger)
+--------------------------------------------------------------------------------
+1. Open the Solana app on the Nano  ← REQUIRED (not the Ethereum app)
+2. Smart Wallet → Accounts → Ledger
+3. Set Derivation # to match the badge you want (L0 → 0, L1 → 1, L2 → 2, L3 → 3)
+4. Tap Connect Ledger
+5. Prefer the full wallet window (toolbar popup may not finish USB)
+6. Allow the Nano in the Chrome HID prompt
+7. Ledger wallet appears (badge L0 / L1 / L2 / L3…)
+
+WRONG APP: Ethereum app open → Connect fails. Switch to Solana app, retry.
+
+
+--------------------------------------------------------------------------------
+PART B — EVM (Link EVM) — WHEN YOU NEED IT
+--------------------------------------------------------------------------------
+Connect Ledger does NOT set the Ethereum address. Link EVM is a separate step
+on an EXISTING Ledger row (it does not create a new wallet).
+
+YOU NEED LINK EVM when that Ledger should use EVM, for example:
+  • Send ETH or tokens on Ethereum / Polygon / Base / Robinhood ETH
+  • In-wallet swap or bridge that uses those EVM chains
+  • dApps such as Uniswap / EVM PancakeSwap with that Ledger address
+  • First time you select an EVM chain for a Ledger that only did Connect
+
+YOU DO NOT NEED LINK EVM when:
+  • Solana only (SOL sends, Jupiter, Solana dApps) — Connect is enough
+  • Software seed wallets (no Link EVM)
+  • That Ledger is already EVM-linked (switch ETH/Polygon/Base freely;
+    keep Ethereum app open when you sign)
+
+HOW TO LINK EVM (once per Ledger row)
+1. Select that Ledger (Active), or set Derivation # to its badge (L0→0, L1→1, …)
+2. Nano: open the Ethereum app
+3. Tap Link EVM (or switch top-bar to an EVM chain the first time — may auto-prompt)
+4. Toast: EVM linked · 0x…
+5. After that, switching among EVM chains does not require Link again
+
+Opening the Ethereum app alone is not enough — Smart Wallet must read the address.
+
+
+--------------------------------------------------------------------------------
+PART C — MULTIPLE LEDGER WALLETS
+--------------------------------------------------------------------------------
+Same Nano seed; each L0 / L1 / L2 / L3 is a different derivation (see table above).
+
+To add the next one:
+  1. Derivation # = next free (after L0 use 1 for L1; after L1 use 2 for L2)
+  2. Solana app → Connect Ledger
+  3. Optional: Ethereum app → Link EVM on that row
+
+New Solana key → new row. Same L# / same key → re-select, no duplicate.
+
+
+--------------------------------------------------------------------------------
+PART D — DELETE AND RECONNECT (SAME ADDRESSES?)
+--------------------------------------------------------------------------------
+Yes — reconnect with the same L# (same Derivation #).
+
+  Delete L1 → later set Derivation # to 1 → Solana Connect → (optional) Link EVM
+  → same addresses as old L1.
+
+  Wrong: second wallet was L1; typing 2 reconnects L2 (different address).
+
+Deleting a row only removes it from Smart Wallet. Keys stay on the device.
+
+
+--------------------------------------------------------------------------------
+PART E — ACTIVE CHAIN / ACTIVE WALLET (QUICK)
+--------------------------------------------------------------------------------
+Connect Ledger
+  • Active chain / Active wallet do not pick the new key — Account # + Solana app do.
+  • After Connect, network often switches to Solana.
+
+Link EVM
+  • Needs a Ledger row that already exists (see Part B).
+  • Ethereum app on the Nano matters; top-bar EVM chain is convenience.
+  • Account # field: if that # is already Connected as a Ledger, Link EVM can
+    target it; if # is not Connected yet, Link EVM errors (Connect first).
+
+Second Ledger row = new Account # + Solana + Connect (not Link EVM alone).
+
+
+--------------------------------------------------------------------------------
+PART F — PRESSING THE BUTTONS AGAIN
+--------------------------------------------------------------------------------
+Safe. Seed stays on the device.
+
+CONNECT again
+  • Same Solana key → re-select that wallet (no second copy)
+  • New Account # / new key → new Ledger row
+  • Toolbar popup may open the full window — tap Connect there
+
+LINK EVM again
+  • Re-reads ETH on that Ledger row (no new account)
+  • Toast: EVM linked - 0x…
+
+  Action              Situation                    Result
+  ------------------  ---------------------------  -----------------------------
+  Connect Ledger      Same Solana key              Re-select; no duplicate
+  Connect Ledger      New Account # / new key      New Ledger row
+  Link EVM            Ledger row exists            Re-link EVM on that row
+  Link EVM            No Ledger at that Account #  Error — Connect first
+
+
+--------------------------------------------------------------------------------
+PART G — WRONG APP / POPUP
+--------------------------------------------------------------------------------
+  Connect + Ethereum app open → fail. Open Solana, Connect again.
+  Want EVM → Link EVM (Ethereum app), not Connect.
+  Toolbar popup → finish Connect in the full Smart Wallet window.
+
+  Connect Ledger  = Solana app   (add / re-select Ledger)
+  Link EVM        = Ethereum app (ETH on an existing Ledger row)
+
+
+--------------------------------------------------------------------------------
+PART H — PASSWORD (OPTIONAL FOR LEDGER)
+--------------------------------------------------------------------------------
+Software password = software wallets only.
+Ledger password = optional separate switch for all Ledgers.
+Keys stay on the device either way.
+See DOCUMENTATION.txt and Key-protection-in-Smart-Wallet.md.
+
+
+--------------------------------------------------------------------------------
+PART I — NOT SUPPORTED ON LEDGER (YET)
+--------------------------------------------------------------------------------
+  • Bitcoin
+  • Sui
+Use a software / seed wallet for those chains.
+
+
+--------------------------------------------------------------------------------
+PART J — TROUBLESHOOTING
+--------------------------------------------------------------------------------
+No device / not found
+  → USB, quit Ledger Live, correct app, Allow HID
+
+CLA_NOT_SUPPORTED on Connect
+  → Open Solana app (not Ethereum)
+
+CLA_NOT_SUPPORTED on Link EVM
+  → Open Ethereum app; Blind signing for contracts if needed
+
+After extension Reload
+  → Hard-refresh dApp tabs; Link EVM again if “not linked”
+
+Security
+  → Always verify amounts on the device
+
+
+================================================================================
+END
+================================================================================

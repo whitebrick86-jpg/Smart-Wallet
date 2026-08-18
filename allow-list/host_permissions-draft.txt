@@ -1,0 +1,110 @@
+# Draft host_permissions entries (replace https://*/* and wss://*/*)
+# Smart Wallet — stock product hosts only
+# See network-hosts.md for roles and notes
+
+# Solana RPC / API
+https://api.mainnet-beta.solana.com/*
+https://solana-rpc.publicnode.com/*
+https://solana.publicnode.com/*
+https://solana.drpc.org/*
+https://mainnet.helius-rpc.com/*
+https://api.helius.xyz/*
+
+# Ethereum
+https://ethereum.publicnode.com/*
+https://eth.llamarpc.com/*
+https://eth.drpc.org/*
+https://eth.meowrpc.com/*
+https://rpc.ankr.com/*
+https://cloudflare-eth.com/*
+https://1rpc.io/*
+
+# Base
+https://base.publicnode.com/*
+https://mainnet.base.org/*
+https://base.llamarpc.com/*
+https://base.drpc.org/*
+https://base.meowrpc.com/*
+
+# Polygon
+https://polygon-bor.publicnode.com/*
+https://polygon-rpc.com/*
+https://polygon.llamarpc.com/*
+https://polygon.drpc.org/*
+https://gasstation.polygon.technology/*
+
+# BSC
+https://bsc.publicnode.com/*
+https://bsc.drpc.org/*
+https://bsc-dataseed.binance.org/*
+https://bsc-dataseed1.binance.org/*
+https://bsc-dataseed2.binance.org/*
+https://stream.binance.com/*
+
+# Robinhood chain
+https://rpc.mainnet.chain.robinhood.com/*
+https://4663.rpc.thirdweb.com/*
+https://robinhoodchain.blockscout.com/*
+
+# Bitcoin / Sui
+https://blockstream.info/*
+https://mempool.space/*
+https://sui-mainnet-endpoint.blockvision.org/*
+https://rpc-mainnet.suiscan.xyz/*
+https://suiscan.xyz/*
+
+# Swap / bridge / prices
+https://lite-api.jup.ag/*
+https://smart-wallet-lifi-proxy-staging.smart-wallet.workers.dev/*
+# li.quest is Worker-upstream only. Do not put LIFI_API_KEY in the extension.
+https://li.quest/*
+https://scan.li.fi/*
+https://li.fi/*
+https://api.coingecko.com/*
+https://assets.coingecko.com/*
+https://coin-images.coingecko.com/*
+https://api.dexscreener.com/*
+https://cdn.dexscreener.com/*
+https://api.geckoterminal.com/*
+
+# Explorers
+https://solscan.io/*
+https://etherscan.io/*
+https://api.etherscan.io/*
+https://basescan.org/*
+https://api.basescan.org/*
+https://polygonscan.com/*
+https://api.polygonscan.com/*
+https://bscscan.com/*
+https://api.bscscan.com/*
+https://arbiscan.io/*
+https://api.arbiscan.io/*
+https://eth.blockscout.com/*
+https://base.blockscout.com/*
+https://polygon.blockscout.com/*
+https://bsc.blockscout.com/*
+
+# Logos / token lists
+https://tokens.uniswap.org/*
+https://tokens.pancakeswap.finance/*
+https://tokens.1inch.io/*
+https://raw.githubusercontent.com/*
+https://arweave.net/*
+https://ipfs.io/*
+https://gateway.ipfs.io/*
+https://storage.googleapis.com/*
+https://xstocks-metadata.backed.fi/*
+https://icons.duckduckgo.com/*
+
+# WalletConnect
+https://relay.walletconnect.org/*
+https://relay.walletconnect.com/*
+https://rpc.walletconnect.org/*
+https://verify.walletconnect.org/*
+https://verify.walletconnect.com/*
+https://pulse.walletconnect.org/*
+https://echo.walletconnect.com/*
+wss://relay.walletconnect.org/*
+wss://relay.walletconnect.com/*
+
+# Localhost is not in the production package.

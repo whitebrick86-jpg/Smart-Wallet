@@ -6,7 +6,7 @@ Non-custodial multi-chain **Chrome / Opera Manifest V3** browser wallet.
 - Local keys · optional password vault · Ledger (Solana + EVM)
 - dApp connect (Wallet Standard / EIP-1193) · WalletConnect · optional Helius History
 
-This repository publishes **product documentation** for users, Chrome Web Store reviewers, and support. **Extension source code is not published here.**
+This repository publishes **product documentation**, store-reviewer materials, and branding assets. **Extension source code is not published here.**
 
 ## Chrome Web Store reviewers
 
@@ -21,14 +21,24 @@ This repository publishes **product documentation** for users, Chrome Web Store 
 
 Optional host justification (`https://*/*`, `wss://*/*`): [CHROME-STORE-OPTIONAL-HOST-JUSTIFICATION.md](./CHROME-STORE-OPTIONAL-HOST-JUSTIFICATION.md)
 
-## Product and legal
+## Documents
 
 | File | Description |
 |------|-------------|
-| [PRODUCT.md](./PRODUCT.md) | Product overview |
-| [TERMS-OF-SERVICE.md](./TERMS-OF-SERVICE.md) | Terms of service |
-| [STORE-LISTING.txt](./STORE-LISTING.txt) | Chrome Web Store listing copy |
-| [privacy.html](./privacy.html) | Short privacy summary |
+| **[PRODUCT.md](./PRODUCT.md)** | Product map and fee classes |
+| **[DOCUMENTATION.txt](./DOCUMENTATION.txt)** | User guide |
+| **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Surfaces, storage, signing, inject, fees |
+| **[HOST-PERMISSIONS.md](./HOST-PERMISSIONS.md)** | Required vs optional hosts vs inject allowlist |
+| **[CHROME-STORE-OPTIONAL-HOST-JUSTIFICATION.md](./CHROME-STORE-OPTIONAL-HOST-JUSTIFICATION.md)** | Chrome Store optional `https://*/*` / `wss://*/*` justification |
+| **[CHAINS.md](./CHAINS.md)** | Supported networks |
+| **[INTERNAL-DEX.md](./INTERNAL-DEX.md)** | Jupiter / LiFi internal swap and bridge |
+| **[MODULES.md](./MODULES.md)** | Runtime module inventory |
+| **[allow-list/](./allow-list/)** | Inject + named network hosts |
+| **[TERMS-OF-SERVICE.md](./TERMS-OF-SERVICE.md)** | Terms |
+| **[STORE-LISTING.txt](./STORE-LISTING.txt)** | Chrome Web Store dashboard copy |
+| **[Key-protection-in-Smart-Wallet.md](./Key-protection-in-Smart-Wallet.md)** | Key-protection overview |
+| **[EXTENSION-README.md](./EXTENSION-README.md)** | Operator notes |
+| **[INSTALL-EXTENSION.txt](./INSTALL-EXTENSION.txt)** | Install / update notes |
 
 ## Support
 

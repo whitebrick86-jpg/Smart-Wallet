@@ -1,0 +1,1234 @@
+================================================================================
+SMART WALLET -- USER DOCUMENTATION
+================================================================================
+Product:   Smart Wallet (Chrome / Opera MV3 extension)
+Version:   user-guide snapshot 0.11.72; live product is 0.11.256 (see PRODUCT.md)
+Audience:  Everyday users and operators
+Repo:      Documentation-only (extension source is not published here)
+           https://github.com/Greenwolf30/Smart-Wallet
+Status:    Keep this file in sync when behavior changes
+Updated:   2026-08-11
+
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+  1.  What it is
+  2.  Install (first time)
+  3.  Update without losing your wallet
+  4.  First open / create a software wallet
+  5.  How addresses work (one seed -> many chains)
+  6.  How the wallet works (architecture)
+  7.  Home screen, PnL, live prices
+  8.  Holdings & token detail
+  9.  Send / Receive / Buy (Onramper) / History
+  10. In-wallet Swap
+  11. Bridge
+  12. Accounts
+  13. Ledger hardware wallet
+  14. WalletConnect & dApps
+  15. Settings, password model, custom RPC, manage tokens
+  16. Backup & import
+  17. SECURITY MODEL (full mechanics + attack vectors)
+  18. Fees
+  19. LOAD PINGS & NETWORK ACTIVITY (annotated)
+  20. Troubleshooting
+  21. Privacy & data
+  22. Documentation maintenance
+  23. Disclaimer
+
+
+--------------------------------------------------------------------------------
+1. WHAT IT IS
+--------------------------------------------------------------------------------
+Smart Wallet is a multi-chain browser wallet extension.
+
+It lets you:
+  * Hold and view balances across several networks
+  * Send and receive assets (clipboard address-guard on Send / Bridge)
+  * Swap in-wallet (Solana via Jupiter; EVM via aggregator routes where enabled)
+    -- platform fee only on this internal Swap (section 18)
+  * Bridge between supported chains -- platform fee only on this internal
+    Bridge (section 18)
+  * View holdings, history, and a simple native price chart
+  * Connect to selected Solana / EVM dApps (injected provider; no Smart Wallet
+    platform fee on external dApp swaps -- section 18)
+  * Use WalletConnect (Reown Project ID)
+  * Software keys always encrypted at rest (user password ON, or device wrap when OFF)
+  * Optional per-Ledger app password (keys still stay on the device)
+  * Connect Ledger Nano for Solana + EVM (keys never leave the device)
+
+Supported networks (software / seed wallets):
+  * Solana
+  * Ethereum
+  * Bitcoin
+  * Polygon
+  * Sui
+  * BNB Smart Chain
+  * Robinhood Ethereum
+  * Base (Ethereum Base)
+  * Arbitrum One
+  * Optimism
+  * Avalanche C-Chain
+
+Ledger support is partial -- see section 13.
+
+Brand / UI:
+  Dark navy + lavender; Inter UI font; mint-green primary actions.
+  Light mode + Dark mode (Settings → Appearance; shared design tokens).
+  Home CTAs: Send | Receive | Swap | Bridge (Send icon matches dock ↗).
+  Top bar: three chips -- Accounts (Smart Wallet logo) | Chain (center) | Address.
+  Product logo is centralized (one asset path / version for in-app mark).
+
+
+--------------------------------------------------------------------------------
+2. INSTALL (FIRST TIME)
+--------------------------------------------------------------------------------
+1. Unzip the Smart Wallet pack (or use your local build folder).
+2. Open Chrome or Opera -> chrome://extensions (or opera://extensions).
+3. Turn on Developer mode.
+4. Click "Load unpacked".
+5. Select the folder that contains manifest.json.
+   (Active development path is often named Gladiator-Wallet-0.6.55 -- folder
+   name is historical; the real version is in manifest.json, currently 0.11.256.)
+6. Pin Smart Wallet from the puzzle-piece extensions menu.
+7. Click the Smart Wallet toolbar icon to open the wallet.
+
+If Chrome asks for HID / Ledger permission later, choose Allow.
+
+
+--------------------------------------------------------------------------------
+3. UPDATE WITHOUT LOSING YOUR WALLET
+--------------------------------------------------------------------------------
+Do NOT remove the extension if you only want to update.
+
+1. Unzip the new pack (or pull the new files).
+2. Copy everything INSIDE the new folder into your EXISTING load-unpacked folder
+   (overwrite files). Keep the same folder path Chrome already uses.
+3. chrome://extensions -> Smart Wallet -> Reload (do NOT Remove).
+4. If Chrome asks for HID / Ledger permission, Allow.
+5. Click the toolbar icon once.
+6. After any Reload: refresh open dApp tabs, then reconnect Smart Wallet before
+   swapping on external sites.
+
+Removing the extension can wipe local wallet data. Prefer overwrite + Reload.
+
+
+--------------------------------------------------------------------------------
+4. FIRST OPEN / CREATE A SOFTWARE WALLET
+--------------------------------------------------------------------------------
+On first launch Smart Wallet creates a local software wallet for you.
+
+A software wallet means:
+  * A seed phrase is generated on your device
+  * Private keys are ALWAYS encrypted at rest in a vault (password ON or OFF)
+  * Plain keys load only briefly for sign / approve / intentional seed reveal
+  * Anyone with the seed can move funds -- back it up offline
+
+From Accounts (Wallets) you can also:
+  * Generate another software wallet
+  * Import a 12/24-word seed or chain private key (Import button)
+  * Connect Ledger (hardware)
+  * Reveal / backup seed for software wallets (never share it)
+
+
+--------------------------------------------------------------------------------
+5. HOW ADDRESSES WORK (ONE SEED -> MANY CHAINS)
+--------------------------------------------------------------------------------
+When you generate or import a seed phrase, Smart Wallet derives keys for:
+
+  Solana     -> Solana address
+  EVM        -> one key shared by Ethereum, Polygon, Base, BNB, Robinhood ETH,
+                 Arbitrum, Optimism, Avalanche C-Chain
+  Bitcoin    -> native SegWit (bc1...) address
+  Sui        -> Sui address
+
+Important:
+  * Switching the chain in the top bar only changes which address / balance
+    you are looking at.
+  * It does NOT create a brand-new seed each time you switch chains.
+  * Solana and EVM keys are different (do not paste a Solana key into EVM).
+
+Ledger is different -- see section 13. Ledger uses separate apps on the device
+for Solana vs Ethereum; connecting once for Solana does not automatically
+know your ETH address until you Link EVM.
+
+
+--------------------------------------------------------------------------------
+6. HOW THE WALLET WORKS (ARCHITECTURE)
+--------------------------------------------------------------------------------
+This is the product model -- how pieces fit together (not a developer API).
+
+
+6.1 Three surfaces
+------------------
+  1) Popup / full wallet UI (popup.html / index.html)
+     - Balances, send, swap, bridge, settings, Ledger HID signing UI
+  2) Service worker (background.js)
+     - dApp provider messages, auto-lock alarms, in-memory signer cache
+     - Opens wallet UI when a dApp needs connect / approve / Ledger sign
+  3) Content scripts + page inject (page-boot, injected.js, content-script)
+     - Puts Smart Wallet on allowlisted dApp pages as a Solana / EVM provider
+     - Forwards sign requests to the service worker
+
+
+6.2 Software wallets vs Ledger
+------------------------------
+  SOFTWARE (seed / imported key):
+    * Seed and private keys are ALWAYS encrypted at rest (vault)
+    * Password ON  -> vault opened with your password (login after lock)
+    * Password OFF -> vault still encrypted with a device wrap key (no password prompt)
+    * Plain keys only briefly in memory for sign / approve / intentional seed reveal
+    * Deleting a seed only when you press ✕ Remove on that account
+
+  LEDGER:
+    * Private keys NEVER leave the Nano
+    * Extension stores only public addresses + path/index
+    * You approve every signature on the device
+    * Password for Ledger is OPTIONAL and per-account (see 15.1)
+
+
+6.3 Signing paths
+-----------------
+  * Software Solana / EVM: sign in extension (offscreen helper when needed)
+  * Ledger Solana / EVM: sign request -> wallet UI -> WebHID -> Nano approve
+  * dApps (jup.ag, uniswap.org, ...): inject provider -> SW -> UI approve
+  * WalletConnect: Reown relay; keep wallet open while pairing / signing
+
+
+6.4 What is stored locally
+--------------------------
+  * Wallet state key: smart_wallet_v1 (chrome.storage.local + localStorage;
+    legacy gladiator_wallet_v1 is still migrated if present)
+  * Accounts (public addresses always; secrets never stored plain on disk)
+  * Encrypted vault blob always when software wallets exist (user password or device wrap)
+  * Activity stamp for auto-lock
+  * PnL snapshots, fee-paid ledgers (anti double-charge), WC sessions
+  * Optional custom Solana RPC string (solRpc)
+
+
+6.5 What is NOT stored / sent by Smart Wallet
+------------------------------------------
+  * No Smart Wallet cloud account required for core use
+  * Seed is never uploaded to a Smart Wallet server
+  * Public RPCs and price APIs only see addresses / queries you make
+  * See section 19 (load pings) and 21 (privacy)
+
+
+--------------------------------------------------------------------------------
+7. HOME SCREEN, PnL, LIVE PRICES
+--------------------------------------------------------------------------------
+The home screen shows:
+
+  * Top bar chips: account | network | short address
+  * Total balance in USD (active wallet + visible holdings)
+  * Portfolio PnL under the $ amount ($ change · percent)
+  * Native coin price + small line chart beside the $
+  * Native balance for the selected chain
+  * Sync / connection status
+  * Send / Receive / Swap / Bridge buttons
+  * Holdings list (token name, amount, USD value)
+  * Green "Ledger" tag next to Total balance when active account is Ledger
+
+Tips:
+  * Use the top-bar chain control to switch networks.
+  * Tap Sync after sending/receiving or if balances look stale.
+  * Tap a token row to open the token detail page.
+
+
+7.1 How to read portfolio PnL
+-----------------------------
+Example:  +$0.40  ·  +0.048%
+
+  * Dollar change of Total balance since the first local snapshot for this
+    account + chain pair
+  * Percent is that change vs the starting total
+  * Wallet / portfolio value -- NOT the native coin market move alone
+  * Snapshots are local only; recorded roughly at most every ~10 minutes
+    unless the total moves enough to save sooner
+
+
+7.2 Live prices + native line chart
+-----------------------------------
+Beside Total balance:
+
+  * Native USD price (e.g. SOL $145.20)
+  * Short % change over the chart series
+  * Small line chart (color by up/down)
+
+Pricing (best-effort public APIs):
+  * Solana holdings: free Jupiter Price API batch (held mints only)
+  * Majors / other chains: CoinGecko (DexScreener rare fallback), throttled
+  * USDC / USD stables often pinned near $1
+  * Timers pause when the popup is closed or you leave Home
+
+Not a pro trading terminal -- illiquid tokens may lack USD.
+Full network timing table: section 19.
+
+
+--------------------------------------------------------------------------------
+8. HOLDINGS & TOKEN DETAIL
+--------------------------------------------------------------------------------
+Holdings list:
+  * Logo inside the row, left of the token name
+  * Amount + USD when priced
+  * Unit price under the name when available
+  * Layout stays stable while values refresh (no full list rebuild flicker)
+
+Token detail:
+  * Chart ranges (e.g. 1H / 1D / 1W / 1M)
+  * Balance + market stats when available
+  * Send / Receive shortcuts
+
+Chart data is best-effort; some tokens show "Chart unavailable".
+
+
+--------------------------------------------------------------------------------
+9. SEND / RECEIVE / HISTORY
+--------------------------------------------------------------------------------
+
+9.1 Send
+--------
+1. Choose the correct chain in the top bar.
+2. Open Send.
+3. Pick the asset (dropdown with logos).
+4. Enter recipient (or saved contact).
+5. Enter amount (or Max).
+6. Review USD estimate and available balance.
+7. Confirm and send.
+
+Clipboard guard:
+  * On paste into recipient (Send / Bridge), Smart Wallet can compare clipboard
+    content and warn if the address looks swapped / unexpected.
+  * Still visually check first and last characters before sending.
+
+Rules:
+  * Addresses are chain-specific.
+  * Bitcoin send supports BTC only.
+  * Ledger: correct app open + on-device approval.
+  * No Smart Wallet platform fee or "tax" on Send -- network/gas only (section 18).
+
+
+9.2 Receive
+-----------
+1. Select the chain.
+2. Open Receive.
+3. Share QR or copy address.
+4. Only send that chain's assets to that address.
+  * No Smart Wallet platform fee on Receive (section 18).
+
+
+9.2.1 Buy with card / bank (Onramper)
+-------------------------------------
+Like Phantom / Solflare "Buy", Receive includes a **Buy** button that opens
+**Onramper** in a browser tab. Onramper is an aggregator: checkout may use
+**MoonPay**, **Topper**, and other ramps depending on country and payment
+method. Purchased crypto is meant to settle to **this wallet's deposit address**
+for the selected chain (not to Smart Wallet servers).
+
+How to use:
+  1. Top bar: select the network you want to fund (e.g. Solana).
+  2. Open **Receive**.
+  3. Confirm the deposit address shown (and QR).
+  4. Tap **Buy**.
+  5. Complete card or bank flow in Onramper / the provider they route you to.
+  6. Wait for on-chain delivery, then **Home → Sync** if balances look stale.
+
+What is pre-filled:
+  * Active chain deposit address is passed as Onramper `wallets` +
+    `networkWallets` so the destination stays locked to your address when
+    token IDs match Onramper's registry.
+  * Crypto list is limited to assets for that chain (see below).
+  * Default crypto is usually the chain native (SOL, ETH, BTC, …).
+
+Solana crypto selector (Onramper IDs):
+  * SOL (`sol`)
+  * USDC (`usdc_solana`)
+  * USDT (`usdt_solana`)
+  * Raydium RAY (`ray_solana`)
+  * PYUSD (`pyusd_solana`)
+  * USD1 (`usd1_solana`)
+  * TRUMP (`trump_solana`)
+  * MELANIA (`melania_solana`)
+  * GMT (`gmt_solana`)
+  * GARI (`gari_solana`)
+  * FIDA (`fida_solana`)
+  * SRM (`srm_solana`)
+  * GST (`gst_solana`)
+  * BONK (`bonk_solana`)
+
+Other chains (examples):
+  * Ethereum -- ETH, USDC (`eth`, `usdc_ethereum`)
+  * Base -- ETH, USDC (`eth_base`, `usdc_base`)
+  * Arbitrum -- ETH, USDC (`eth_arbitrum`, `usdc_arbitrum`)
+  * Optimism -- ETH, USDC (`eth_optimism`, `usdc_optimism`)
+  * Avalanche -- AVAX, USDC (`avax_avalanche`, `usdc_avalanche`)
+  * Polygon -- POL, USDC (`pol_polygon`, `usdc_polygon`)
+  * BNB Smart Chain -- BNB, USDC (`bnb_bsc`, `usdc_bsc`)
+  * Bitcoin -- BTC (`btc`)
+  * Sui -- SUI, USDC (`sui_sui`, `usdc_sui`)
+  * Robinhood Chain -- card ramps often do not list RH; Buy may offer ETH/USDC
+    on Ethereum for the same EVM address when supported.
+
+Fees and support:
+  * No Smart Wallet platform fee on Buy / Receive (section 18).
+  * Onramper / MoonPay / Topper / banks may charge their own fees and apply
+    KYC, geo, and payment limits.
+  * Availability of a listed token depends on country, payment method, and
+    which ramp is offered -- a token can be in our list and still hidden for
+    your region.
+
+Configuration (operators):
+  * Extension `config.js`: set `onramperApiKey` from
+    https://dashboard.onramper.com (production partner key).
+  * Without a key, Buy may still open Onramper but ramps / address lock can
+    be limited.
+  * Production address lock may require Onramper **signed widget URLs**
+    (secret key stays on a backend -- never ship secrets in the extension).
+    If the widget asks for an address, paste the Receive address (Buy also
+    copies it to the clipboard as a backup).
+
+Troubleshooting:
+  * Wrong chain selected -- switch top bar network, then open Buy again.
+  * Address not auto-filled -- ensure token IDs match Onramper; set API key;
+    paste from clipboard if needed.
+  * Funds not visible yet -- wait for confirmation, then Home → Sync.
+  * Unsupported region / payment -- try another method or on-ramp in Onramper.
+
+
+9.3 History
+-----------
+Dock: History (not Accounts). Shows on-chain sends, receives, buys & sells for
+the **active** wallet on the **active** chain.
+History is a viewer only -- Smart Wallet does not add any fee or tax when a
+row appears as a buy or sell (section 18).
+
+Basics:
+  * Select the correct chain (Jupiter buys/sells are on Solana)
+  * Select the wallet you used to trade
+  * Tap Refresh if the list looks empty or stale
+  * List is cached briefly; durable store keeps recent rows across reloads
+
+How History is loaded (Solana):
+
+  WITHOUT a custom Helius key (default):
+    * Free public Solana RPCs
+    * Wallet classifies swaps from raw transactions
+    * Can look empty or incomplete when free RPCs rate-limit (HTTP 429)
+
+  WITH Helius (recommended for reliable buys/sells):
+    * Accounts -> Advanced - RPC -> paste free Helius API key or full
+      https://mainnet.helius-rpc.com/?api-key=YOUR_KEY -> Save
+    * History uses Helius Enhanced Transactions (parsed swaps / transfers)
+    * Called only when you open History or tap Refresh (not a background spam loop)
+    * Live balances and USD price pings still use the normal multi-RPC + free
+      price APIs -- Helius History does not drive those timers
+    * If Helius fails, wallet falls back to public RPC History automatically
+    * Status line may show "Helius" or "RPC" so you know which path ran
+
+Important:
+  * Custom RPC / Helius is OPTIONAL -- the wallet works without it
+  * Helius is Solana-only -- do not paste Ethereum RPC URLs in that field
+  * Jupiter website "Activity" is Jupiter's own product -- it is separate from
+    Smart Wallet History (section 9.3)
+  * Free Helius key: https://dashboard.helius.dev
+
+
+--------------------------------------------------------------------------------
+10. IN-WALLET SWAP
+--------------------------------------------------------------------------------
+From Home or token detail, open Swap.
+
+Solana:
+  * Jupiter routing
+  * Token chips with logos, flip, amount presets (25/50/75/MAX), slippage
+  * Auto slippage by default (capped ~5% unless you set higher manual)
+
+EVM (where enabled):
+  * Aggregator routes (LiFi-style) depending on chain / quote
+  * Limited ERC-20 approve (amount needed + small buffer -- not unlimited)
+  * After successful internal swap: residual allowance cleared when possible
+    (software keys)
+  * Next sell re-approves the needed amount
+  * Uniswap Permit2 is NOT auto-revoked (would break external DEX sells)
+
+Ledger:
+  * Solana swap: approve each sign on the Nano (Solana app open)
+  * EVM swap: Ethereum app + Link EVM required
+
+Notes:
+  * Keep native gas (SOL / ETH / etc.) for network fees
+  * Smart Wallet platform fee applies only on this internal Swap screen
+    (0.45%; EVM LiFi currently 0.70% combined with LI.FI 0.25%) -- section 18
+  * Swaps on external sites (Jupiter web, Uniswap, PancakeSwap, pump.fun, etc.)
+    have NO Smart Wallet platform fee / tax -- section 18
+  * External DEXes may charge their own protocol or LP fees; Smart Wallet
+    does not add a cut -- approval models: section 17.7
+
+
+--------------------------------------------------------------------------------
+11. BRIDGE
+--------------------------------------------------------------------------------
+Bridge moves value across supported chains (Home -> Bridge).
+
+  * Pick source / destination networks carefully (must differ; same-chain = Swap)
+  * Recipient may be your own address or another (chain-correct)
+  * Clipboard guard applies on address paste where wired
+  * Quotes and completion depend on bridge routes / RPCs (LiFi-style)
+  * Status can be polled after submit until complete
+  * Smart Wallet platform fee applies only on this internal Bridge screen
+    (0.85%; EVM-source LiFi currently 1.10% combined with LI.FI 0.25%) -- section 18
+  * Bridging / swapping through an external site is not an internal Bridge
+    and has no Smart Wallet platform fee
+
+
+--------------------------------------------------------------------------------
+12. ACCOUNTS
+--------------------------------------------------------------------------------
+Two ways to open accounts:
+
+  A) Top-left Smart Wallet chip -> side drawer (switch wallets quickly)
+       Connect Ledger | Link EVM | Manage accounts
+  B) Dock -> Accounts (full wallets panel)
+       Generate | Connect Ledger | Link EVM | Import | Advanced RPC
+
+Open Accounts to:
+  * See all wallets (avatars: A1/A2 generated, IM imported, L1/L2 Ledger)
+  * Switch the active wallet
+  * Generate a new software wallet
+  * Import seed / private key
+  * Connect Ledger (Solana app)
+  * Link EVM (Ethereum app) for the active Ledger account
+  * Toggle optional password on a Ledger (lock / unlock icon) -- section 15.1
+  * Copy address / open backup (software) / remove wallet from this device
+
+Removing a wallet from Smart Wallet does not delete funds on-chain.
+
+
+--------------------------------------------------------------------------------
+13. LEDGER HARDWARE WALLET
+--------------------------------------------------------------------------------
+Ledger keys never leave the device. Smart Wallet only stores public addresses and
+derivation paths/indexes.
+
+IMPORTANT -- two different Ledger apps:
+  * Solana app     -> Solana address / Solana signing
+  * Ethereum app   -> one EVM address for Ethereum, Polygon, Base,
+                      BNB Smart Chain, Robinhood Ethereum, Arbitrum,
+                      Optimism, Avalanche C-Chain
+
+Opening an app on the Nano by itself does NOT connect Smart Wallet.
+Smart Wallet must read the address (Connect Ledger or Link EVM / chain switch).
+
+
+13.1 What works on Ledger today
+-------------------------------
+Supported:
+  * Solana -- connect + receive + send + many Solana dApp signs
+  * Ethereum / Polygon / Base / BNB / Robinhood ETH / Arbitrum /
+    Optimism / Avalanche C-Chain -- after Link EVM
+
+Not supported yet on Ledger accounts:
+  * Bitcoin
+  * Sui
+  (Use a software / seed wallet for those chains.)
+
+
+13.2 Connect Ledger -- Solana
+-----------------------------
+1. Quit Ledger Live
+2. USB (not Bluetooth), unlock Nano, open Solana app
+3. Accounts -> Account # -> Connect Ledger -> Allow device
+4. Path Account # N: 44'/501'/N'
+5. New Ledgers default to password OFF (optional later -- section 15.1)
+
+
+13.3 Link EVM
+-------------
+1. Select that Ledger wallet
+2. Open Ethereum app on Nano
+3. Tap Link EVM or switch to an EVM chain
+4. Toast confirms EVM linked
+5. Path same Account # N: 44'/60'/0'/0/N
+
+
+13.4 Multiple Ledger wallets
+----------------------------
+  Account # 0 -> Solana 44'/501'/0'  + (after Link) ETH index 0
+  Account # 1 -> Solana 44'/501'/1'  + ETH index 1
+  ...
+
+Reconnect same Account # does not delete the wallet.
+
+
+13.5 Ledger troubleshooting
+---------------------------
+  * USB, quit Ledger Live, correct app open
+  * Blind signing in Ethereum app settings if contract data required
+  * After extension Reload: hard-refresh dApp tabs and reconnect
+  * Full short guide: HOW-TO-MULTIPLE-LEDGER-WALLETS.txt
+
+
+--------------------------------------------------------------------------------
+14. WALLETCONNECT & DAPPS
+--------------------------------------------------------------------------------
+WalletConnect:
+  * Settings -> WalletConnect
+  * Free Reown Project ID from cloud.reown.com
+  * Paste a fresh wc: URI from the dApp
+  * Keep the Smart Wallet window open while connecting and signing
+
+14.1 In-page provider inject (allowlist only)
+--------------------------------------------
+Smart Wallet does NOT inject on every website. Content scripts and the
+page provider (page-boot, injected.js, content-script) run only on an
+explicit host allowlist (source: inject-allowlist.js in the extension).
+
+Matching rules:
+  * Apex host and all subdomains count (e.g. uniswap.org covers
+    app.uniswap.org; pancakeswap.finance covers app.pancakeswap.finance)
+  * localhost and 127.0.0.1 are not injected in the production package
+  * Chrome Web Store / chrome.google.com are never injected
+  * If a site is not on the list, the provider is not auto-injected
+    (WalletConnect may still work for some dApps that support it)
+
+On allowlisted sites Smart Wallet can appear as a Solana and/or EVM
+wallet provider. Connect and sign still require your approval in the
+wallet UI (and on Ledger when applicable).
+
+Smart Wallet does NOT take a platform fee or "tax" on external dApp
+swaps, buys, sells, or sends -- only the in-wallet Swap and Bridge
+screens do (section 18). Network/gas and the dApp's own fees may still
+apply.
+
+14.2 Allowlisted hosts (v0.9.98)
+--------------------------------
+Solana DEXes / trading:
+  * jup.ag, jupiter.ag
+  * pump.fun
+  * raydium.io, orca.so, meteora.ag, phoenix.trade
+  * tensor.trade, drift.trade, mango.markets
+  * kamino.finance, sanctum.so, sol-incinerator.com
+  * birdeye.so, dexscreener.com
+  * photon-sol.tinyastro.io, bullx.io, trojan.com
+  * fluxbot.xyz, bonkbot.io, jito.network
+
+EVM DEXes / aggregators (Ethereum, Base, Polygon, BNB Smart Chain,
+Arbitrum, and other EVM surfaces the wallet supports):
+  * uniswap.org
+  * pancakeswap.finance
+  * sushi.com, sushiswap.com
+  * 1inch.io, 1inch.exchange
+  * matcha.xyz, 0x.org
+  * curve.fi, balancer.fi, dodoex.io
+  * kyberswap.com, paraswap.io, cow.fi
+  * aerodrome.finance, velodrome.finance
+  * traderjoexyz.com, quickswap.exchange, spooky.fi
+  * camelot.exchange, thena.fi, biswap.org, apeswap.finance
+  * odos.xyz, openocean.finance, bebop.xyz
+  * gmx.io, hyperliquid.xyz, dydx.exchange, dydx.trade
+  * hashflow.com, woofi.com, woo.org
+  * thruster.finance, baseswap.fi, swapbased.finance, alienbase.xyz
+  * equalizer.exchange, zyberswap.io, arbidex.fi
+  * ramses.exchange, maverick.xyz, mav.xyz
+  * frax.finance, shibaswap.com, bancor.network, airswap.io
+  * defillama.com, llama.fi, krystal.app, web3.okx.com
+
+Bridges / multi-chain swap UIs:
+  * relay.link, li.fi, jumper.exchange
+  * stargate.finance, across.to, socket.tech, bungee.exchange
+  * debridge.finance, orbiter.finance, hop.exchange
+  * synapseprotocol.com, cbridge.celer.network
+  * portalbridge.com, wormhole.com
+
+Chain portals / explorers (wallet-connect surfaces):
+  * base.org, arbitrum.io, polygon.technology
+  * bscscan.com, etherscan.io, basescan.org
+  * polygonscan.com, arbiscan.io
+
+DeFi / swap-adjacent:
+  * aave.com, compound.finance
+  * opensea.io, blur.io
+  * robinhood.com, ens.domains
+
+Production does not inject on localhost or 127.0.0.1.
+
+Need another dApp? The host must be added to inject-allowlist.js and the
+manifest match list regenerated (tools/sync-inject-manifest.py). Update
+this section when the list changes.
+
+Note: LavaMoat / "opr" console errors on Opera often come from MetaMask or
+other wallets -- not from Smart Wallet.
+
+After Reload: hard-refresh the dApp tab and reconnect.
+
+
+--------------------------------------------------------------------------------
+15. SETTINGS, PASSWORD MODEL, CUSTOM RPC, MANAGE TOKENS
+--------------------------------------------------------------------------------
+Settings typically includes:
+  * Password protection + auto-lock interval
+  * Contacts / rename / manage tokens
+  * WalletConnect
+  * Custom Solana RPC (optional Helius / RPC URL) -- solRpc in wallet state
+  * Network / sync options
+
+Architecture note (password scopes): Software password is global for all
+seed/imported wallets. Ledger password is global for all Ledger wallets and is
+fully separate -- locking or unlocking one never affects the other. Ledger keys
+stay on the device. Full detail: ARCHITECTURE.md section 4.
+
+
+15.1 Password model (important) — always encrypted at rest
+----------------------------------------------------------
+Password protection is GLOBAL for all software wallets, and OPTIONAL global for
+all Ledger wallets (two independent Settings switches).
+
+Software seeds are ALWAYS encrypted on disk (ON or OFF). Plain seed text is
+never stored long-term. Seeds load only for sign / approve / intentional reveal.
+
+  SOFTWARE wallets (seed / imported keys):
+    * ONE Settings switch for ALL software accounts together
+    * When ON: your password opens the vault; login after auto-lock / Lock now
+    * NOT asked again for every swap or approval while unlocked
+    * When OFF: vault still encrypted with a device wrap key (no password prompt);
+      same wallets/seeds; confirm only: "Are you sure you want to turn password
+      protection off?"
+    * Prefer ON on shared devices; OFF is convenience, not plaintext storage
+    * Deleting a seed: only ✕ Remove on that account (with confirm)
+
+  LEDGER accounts:
+    * Separate global switch (not the software vault)
+    * When Ledger password OFF (default): Ledgers work even while software
+      vault is locked (user password mode)
+    * When Ledger password ON: app login gates all Ledger wallets together
+    * Turning software password on/off does NOT force Ledgers to lock or unlock
+    * Keys stay on the device -- Smart Wallet stores addresses / paths only
+
+Auto-lock options (when software password ON and/or Ledger password ON):
+  15m / 30m / 1h / 2h / 3h / 12h / 24h / 3d
+  * Idle timer + service-worker alarm so dApps cannot keep signing past lock
+  * Lock now clears session unlock material; vault stays ciphertext on disk
+
+
+15.2 Custom Solana RPC / Helius (History boost)
+-----------------------------------------------
+Where:
+  * Accounts -> Advanced - RPC (field: Custom Solana RPC / Helius)
+  * Solana only -- never paste an Ethereum / EVM RPC URL here
+
+What to paste:
+  * Free Helius API key alone, OR
+  * Full URL: https://mainnet.helius-rpc.com/?api-key=YOUR_KEY
+  * Get a free key: https://dashboard.helius.dev
+
+What it does:
+  * IMPROVES in-wallet History (buys/sells/swaps) on Solana -- more reliable,
+    less prone to free-RPC 429s when loading many transactions
+  * Does NOT change how often Home price pings run
+  * Live balances still use multi-RPC (and free Jupiter/CoinGecko prices)
+  * Without Helius: wallet still works; History uses public Solana RPCs only
+
+How to use:
+  1. Paste key or URL -> Save override
+  2. Dock -> History -> chain = Solana -> active wallet correct -> Refresh
+  3. Look for status text mentioning Helius when the enhanced path runs
+
+Cost / privacy notes:
+  * History calls Helius only on open/Refresh (capped row count) -- keep usage low
+  * API key is a usage credential stored in extension storage (not your seed)
+  * Rotate the key if it leaks; do not ship your personal key inside a zip you
+    give to many people (shared key = shared rate limits / billing)
+  * Locations: chrome.storage.local + localStorage mirror under wallet state
+
+
+15.3 Manage tokens
+------------------
+Where:
+  * Settings -> Manage tokens
+  * Or address menu -> Manage tokens (scrolls to the same block)
+
+How tokens appear:
+  * Tokens load automatically on Sync for every EVM chain (Ethereum, BNB,
+    Base, Polygon, Robinhood...).
+  * After a DEX swap, open Home and Sync - new tokens are detected from
+    on-chain transfers.
+  * Import below is optional (any EVM chain: switch the network first, then
+    paste the contract).
+
+Optional import:
+  1. Switch the top-bar network to the EVM chain of the token
+  2. Paste the 0x contract address
+  3. Tap Import
+  4. Token shows in Manage tokens and on Home holdings after Sync when
+     balance is present
+
+You can hide or manage listed tokens from the Manage tokens list for the
+active wallet + selected chain.
+
+
+--------------------------------------------------------------------------------
+16. BACKUP & IMPORT
+--------------------------------------------------------------------------------
+You need ONE recovery method -- not both seed and private key:
+
+  * Seed phrase -> full multi-chain restore
+  * Private key -> that account / chain key only
+  * Password -> unlocks this install's encrypted vault (not a seed substitute)
+  * Ledger -> device + recovery sheets
+
+
+16.1 Viewing the seed (software wallets)
+----------------------------------------
+1. Accounts -> software wallet tools
+2. Security notice first (never share; prefer not to copy)
+3. Tap "Reveal seed phrase" (unlock if password ON)
+4. Write words offline
+5. "Copy seed phrase" is optional only -- avoid when you can
+6. Private key section is separate (current chain only)
+
+Never give seed or private keys to anyone (support scams, DMs, fake sites).
+
+
+16.2 Import
+-----------
+  * 12/24 seed -> multi-chain
+  * Private key -> depends on active chain type (Solana / EVM / BTC / Sui)
+
+
+--------------------------------------------------------------------------------
+17. SECURITY MODEL (MECHANICS + ATTACK VECTORS)
+--------------------------------------------------------------------------------
+This section is the security map. Read it like a checklist.
+
+
+17.1 Threat model (honest)
+--------------------------
+Smart Wallet is a browser hot wallet (optional Ledger).
+
+  * Same class as other software wallets for encryption-at-rest + user signs
+  * Not a bank; not unhackable
+  * Majors have more audits / battle history; fundamentals are similar
+
+
+17.2 Password vault -- software keys at rest (always encrypted)
+----------------------------------------------------------------
+Software seeds are ALWAYS encrypted at rest (whether password protection is ON or OFF).
+Plain seed text is never stored long-term in the browser; it loads only for sign /
+approve / intentional reveal, then is purged.
+
+Password protection is GLOBAL for all software wallets:
+
+  PASSWORD ON + LOCKED:
+    * Encrypted vault blob on disk (user password)
+    * No plain seed/keys on disk or account objects
+    * Must log in before software signing
+    * Free Ledgers can still sign on device; Ledger password is separate
+
+  PASSWORD ON + UNLOCKED:
+    * Session password in memory; vault still ciphertext on disk
+    * Plain keys only during sign/approve (JIT), then purged
+    * Connect / approve / sign do not re-ask password until lock / auto-lock
+
+  PASSWORD OFF:
+    * Same wallets/seeds — nothing deleted
+    * Vault re-wrapped with a device wrap key (not shown to the user)
+    * Still no plaintext seed on disk; still JIT decrypt for sign/approve only
+    * No password prompt to unlock
+    * Confirm dialog: "Are you sure you want to turn password protection off?"
+    * Prefer ON when the device is shared or higher risk
+
+  REMOVE ACCOUNT (X):
+    * Only explicit way to discard a software seed (user confirms)
+
+Crypto (current):
+  * AES-256-GCM
+  * PBKDF2-HMAC-SHA-256 ~650,000 iterations
+  * 32-byte salt
+  * Older vaults (310k / 16-byte salt) still open; upgraded on successful login
+
+UI brute-force throttle (user password mode):
+  * 10 wrong passwords -> 1 hour lockout (persists across popup close)
+  * Correct password resets the counter
+  * Protects interactive guessing -- NOT offline cracking of a stolen vault blob
+
+
+17.3 Auto-lock / unlocked session
+---------------------------------
+  * After unlock, connect / approve / sign do not re-ask password until lock
+  * UI exact timer + ~5s safety poll + service-worker 1-minute alarm
+  * Use a short auto-lock when possible; Lock when leaving the machine
+  * "Lock now" freezes activity so reopen still counts as expired if idle
+
+
+17.4 Ledger password optional (per account)
+-------------------------------------------
+  * Default: requirePassword = false (free Ledger)
+  * Free Ledger: software vault lock does not block device signing
+  * Opt-in (Wallets -> lock icon): requires app unlock when software locked
+  * Seed never stored for Ledger accounts (sanitize strips any accidental keys)
+
+
+17.5 Seed & private key handling
+--------------------------------
+  * Prefer write offline; do not copy if avoidable
+  * Clipboard malware steals seeds/keys
+  * Reveal gate forces a warning before words appear
+  * One seed restores the wallet; private key is usually one account
+
+
+17.6 Clipboard address swap
+---------------------------
+  * Malware can replace a copied address with an attacker address
+  * Send / Bridge paste guard warns on suspicious clipboard changes
+  * Always check recipient visually
+
+
+17.7 Phishing & malicious dApps (highest real-world loss)
+---------------------------------------------------------
+  * Fake Uniswap / Jupiter / "claim" sites
+  * Malicious WalletConnect sessions
+  * Unlimited token approvals -> later drain
+
+Defend:
+  * Type URLs / use bookmarks
+  * Read every approve prompt (origin, amount, spender)
+  * Disconnect WC when done
+  * Revoke old allowances (e.g. revoke.cash) after using untrusted dApps
+
+
+17.8 External DEX approvals vs internal swap
+--------------------------------------------
+Internal Smart Wallet Swap (EVM, software keys):
+  * Limited approve for the trade
+  * Best-effort revoke residual allowance after success
+  * Next sell re-approves
+  * Does not revoke Permit2
+
+External DEX (site UI):
+  * Site chooses approve amount (often unlimited)
+  * Smart Wallet does NOT auto-revoke after external buys
+  * Manual revoke is the user control
+
+
+17.9 Unlimited ERC-20 approvals
+-------------------------------
+  * "Approve all" lets a contract spend that token until revoked
+  * Prefer limited amounts when a dApp allows
+  * Revoke when finished with a protocol
+
+
+17.10 Blind signing (Ledger / complex EVM)
+------------------------------------------
+  * You may approve without full human-readable detail
+  * Enable only when required; verify amounts on device when possible
+
+
+17.11 Browser extension attack surface
+--------------------------------------
+  * Extensions share the browser profile
+  * Install few trusted extensions
+  * Malware / stealers on the PC can attack unlocked sessions
+
+
+17.12 Compromised PC / shared machines
+--------------------------------------
+  * Don't use large balances on shared or work PCs
+  * Keep OS and browser updated
+
+
+17.13 Offline vault brute force
+-------------------------------
+  * If someone copies the encrypted vault, they can try passwords offline
+  * Defense: strong unique passphrase + high KDF cost
+  * 10-try UI lockout does not apply offline
+
+
+17.14 RPC / price / history integrity
+-------------------------------------
+  * Bad or flaky RPC can show wrong balances or delay txs
+  * Public free endpoints rate-limit (429) -- Sync / wait / custom RPC
+  * Does not replace "verify on explorer after send"
+
+
+17.15 Address poisoning
+-----------------------
+  * Tiny dust from lookalike addresses so you copy the wrong one from history
+  * Always verify full address or first+last carefully
+
+
+17.16 Wrong chain / bridge / human error
+----------------------------------------
+  * Sending SOL-type tokens to an EVM address (or reverse) can lose funds
+  * Bridges: confirm source, dest, asset, recipient
+
+
+17.17 Ledger residual risk
+--------------------------
+  * Device protects keys that live on device
+  * Unsupported chains still use software if you hold them that way
+  * You can still approve a malicious tx on the device
+
+
+17.18 What Smart Wallet does well (summary)
+----------------------------------------
+  * Encrypted vault + stronger KDF + lockout
+  * Global software password; optional per-Ledger gate
+  * Seed reveal warning gate
+  * Clipboard paste guard (Send / Bridge)
+  * Limited internal EVM approve + post-swap clear
+  * Auto-lock (UI + service worker)
+  * Fee ledgers to avoid double-charging internal Swap/Bridge platform fee on retry
+  * Ledger for supported paths
+
+
+17.19 What still depends on you
+-------------------------------
+  * Strong password
+  * Never share seed
+  * Reject scam sites / bad approves
+  * Device hygiene
+  * Hardware for large size
+  * Manual revoke of external unlimited approvals
+
+
+--------------------------------------------------------------------------------
+18. FEES (SMART WALLET PLATFORM FEE vs NETWORK / EXTERNAL)
+--------------------------------------------------------------------------------
+There is NO general Smart Wallet "tax" on buys, sells, sends, receives, or
+other on-chain activity. Smart Wallet takes a platform fee ONLY on two
+built-in flows: the in-wallet Swap screen and the in-wallet Bridge screen.
+
+
+18.1 Network fees (always on-chain, not a Smart Wallet product fee)
+-------------------------------------------------------------------
+  * Paid to the blockchain / validators (SOL fees, ETH gas, BTC fees, rent, etc.)
+  * Apply whenever the chain requires them (Send, Swap, Bridge, some
+    token-account creation, etc.)
+  * Smart Wallet does not set or collect these
+
+
+18.2 Platform fee -- internal Swap only (Home -> Swap)
+-------------------------------------------------------
+  * Smart Wallet 0.45% of the input on the wallet's own Swap screen
+  * Solana / Jupiter: combined service/platform total is 0.45% (no LI.FI fee)
+  * EVM / LiFi: LI.FI currently adds a separate 0.25% service fee, so the
+    combined service/platform total is currently 0.70%
+  * Those Smart Wallet and LI.FI fees are in the same atomic source transaction
+  * Network gas, DEX/tool costs, price impact and slippage are separate
+  * Failed or rejected fee-bearing swap completes neither the swap nor the fee
+  * Very small sizes can floor the Smart Wallet fee to zero (route unavailable)
+  * Auto slippage capped ~5% unless higher manual set
+
+
+18.3 Platform fee -- internal Bridge only (Home -> Bridge)
+----------------------------------------------------------
+  * Smart Wallet 0.85% of the amount you bridge (shown in the bridge quote)
+  * LI.FI currently adds a separate 0.25% service fee on EVM-source routes,
+    so the combined service/platform total is currently 1.10%
+  * Those fees are atomic with source-chain initiation
+  * Source gas, relayer/tool and destination-gas costs are separate
+  * Destination completion does not charge a second Smart Wallet fee
+
+
+18.4 NO Smart Wallet platform fee (explicit)
+--------------------------------------------
+Smart Wallet does NOT charge a platform fee / tax on:
+
+  * Send
+  * Receive
+  * Buy with card/bank via Onramper (Receive → Buy) -- Onramper / MoonPay /
+    Topper / banks may charge their own fees (section 9.2.1)
+  * Buys or sells that only appear in History (History is a viewer)
+  * External / third-party swaps (Jupiter site, Uniswap, PancakeSwap,
+    pump.fun, Raydium, 1inch, or any other dApp you connect to)
+  * External bridges or multi-chain UIs opened in the browser
+  * WalletConnect sessions
+  * Connecting to dApps / signing dApp transactions
+  * Viewing balances, holdings, charts, or history
+
+On external DEXes and dApps you may still pay:
+  * Network/gas fees, and
+  * That site's own protocol, LP, or interface fees --
+    Smart Wallet does not add a Smart Wallet cut on top of those.
+
+Note: Fee destination addresses for the internal Swap/Bridge platform fees
+are product internals and are not listed in this user guide.
+
+
+--------------------------------------------------------------------------------
+19. LOAD PINGS & NETWORK ACTIVITY (ANNOTATED)
+--------------------------------------------------------------------------------
+Smart Wallet does NOT run a proprietary telemetry "phone home" for product
+analytics. "Load pings" here means normal network requests the wallet makes
+so balances, prices, swaps, and dApps work.
+
+All of these STOP or throttle when the popup is closed / Home is not active
+unless a dApp or WalletConnect session is actively using the service worker.
+
+
+19.1 While Home is open (soft live refresh)
+-------------------------------------------
+  | What                         | Interval / rule                         | Endpoint class        |
+  |------------------------------|-----------------------------------------|-----------------------|
+  | Solana holdings USD prices   | ~every 35s (min gap ~30s)               | Jupiter Price API     |
+  |                              | one batch of held mints (up to ~50)     | lite-api.jup.ag       |
+  | On-chain balances (light)    | ~every 90s                              | Chain RPCs            |
+  |                              | skips re-hit if sticky native <25s old  |                       |
+  | Native majors prices         | throttled ~every 2 minutes when needed  | CoinGecko (+ fallback)|
+  | Native chart series          | cached ~15 minutes per coin             | CoinGecko market chart|
+  | PnL snapshot save            | at most ~every 10 minutes unless big $  | local storage only    |
+  | USDC / stables               | pinned ~$1 -- no price request          | n/a                   |
+
+Timers STOP when:
+  * Document is hidden (popup closed / tab backgrounded)
+  * You leave the Home panel
+  * A full Sync is already busy
+
+
+19.2 On demand (user action or forced Sync)
+-------------------------------------------
+  | Action                | Network effect                                      |
+  |-----------------------|-----------------------------------------------------|
+  | Sync button           | Balance RPC + force price refresh                   |
+  | Open Home             | Immediate cheap price tick                          |
+  | Successful swap       | Force price refresh                                 |
+  | History open/refresh  | Helius enhanced (if key set) else multi-RPC; cache  |
+  | Send / Swap / Bridge  | RPC + aggregator APIs (Jupiter / LiFi-style)       |
+  | Bridge status poll    | First check immediate, then ~every 10s until done   |
+  | WalletConnect pair    | Reown / WalletConnect relays (wss + https)          |
+  | dApp connect/sign     | Between page inject, service worker, and RPCs       |
+  | Ledger sign           | Local WebHID to device (not a cloud "sign API")     |
+
+
+19.3 Design goals (rate limits)
+-------------------------------
+  * Feel live without paid premium market streams
+  * Batch Solana prices (not one call per token)
+  * Stop when closed -- no background spam from the popup timers
+  * On HTTP 429: keep last good prices on screen; user can Sync later
+
+19.3b Free live feeds (v0.10.0+, live-feeds.js) -- idle-first push layer
+--------------------------------------------------------------------
+  When Home is open / visible, Smart Wallet may open free WebSockets.
+  Idle rule: if nothing happens on-chain and the native price barely moves,
+  feeds do not trigger RPC balance calls or holdings rebuilds.
+
+  | Feed                         | Source (free)                              | Idle behavior                   |
+  |------------------------------|--------------------------------------------|---------------------------------|
+  | Market-data WebSocket        | Binance *active chain only* (1 ticker)     | Push only if ≥~0.2% move + ≥12s |
+  | RPC WebSocket (Solana)       | logsSubscribe mentions on *your* address   | Silent until a tx mentions you  |
+  | RPC WebSocket (EVM)          | (not used) — newHeads would fire every     | HTTP balance poll only          |
+  |                              | block and cause unnecessary load           |                                 |
+  | On real Solana activity      | Debounced (min ~20s between refreshes)     | One light balance refresh       |
+
+  * Custom Solana RPC / Helius (if set) is preferred for the Solana WS URL
+  * With Solana mentions WS live, HTTP balance polls back off (~4 min safety net)
+  * Market WS fresh → skip redundant HTTP majors polls on non-Solana chains
+  * Feeds stop when popup is hidden or you leave Home
+
+Rough monthly volume (order of magnitude):
+  * ~30 min open/day  -> a few thousand price batches / month
+  * A few hours open/day -> still modest for free public endpoints
+  * Idle Home open: market socket stays open (1 stream) but almost no RPC load
+
+
+19.4 What is NOT a load ping
+----------------------------
+  * Auto-lock timers (local only)
+  * chrome.storage / localStorage reads and writes
+  * Password KDF / AES vault crypto (local CPU)
+  * Clipboard guard comparisons (local)
+
+
+19.5 Operators / custom RPC & Helius History
+--------------------------------------------
+  * Optional Helius key: Accounts -> Advanced - RPC (see section 15.2)
+  * With Helius: Solana History uses enhanced API on demand only (low cost)
+  * Live balance soft-refresh and price pings do NOT switch to a Helius-only
+    spam loop just because History is configured
+  * Do not put Ethereum RPC URLs in the Solana field
+  * API keys in solRpc are usage credentials -- rotate if leaked
+  * Do not hardcode one Helius key into a widely shared extension zip
+
+
+--------------------------------------------------------------------------------
+20. TROUBLESHOOTING
+--------------------------------------------------------------------------------
+Balances zero / stale:
+  * Sync; correct chain; correct account; wait for RPC rate-limit
+
+History empty / missing buys and sells (Solana):
+  * Dock History (not Accounts); chain = Solana; correct active wallet
+  * Tap Refresh
+  * For more reliable History: paste free Helius key under
+    Accounts -> Advanced - RPC -> Save, then Refresh again (section 9.3 / 15.2)
+  * Status may say "Helius" or "RPC" -- if Helius fails it falls back to RPC
+  * Jupiter website Activity is separate from Smart Wallet History
+  * Confirm the address has txs on Solscan if the list is still empty
+
+Extension context invalidated on dApp:
+  * Hard-refresh dApp tab after Reload; reconnect wallet
+
+Ledger:
+  * Section 13.5 / HOW-TO-MULTIPLE-LEDGER-WALLETS.txt
+
+Login lockout:
+  * Wait out the hour or unlock after lockout expires with correct password
+
+Swap fails:
+  * Gas / SOL for fees; slippage; re-quote; token liquidity
+
+Bridge stuck:
+  * Wait for status poll; check LiFi/explorer link if shown; gas on both sides
+
+Clipboard warn:
+  * Re-copy recipient from a trusted source; compare characters
+
+Free Ledger blocked after lock:
+  * Confirm that Ledger's PW toggle is OFF (Wallets -> unlock icon)
+  * Software vault lock should not block free Ledgers
+
+
+--------------------------------------------------------------------------------
+21. PRIVACY & DATA
+--------------------------------------------------------------------------------
+  * Keys / vault / activity stay local to the browser profile
+  * Public RPCs and price APIs see addresses and queries you make
+  * WalletConnect relays see session metadata when you pair
+  * No requirement to create a Smart Wallet cloud account for core wallet use
+  * No separate analytics product ping is required for balances to work
+    (see section 19)
+
+
+--------------------------------------------------------------------------------
+22. DOCUMENTATION MAINTENANCE
+--------------------------------------------------------------------------------
+When product behavior changes, update:
+  * This DOCUMENTATION.txt version line
+  * README.md snapshot version
+  * Section 14.2 inject allowlist if hosts are added/removed
+  * Section 15 password model if software/Ledger rules change
+  * Section 17 security if crypto / lockout / approve policy changes
+  * Section 19 load pings if intervals or providers change
+  * Section 18 fees if internal Swap/Bridge bps change (do not invent fees
+    on Send/Receive/external swaps)
+
+Source of truth for code version: extension manifest.json
+(not the load-unpacked folder name).
+
+Companion short guide:
+  * HOW-TO-MULTIPLE-LEDGER-WALLETS.txt
+
+
+--------------------------------------------------------------------------------
+23. DISCLAIMER
+--------------------------------------------------------------------------------
+Crypto wallets involve risk of permanent loss of funds.
+Double-check networks, addresses, and Ledger prompts.
+This document describes product behavior as of the version noted above and may
+change as Smart Wallet is updated.
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================
