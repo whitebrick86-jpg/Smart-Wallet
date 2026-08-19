@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Smart Wallet â€” Privacy</title>
+    <title>Smart Wallet — Privacy</title>
     <link rel="icon" type="image/png" data-sw-logo="favicon" href="./icons/smart-wallet.png?v=32" />
     <style>
       :root {
@@ -68,40 +68,47 @@
   </head>
   <body>
     <main>
-      <h1>Smart Wallet â€” Privacy</h1>
-      <p class="meta">Last updated: 2026-08-08 Â· Non-custodial browser wallet</p>
+      <h1>Smart Wallet — Privacy</h1>
+      <p class="meta">Last updated: 2026-08-19 · Non-custodial browser wallet</p>
 
-      <h2>What we do not collect</h2>
+      <h2>Non-custodial design</h2>
       <ul>
-        <li>We do not upload your seed phrase or private keys to a Smart Wallet cloud.</li>
-        <li>We do not require a Smart Wallet account for core wallet use.</li>
-        <li>We do not sell your personal information for advertising.</li>
+        <li>We do not operate a Smart Wallet cloud account that stores your seed phrase or private keys.</li>
+        <li>We do not intentionally transmit seed phrases, private keys, passwords, or decrypted vault contents to Smart Wallet servers.</li>
+        <li>Smart Wallet infrastructure cannot approve or sign transactions for you.</li>
+        <li>We do not sell personal information or use wallet activity for personalized advertising.</li>
       </ul>
 
       <h2>What stays on your device</h2>
       <p>
-        Addresses, encrypted vault data (when password is on), settings (including an optional
-        Helius/Solana RPC key you paste), and local caches are stored in your browser profile
-        via extension storage.
+        Addresses, encrypted vault data, settings, Custom RPC configuration, caches, dApp
+        permissions, and a non-exportable Managed RPC device-authentication key stay in your
+        browser profile. Seed phrases and private wallet keys are not included in Managed RPC
+        registration.
       </p>
 
       <h2>Network requests</h2>
       <p>
-        Your browser contacts blockchain RPCs, optional Helius (if you enable it), price APIs
-        (e.g. Jupiter, CoinGecko), WalletConnect/Reown when you use WC, and explorers when you
-        open links. Those parties may see public addresses and normal web request metadata (such
-        as IP address).
+        Your browser may contact Managed RPC infrastructure, public or Custom RPC providers,
+        Helius, Jupiter, CoinGecko, LiFi-related services, WalletConnect/Reown, on-ramps,
+        explorers, and dApps you connect. Those parties may see public addresses, request
+        contents, and ordinary web metadata such as IP address.
+      </p>
+      <p>
+        Automatic blockchain requests are limited to the selected network, except for explicit
+        features such as bridge, swap, authorized dApp requests, transaction confirmation, or an
+        all-network balance view you open.
       </p>
 
       <h2>Permissions (plain language)</h2>
       <ul>
-        <li>Storage â€” local wallet state</li>
-        <li>Clipboard â€” copy address; paste-safety checks on Send/Bridge</li>
-        <li>Websites / scripting â€” inject a standard wallet provider so dApps can connect and request signatures</li>
-        <li>Tabs â€” open or focus the wallet for approvals and Ledger</li>
-        <li>Alarms â€” auto-lock</li>
-        <li>Offscreen â€” local signing helper</li>
-        <li>HID â€” Ledger hardware over USB</li>
+        <li>Storage — encrypted wallet state, settings, and local registration state</li>
+        <li>Clipboard — copy address; paste-safety checks on Send/Bridge</li>
+        <li>Websites / scripting — inject a standard wallet provider on allowlisted dApp hosts</li>
+        <li>Tabs — open or focus the wallet for approvals and Ledger</li>
+        <li>Alarms — auto-lock and bounded maintenance</li>
+        <li>Offscreen — local signing helper</li>
+        <li>HID — Ledger hardware over USB</li>
       </ul>
 
       <h2>Full policy, fees &amp; contact</h2>
@@ -112,21 +119,21 @@
           rel="noopener noreferrer"
           >Privacy Policy</a
         >
-        Â·
+        ·
         <a
           href="https://github.com/whitebrick86-jpg/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md"
           target="_blank"
           rel="noopener noreferrer"
           >Fee disclosure</a
         >
-        Â·
+        ·
         <a
           href="https://github.com/whitebrick86-jpg/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/CONTACTS.md"
           target="_blank"
           rel="noopener noreferrer"
           >Contact</a
         >
-        Â·
+        ·
         <a
           href="https://github.com/whitebrick86-jpg/Smart-Wallet"
           target="_blank"
