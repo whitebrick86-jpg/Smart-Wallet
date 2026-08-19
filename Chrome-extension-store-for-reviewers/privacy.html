@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Smart Wallet — Privacy</title>
-    <link rel="icon" type="image/png" href="./icons/smart-wallet.png" />
+    <link rel="icon" type="image/png" data-sw-logo="favicon" href="./icons/smart-wallet.png?v=35" />
     <style>
       :root {
         color-scheme: dark;
@@ -79,6 +79,31 @@
         <li>We do not sell personal information or use wallet activity for personalized advertising.</li>
       </ul>
 
+      <h2>RPC routing</h2>
+      <p>
+        Blockchain requests may use built-in public RPC, a Custom RPC endpoint you configure, or
+        developer-managed RPC infrastructure. An authorized operator may choose Managed RPC or
+        Public RPC for reliability, security, maintenance, availability, or capacity. That
+        operator cannot access seed phrases or private wallet keys and cannot approve or sign
+        transactions for you. Disabling Managed RPC does not remotely turn off a Custom RPC you
+        configured.
+      </p>
+
+      <h2>Device authentication</h2>
+      <p>
+        After you agree, Smart Wallet may silently create a unique non-exportable
+        device-authentication key. The private device-authentication key stays on this device.
+        Only the public key and a derived device identifier are sent to Smart Wallet
+        infrastructure. That identifier is not your seed phrase or wallet private key.
+      </p>
+
+      <h2>What Managed RPC may process</h2>
+      <p>
+        When Managed RPC is used, Smart Wallet infrastructure may process the selected network,
+        RPC method and parameters, public addresses, transaction hashes, signed transaction data
+        submitted for broadcasting, IP address, timestamps, and security or diagnostic metadata.
+      </p>
+
       <h2>What stays on your device</h2>
       <p>
         Addresses, encrypted vault data, settings, Custom RPC configuration, caches, dApp
@@ -142,5 +167,6 @@
         >
       </p>
     </main>
+    <script src="./ui/ui-logo.js"></script>
   </body>
 </html>
