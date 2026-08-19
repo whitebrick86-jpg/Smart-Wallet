@@ -1,8 +1,10 @@
 # Smart Wallet — Network Loads (Pings, RPC, APIs)
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
-**Code snapshot:** load-count **0.11.159** · **Live product:** **0.11.257** ([PRODUCT.md](./PRODUCT.md))  
-**Last updated:** 2026-08-13  
+**Code snapshot:** load-count **0.11.159** · **Live product:** **0.11.349** ([PRODUCT.md](./PRODUCT.md))  
+**Last updated:** 2026-08-19  
+
+**Live scan (0.11.349):** rough HTTP max-use and stored-payload numbers are in **§0** below. They come from the current unpacked tree (`Gladiator-Wallet-0.6.55`), not a Chrome Network HAR. Order-of-magnitude only.  
 
 **Architecture note (0.11.34+ through 0.11.159):** Chain RPC calls go through a shared **rpc-gateway** (UI + service worker) with sequential multi-RPC failover, per-host cooldown after 429, hard timeouts (especially `eth_getLogs`), in-flight request dedupe, and **provider scoring** (latency / reliability / 429 history; still sequential — no free-RPC fan-out). Host lists come from a single **chain-registry**. Solana and EVM JSON-RPC from the popup can proxy via the service worker (`smart-wallet-sol-rpc` / `smart-wallet-evm-rpc`). Transaction confirmation can multi-vote RPC hosts via the transaction manager.
 
@@ -21,6 +23,93 @@
 | **Round** | One logical job. Failover may multiply **RPC tries** (1–4 hosts) but is still one round. Sequential only. |
 
 **Not loads:** theme CSS, product logo, auto-lock timers, vault crypto, Settings → Logs (local `chrome.storage` only). Local diagnostic writes (`smart_wallet_diag_logs`) are **not** network requests. RPC host-failure and recovery rows are recorded fire-and-forget from the existing sequential walk — they do **not** add RPC calls, do **not** retry a successful host, and do **not** change request frequency. The 500/1,000-row Logs cap is local storage only.
+
+---
+
+## 0. Live scan — 2026-08-19 (product 0.11.349)
+
+Code-read of the live unpacked wallet. **Not** a Chrome DevTools capture (no remote-debugging port on this machine). Numbers are **caps and typical envelopes**, not a promise of exact traffic.
+
+### 0.1 Hard request ceilings (cannot exceed these at once)
+
+| Control | Live value | What it means |
+|---------|------------|----------------|
+| Global inflight | **8** | All automatic chain work across the wallet |
+| Per-chain inflight | **4** | One selected chain |
+| Portfolio picker | **2** concurrent | Networks tab while open |
+| Screen budget (non-critical) | Home **16** / Send **20** / Swap **24** / Bridge **24** / History **12** / Settings **4** per **15 s** | Critical send/swap/sign/broadcast/confirm **bypass** |
+| RPC walk | Sequential **1–5** hosts, no `Promise.all` fan-out | One logical round can become several tries |
+| Confirm (EVM) | Poll **~0.5–1.5 s**, overall **~12–90 s**, **maxHosts 2–5** | ~8–40 receipt calls per hash, then stop |
+| Confirm (Solana) | **≤16** `getSignatureStatuses` tries | Shared `waitSolConfirmed` path |
+| Price batch | **≤50** mints / Jupiter request | One HTTPS round |
+| EVM discovery | **≤32** unknown contracts / pass | Holdings cache **48** rows / chain |
+| History open | Helius **≤50** rows **or** **≤60** sigs in batches of **5** | **0** unless History is open |
+
+Idle Home still uses the 0.11.0+ timers: price reconcile **90 s**, balance fallback **105 s**, Solana+WS safety **4 min**. Hidden popup/tab **stops** those loops.
+
+### 0.2 Rough HTTP / RPC max-use
+
+| Situation | Logical rounds | With failover tries (×1–4) | Notes |
+|-----------|----------------|----------------------------|--------|
+| Idle Home, 1 hour, Solana + healthy WS | **~45–70** | **~60–150** | + **2** long-lived WS (Binance ticker + Solana mentions) |
+| Idle Home, 1 hour, no WS (EVM / WS down) | **~80–120** | **~120–300** | Price 90 s + balance 105 s + occasional majors |
+| Theoretical Home budget ceiling | **64 / min** = **~3,800 / hr** | n/a | 16 per 15 s if every slot is used. Live timers do **not** fire that fast |
+| One EVM send / swap confirm | **~8–40** | same (already sequential) | Then submitted/confirming, not endless poll |
+| One Solana swap confirm | **≤16** | **≤16** | Timeout stays pending, not failed |
+| Networks picker open | **~11–22** | **~11–40** | 11 chains, concurrency 2, then cancel on close |
+| Heavy trading day (see §6 C) | **~600–1,600** | **~1k–3k** | Quotes + 15 swaps + 5 bridges + History + Syncs |
+| Worst stress hour (see §6 D) | **~300–550** | **~800–2,000** | User spam Sync/History/quotes, WS down |
+| Popup closed, no due fee/confirm | **0** | **0** | SW alarms are local unless a residual/await row is due |
+
+**Rule of thumb for operators:** plan free-tier around **~50–80 HTTP rounds/hour idle**, **~1,000–2,000 rounds on a hard trading day**, and treat **~3,000+ tries** as a user-driven stress day, not the idle product.
+
+Typical payload **per** request (rough):
+
+| Kind | Request | Response |
+|------|---------|----------|
+| JSON-RPC read | **0.2–1 KB** | **0.5–8 KB** (getLogs chunks larger but bounded) |
+| Jupiter price batch | **~0.5 KB** | **2–20 KB** |
+| Jupiter / LiFi quote | **1–4 KB** | **5–50 KB** |
+| Solana signed tx | **≤1.3 KB** | small sig |
+| Icon / chart | **0.5 KB** | **5–80 KB** |
+
+Idle hour **on the wire** is therefore about **~0.1–2 MB** transferred. A hard trading day is closer to **~5–30 MB**, not hundreds of megabytes.
+
+### 0.3 Rough stored payload the wallet can accumulate
+
+Chrome **does not** grant `unlimitedStorage`. `chrome.storage.local` quota is **10 MB**. `localStorage` is typically **5–10 MB** on the extension origin. Encrypted vault + caches share that envelope.
+
+| Store | Cap in code | Rough bytes if full |
+|-------|-------------|---------------------|
+| Logs (`smart_wallet_diag_logs`) | **500** default / **1000** max; message **280** chars | **~0.3–0.8 MB** |
+| History UI store | **240** rows | **~0.1–0.4 MB** |
+| History manager cache | **40** keys | **~0.5–1.6 MB** |
+| Portfolio cache | **60** keys × **48** holdings | **~0.4–1.2 MB** |
+| Local tx list | **80** rows | **~40 KB** |
+| Tx lifecycle durable | **40** records (100 in memory) | **~20–50 KB** |
+| Token visibility / catalog | grows with discovered mints | **~0.1–0.4 MB** |
+| Swap/bridge await + fee residual | 7-day retain, no huge row cap | **~50–200 KB** typical |
+| Encrypted vault `smart_wallet_v1` | accounts + settings | **~20–200 KB** |
+| Other keys (consent, trusted origins, nonce, UI) | small maps | **~50–200 KB** |
+
+| Envelope | Rough total |
+|----------|-------------|
+| Quiet single-account wallet | **~0.5–2 MB** |
+| Heavy multi-account / many chains / Logs at 1000 | **~3–6 MB** |
+| Packed worst before quota pressure | **~8–10 MB** |
+| Chrome hard stop | **10 MB** `chrome.storage.local` |
+
+Secrets stay in the encrypted vault blob. Logs, history, lifecycle, and portfolio caches are **not** allowed to store seed / private key fields.
+
+### 0.4 What this scan did **not** measure
+
+- Live Chrome Network HAR of idle Home (DevTools protocol was not exposed).
+- Production Managed RPC traffic (not enabled).
+- Worker LiFi volume (separate service).
+
+Historical idle/trading tables in §2–§10 are still the evolution story. Use **§0** for current 0.11.349 planning numbers.
+
+---
 
 ### Payload endpoints still in use (0.11.159)
 
