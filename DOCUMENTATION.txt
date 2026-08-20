@@ -2,12 +2,12 @@
 SMART WALLET -- USER DOCUMENTATION
 ================================================================================
 Product:   Smart Wallet (Chrome / Opera MV3 extension)
-Version:   user-guide snapshot 0.11.72; live product is 0.11.256 (see PRODUCT.md)
+Version:   user-guide snapshot 0.11.72; live product is 0.11.361 (see PRODUCT.md)
 Audience:  Everyday users and operators
 Repo:      Documentation-only (extension source is not published here)
            https://github.com/whitebrick86-jpg/Smart-Wallet
 Status:    Keep this file in sync when behavior changes
-Updated:   2026-08-11
+Updated:   2026-08-19
 
 
 --------------------------------------------------------------------------------
@@ -28,6 +28,7 @@ TABLE OF CONTENTS
   13. Ledger hardware wallet
   14. WalletConnect & dApps
   15. Settings, password model, custom RPC, manage tokens
+      15.4 Messaging
   16. Backup & import
   17. SECURITY MODEL (full mechanics + attack vectors)
   18. Fees
@@ -54,6 +55,7 @@ It lets you:
   * Connect to selected Solana / EVM dApps (injected provider; no Smart Wallet
     platform fee on external dApp swaps -- section 18)
   * Use WalletConnect (Reown Project ID)
+  * Message another Smart Wallet (in-app, or another browser) -- section 15.4
   * Software keys always encrypted at rest (user password ON, or device wrap when OFF)
   * Optional per-Ledger app password (keys still stay on the device)
   * Connect Ledger Nano for Solana + EVM (keys never leave the device)
@@ -766,6 +768,48 @@ Optional import:
 You can hide or manage listed tokens from the Manage tokens list for the
 active wallet + selected chain.
 
+15.4 Messaging
+--------------
+Where:
+  * Home -> three-dot menu on Total balance -> Messaging
+  * Settings -> Messaging -> Open
+  * Home unread chip / toolbar badge when Inbox has new mail
+
+What it is:
+  In-wallet mail (not a separate Chrome window). Folders: Inbox, Sent,
+  Compose, Announcements. Open a conversation to read the log and Reply
+  (Gmail-style thread). Inbox/Sent show one row per conversation.
+
+Send:
+  * From = one of your wallets in this install (software or Ledger)
+  * To = another wallet in this app, a saved Address book contact, or
+    paste a full wallet address
+  * From and To must be different addresses
+  * Use the same address type the other wallet actually has
+    (EVM to EVM, Solana to Solana)
+
+Receive:
+  * Mail addressed to one of your wallets in this install appears in Inbox
+  * Mail to a contact that is not one of your wallets stays in Sent only
+  * Another Smart Wallet in a different browser or across the world can
+    receive it after both sides reload a Messaging-capable build (0.11.359+)
+    and open Inbox (Inbox also refreshes about every 20 seconds)
+  * Chrome may ask to allow the staging mail host
+    smart-wallet-rpc-gateway-staging.smart-wallet.workers.dev -- Allow on
+    each browser that sends or receives
+  * Opened messages show From as a saved contact name if you stored that
+    address, otherwise the wallet name, plus the full address
+
+What it is not:
+  * Not a production public mail service. Delivery uses the staging mail
+    relay. Do not treat it as guaranteed always-on
+  * Not end-to-end encrypted. Never put a seed phrase, private key, or
+    password in a message
+  * Smart Wallet will never ask for secrets in Messaging
+
+Announcements:
+  Product notices inside the same Messaging panel (read-only).
+
 
 --------------------------------------------------------------------------------
 16. BACKUP & IMPORT
@@ -1196,6 +1240,9 @@ Free Ledger blocked after lock:
   * Keys / vault / activity stay local to the browser profile
   * Public RPCs and price APIs see addresses and queries you make
   * WalletConnect relays see session metadata when you pair
+  * Messaging (section 15.4) may send From/To/subject/body to the staging
+    mail relay so another Smart Wallet can receive it. Do not put secrets
+    in messages. Delivery is not a production SLA.
   * No requirement to create a Smart Wallet cloud account for core wallet use
   * No separate analytics product ping is required for balances to work
     (see section 19)
@@ -1209,6 +1256,7 @@ When product behavior changes, update:
   * README.md snapshot version
   * Section 14.2 inject allowlist if hosts are added/removed
   * Section 15 password model if software/Ledger rules change
+  * Section 15.4 Messaging if send/receive or the mail relay changes
   * Section 17 security if crypto / lockout / approve policy changes
   * Section 19 load pings if intervals or providers change
   * Section 18 fees if internal Swap/Bridge bps change (do not invent fees
