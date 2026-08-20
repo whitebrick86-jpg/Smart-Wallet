@@ -502,3 +502,9 @@ You may also open an issue on the documentation repository:
 https://github.com/whitebrick86-jpg/Smart-Wallet
 
 Do not email or message seed phrases, private keys, wallet passwords, authentication tokens, administrative credentials, or recovery information.
+
+## Retention, deletion, blocking, and reports
+
+Active personal message bodies are retained on Smart Wallet infrastructure while a participant still has a server-side Inbox reference, and otherwise for up to 30 days of Inbox TTL. Delete for me removes the requester’s Inbox reference after a signed request. If no participant retains a reference, the active body is removed. Body-less tombstones may be kept up to 30 days for replay and idempotency safety and do not contain the message body. Security, rate-limit, replay, and report metadata may be kept up to 90 days. Idempotency records expire after 24 hours and do not contain plaintext bodies. Block lists are stored for up to 365 days and do not contain message bodies. Announcements are public operator content retained until the authorized owner deletes them or an expiration date removes them.
+
+Users may block a sender so future personal messages are not stored for that Inbox. Blocking does not affect blockchain transfers. Users may report a specific message; reporting records explicit consent for authorized review of that message only. Users may request deletion of eligible server-stored personal messages for a wallet they prove they control. Other participants’ copies, screenshots, exports, and legally retained records may remain. Humans may not read personal message bodies except with explicit consent for specific data, a specific report, security or abuse investigation, legal obligation, or properly aggregated anonymous operations.

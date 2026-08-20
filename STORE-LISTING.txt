@@ -46,6 +46,7 @@ chains such as Base, Polygon, BNB Smart Chain), Bitcoin, and Sui.
 • Software keys always encrypted at rest; optional software password (or device wrap when off)
 • Connect Ledger (Solana + EVM) — keys stay on the device
 • View balances and holdings; send, receive, in-wallet swap and bridge
+• Optional wallet-address communication associated with the non-custodial wallet
 • Connect to websites using Solana Wallet Standard and EVM (EIP-1193)
 • WalletConnect (user provides a free Reown Project ID when needed)
 • Optional Helius API key for more reliable Solana History
@@ -89,6 +90,7 @@ Recommended sizes: 1280x800 or 640x400 PNG
 3. Swap (platform fee line visible)
 4. Settings (Privacy / Contact / Fee disclosure links visible)
 5. History (optional)
+6. Inbox / Messaging (optional; no message bodies in the capture)
 
 --------------------------------------------------------------------------------
 PACKAGE

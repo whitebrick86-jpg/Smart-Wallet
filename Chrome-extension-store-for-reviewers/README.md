@@ -2,7 +2,7 @@
 
 **Product:** Smart Wallet — Chrome / Opera Manifest V3 non-custodial multi-chain wallet  
 **Audience:** Chrome Web Store reviewers, security reviewers, compliance readers  
-**Docs snapshot:** 0.11.253  
+**Docs snapshot:** 0.11.388  
 
 This folder is a **single place** with the documents most relevant to Chrome Web Store review.  
 You do not need to search the rest of the repository for privacy, fees, host permissions, or contacts.
@@ -28,7 +28,7 @@ The shipped package is the store zip built from the operator package pipeline.
 
 | Topic | Summary |
 |-------|---------|
-| **Purpose** | Non-custodial browser crypto wallet only (create/import, balances, send, swap, bridge, dApp connect, optional Ledger) |
+| **Purpose** | Non-custodial browser crypto wallet (create/import, balances, send, swap, bridge, dApp connect, optional Ledger, optional wallet-address Messaging) |
 | **Custody** | No Smart Wallet cloud custody of seeds/keys |
 | **Inject scope** | Content scripts / wallet provider on an **allowlist** of DEX/DeFi hosts — not every website |
 | **Network scope** | Broad `host_permissions` so the **extension** can call RPCs, price APIs, swap/bridge APIs, WC relays, and optional user-pasted RPC (see host-permissions doc) |
@@ -79,7 +79,8 @@ These are the **canonical** public privacy, fee, host-permission, and contact do
 | File | Role |
 |------|------|
 | [STORE-LISTING.txt](../STORE-LISTING.txt) | Dashboard paste kit (listing text + permission form answers) |
-| [CHROME-WEB-STORE-READINESS.md](../CHROME-WEB-STORE-READINESS.md) | Internal gap analysis (screenshots, packaging checklist) |
+| [CHROME-WEB-STORE-READINESS.md](../CHROME-WEB-STORE-READINESS.md) | Internal gap analysis (screenshots, packaging checklist) — **0.11.388** |
+| [MESSAGING.md](../MESSAGING.md) | Inbox / Messaging controls, including the three delete paths |
 
 ---
 

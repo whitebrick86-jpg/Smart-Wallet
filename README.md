@@ -21,11 +21,15 @@ This repository publishes **product documentation**, store-reviewer materials, a
 
 Optional host justification (`https://*/*`, `wss://*/*`): [CHROME-STORE-OPTIONAL-HOST-JUSTIFICATION.md](./CHROME-STORE-OPTIONAL-HOST-JUSTIFICATION.md)
 
+Chrome Web Store gap analysis (operator): [CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md) — snapshot **0.11.388**.
+
 ## Documents
 
 | File | Description |
 |------|-------------|
 | **[PRODUCT.md](./PRODUCT.md)** | Product map and fee classes |
+| **[MESSAGING.md](./MESSAGING.md)** | Inbox / Messaging: folders, buttons, Delete conversation vs Delete for me vs server deletion request |
+| **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)** | Chrome Web Store gap analysis (0.11.388) |
 | **[DOCUMENTATION.txt](./DOCUMENTATION.txt)** | User guide |
 | **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Surfaces, storage, signing, inject, fees |
 | **[HOST-PERMISSIONS.md](./HOST-PERMISSIONS.md)** | Required vs optional hosts vs inject allowlist |
