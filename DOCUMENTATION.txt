@@ -533,7 +533,9 @@ Supported:
 Not supported yet on Ledger accounts:
   * Bitcoin
   * Sui
-  (Use a software / seed wallet for those chains.)
+  * Messaging / Inbox (personal send, reply, Inbox, block, report, deletion)
+  (Use a software / seed wallet for those chains. Ledger accounts are
+  not currently supported for Messaging.)
 
 
 13.2 Connect Ledger -- Solana
@@ -782,6 +784,10 @@ What it is:
   Sent, Compose, Announcements. Personal send/pull waits for the local
   2026-08-20 messaging consent notice. Canonical unpacked and Store builds
   use the production mail host, not staging.
+
+Ledger:
+  Ledger accounts are not currently supported for Messaging. Select a
+  software wallet. Inbox/Sent show only that wallet's conversations.
 
 Three different deletes:
   * Delete conversation / Delete selected / Clear inbox = this device only

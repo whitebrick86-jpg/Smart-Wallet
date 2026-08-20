@@ -2,11 +2,13 @@
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
 **Audience:** Users, Chrome Web Store reviewers, operators  
-**Live unpacked product:** 0.11.388  
+**Live unpacked product:** 0.11.397  
 **Consent notice:** 2026-08-20 (`smart_wallet_messaging_consent_v1`)  
 **Date:** 2026-08-20  
 
 This page is the product map for **Inbox / Messaging**: every panel, folder, and button, and the difference between **Delete conversation**, **Delete for me**, and **Request deletion of my server messages**.
+
+**Ledger accounts are not currently supported for Messaging.** Personal send, reply, Inbox, Sent, block, report, and deletion require a **software** wallet. Ledger private keys stay on the device. Do not select a Ledger account expecting Messaging to work.
 
 Related: [PRIVACY-POLICY.md](./Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md) · [CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md) · [DOCUMENTATION.txt](./DOCUMENTATION.txt)
 
@@ -23,8 +25,13 @@ Messaging is **optional wallet-to-wallet mail** inside Smart Wallet. It is not a
 - Messages are encrypted **in transit and at rest**. Authorized infrastructure can process contents. They are **not** end-to-end encrypted.
 - Personal Messaging stays **inside the wallet window**. Buttons do not open an external website, tab, or browser window.
 - Blockchain **Send / Swap / Bridge** is separate and is not blocked by a Messaging block list.
+- Inbox and Sent show **only the selected software wallet’s** conversations with each recipient. Switching wallets does not list another wallet’s threads.
 
 Announcements are **read-only notices** in the same Messaging panel. They are not personal mail.
+
+### Ledger (not supported)
+
+Messaging is **not currently supported on Ledger accounts** (Solana or EVM). Use a software / seed wallet. Ledger Nano connect, Link EVM, and on-device **transaction** signing are unchanged and are not Messaging.
 
 ---
 
@@ -66,7 +73,7 @@ The Messaging header has **← Settings** and a vertical **⋮** (**Messaging op
 | **Compose** | New message form |
 | **Announcements** | Product notices. Not a personal conversation. Store builds can **read** these; they cannot **broadcast** new ones |
 
-**Refresh inbox** appears when Inbox is open. It signs a pull for wallets on this device. It does not run in the background on Home, Send, Swap, or Bridge.
+**Refresh inbox** appears when Inbox is open. It signs a pull for the **selected software wallet**. It does not run in the background on Home, Send, Swap, or Bridge. Empty Inbox: **No conversations for this wallet yet.**
 
 ---
 
@@ -74,7 +81,7 @@ The Messaging header has **← Settings** and a vertical **⋮** (**Messaging op
 
 | Control | What it does |
 |---------|----------------|
-| **From** | Wallet on this device that will send |
+| **From** | Selected **software** wallet on this device. Ledger accounts are not currently supported |
 | **To** | Saved contact |
 | **Or paste another wallet address** | Address that is not in contacts. From and To cannot be the same |
 | **Subject** | Optional; capped |
@@ -163,14 +170,16 @@ Header **⋮** → **Blocked addresses** (menu first, then panel).
 | **Blocked addresses** (menu item) | Opens the **internal** panel. Does not navigate away. The list request runs when the panel opens, not before. |
 | Panel title | **Blocked addresses** |
 | **✕** | Closes the panel. There is no “← Messaging” back arrow; **✕** is the exit. |
-| Each row | Shortened address + **Unblock** (and Copy). No message body is loaded. |
+| **Select all** | Selects every listed blocked address |
+| **Unblock selected address** | Unblocks the checked rows. There is no Clear all. Rows do not repeat Copy/Unblock. |
+| Each row | Checkbox + shortened address. No message body is loaded. |
 | Empty | **You haven’t blocked any addresses.** |
 
-**Unblock**
+**Unblock selected**
 
-- Pending: **Unblocking sender…**
-- Success after HTTP 200: **Sender unblocked.**
-- The panel stays open. Only that row disappears.
+- Pending: **Unblocking sender…** (or **Unblocking selected addresses…**)
+- Success after HTTP 200: **Sender unblocked.** (or **Selected addresses unblocked.**)
+- The panel stays open. Unblocked rows disappear.
 - After unblock, that address may send a new personal message.
 
 **Load failure:** **Could not load blocked addresses. Try again.**  
@@ -254,7 +263,7 @@ Canonical unpacked Messaging talks to the **production** mail host. A separate `
 - Personal mail rate limits exist on the relay (send, report, block).  
 - Report review is owner-only and stripped from Store.  
 - Blocking does not affect chain Send.  
-- Production Worker mail-privacy (delete-for-me, block, report, delete-all) was proven on **staging**. Production Worker **0.2.12** was not updated in that pass. Server buttons must not be offered as working in the Store listing until production matches.
+- Production Worker mail-privacy (delete-for-me, block, report, delete-all) is live on production **0.2.20**. **Ledger Messaging is not currently supported.**
 
 ---
 
