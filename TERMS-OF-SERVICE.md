@@ -1,4 +1,4 @@
-# Smart Wallet â€” Terms of Service
+# Smart Wallet — Terms of Service
 
 **Last Updated:** August 12, 2026
 

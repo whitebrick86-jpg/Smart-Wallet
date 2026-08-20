@@ -1,13 +1,13 @@
 # Chrome extension store (for reviewers)
 
-**Product:** Smart Wallet â€” Chrome / Opera Manifest V3 non-custodial multi-chain wallet  
+**Product:** Smart Wallet — Chrome / Opera Manifest V3 non-custodial multi-chain wallet  
 **Audience:** Chrome Web Store reviewers, security reviewers, compliance readers  
 **Docs snapshot:** 0.11.253  
 
 This folder is a **single place** with the documents most relevant to Chrome Web Store review.  
 You do not need to search the rest of the repository for privacy, fees, host permissions, or contacts.
 
-**Documentation-only repository** â€” extension source code is **not** published here.  
+**Documentation-only repository** — extension source code is **not** published here.  
 The shipped package is the store zip built from the operator package pipeline.
 
 ---
@@ -30,7 +30,7 @@ The shipped package is the store zip built from the operator package pipeline.
 |-------|---------|
 | **Purpose** | Non-custodial browser crypto wallet only (create/import, balances, send, swap, bridge, dApp connect, optional Ledger) |
 | **Custody** | No Smart Wallet cloud custody of seeds/keys |
-| **Inject scope** | Content scripts / wallet provider on an **allowlist** of DEX/DeFi hosts â€” not every website |
+| **Inject scope** | Content scripts / wallet provider on an **allowlist** of DEX/DeFi hosts — not every website |
 | **Network scope** | Broad `host_permissions` so the **extension** can call RPCs, price APIs, swap/bridge APIs, WC relays, and optional user-pasted RPC (see host-permissions doc) |
 | **Remote code** | Product logic ships in the extension package; extension pages CSP `script-src 'self'` |
 | **Fees** | Smart Wallet 0.45% Jupiter / 0.45%+current LI.FI 0.25% LiFi swap / 0.85%+0.25% LiFi bridge; atomic with the source tx; not on Send / external dApps |
@@ -74,7 +74,7 @@ Full page: [CONTACTS.md](./CONTACTS.md)
 | [FEE-DISCLOSURE.md](./FEE-DISCLOSURE.md) | Fee disclosure |
 | [CONTACTS.md](./CONTACTS.md) | Contact emails |
 
-These are the **canonical** public privacy, fee, host-permission, and contact documents for Smart Wallet.\r\n\r\n**Not included here (operator only â€” for the submitter, not reviewers):**
+These are the **canonical** public privacy, fee, host-permission, and contact documents for Smart Wallet.\r\n\r\n**Not included here (operator only — for the submitter, not reviewers):**
 
 | File | Role |
 |------|------|

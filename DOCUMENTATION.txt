@@ -77,8 +77,8 @@ Ledger support is partial -- see section 13.
 
 Brand / UI:
   Dark navy + lavender; Inter UI font; mint-green primary actions.
-  Light mode + Dark mode (Settings â†’ Appearance; shared design tokens).
-  Home CTAs: Send | Receive | Swap | Bridge (Send icon matches dock â†—).
+  Light mode + Dark mode (Settings → Appearance; shared design tokens).
+  Home CTAs: Send | Receive | Swap | Bridge (Send icon matches dock ↗).
   Top bar: three chips -- Accounts (Smart Wallet logo) | Chain (center) | Address.
   Product logo is centralized (one asset path / version for in-app mark).
 
@@ -181,7 +181,7 @@ This is the product model -- how pieces fit together (not a developer API).
     * Password ON  -> vault opened with your password (login after lock)
     * Password OFF -> vault still encrypted with a device wrap key (no password prompt)
     * Plain keys only briefly in memory for sign / approve / intentional seed reveal
-    * Deleting a seed only when you press âœ• Remove on that account
+    * Deleting a seed only when you press ✕ Remove on that account
 
   LEDGER:
     * Private keys NEVER leave the Nano
@@ -224,7 +224,7 @@ The home screen shows:
 
   * Top bar chips: account | network | short address
   * Total balance in USD (active wallet + visible holdings)
-  * Portfolio PnL under the $ amount ($ change Â· percent)
+  * Portfolio PnL under the $ amount ($ change · percent)
   * Native coin price + small line chart beside the $
   * Native balance for the selected chain
   * Sync / connection status
@@ -240,7 +240,7 @@ Tips:
 
 7.1 How to read portfolio PnL
 -----------------------------
-Example:  +$0.40  Â·  +0.048%
+Example:  +$0.40  ·  +0.048%
 
   * Dollar change of Total balance since the first local snapshot for this
     account + chain pair
@@ -334,14 +334,14 @@ How to use:
   3. Confirm the deposit address shown (and QR).
   4. Tap **Buy**.
   5. Complete card or bank flow in Onramper / the provider they route you to.
-  6. Wait for on-chain delivery, then **Home â†’ Sync** if balances look stale.
+  6. Wait for on-chain delivery, then **Home → Sync** if balances look stale.
 
 What is pre-filled:
   * Active chain deposit address is passed as Onramper `wallets` +
     `networkWallets` so the destination stays locked to your address when
     token IDs match Onramper's registry.
   * Crypto list is limited to assets for that chain (see below).
-  * Default crypto is usually the chain native (SOL, ETH, BTC, â€¦).
+  * Default crypto is usually the chain native (SOL, ETH, BTC, …).
 
 Solana crypto selector (Onramper IDs):
   * SOL (`sol`)
@@ -394,7 +394,7 @@ Troubleshooting:
   * Wrong chain selected -- switch top bar network, then open Buy again.
   * Address not auto-filled -- ensure token IDs match Onramper; set API key;
     paste from clipboard if needed.
-  * Funds not visible yet -- wait for confirmation, then Home â†’ Sync.
+  * Funds not visible yet -- wait for confirmation, then Home → Sync.
   * Unsupported region / payment -- try another method or on-ramp in Onramper.
 
 
@@ -681,7 +681,7 @@ fully separate -- locking or unlocking one never affects the other. Ledger keys
 stay on the device. Full detail: ARCHITECTURE.md section 4.
 
 
-15.1 Password model (important) â€” always encrypted at rest
+15.1 Password model (important) — always encrypted at rest
 ----------------------------------------------------------
 Password protection is GLOBAL for all software wallets, and OPTIONAL global for
 all Ledger wallets (two independent Settings switches).
@@ -697,7 +697,7 @@ never stored long-term. Seeds load only for sign / approve / intentional reveal.
       same wallets/seeds; confirm only: "Are you sure you want to turn password
       protection off?"
     * Prefer ON on shared devices; OFF is convenience, not plaintext storage
-    * Deleting a seed: only âœ• Remove on that account (with confirm)
+    * Deleting a seed: only ✕ Remove on that account (with confirm)
 
   LEDGER accounts:
     * Separate global switch (not the software vault)
@@ -875,7 +875,7 @@ Password protection is GLOBAL for all software wallets:
     * Connect / approve / sign do not re-ask password until lock / auto-lock
 
   PASSWORD OFF:
-    * Same wallets/seeds â€” nothing deleted
+    * Same wallets/seeds — nothing deleted
     * Vault re-wrapped with a device wrap key (not shown to the user)
     * Still no plaintext seed on disk; still JIT decrypt for sign/approve only
     * No password prompt to unlock
@@ -1081,7 +1081,7 @@ Smart Wallet does NOT charge a platform fee / tax on:
 
   * Send
   * Receive
-  * Buy with card/bank via Onramper (Receive â†’ Buy) -- Onramper / MoonPay /
+  * Buy with card/bank via Onramper (Receive → Buy) -- Onramper / MoonPay /
     Topper / banks may charge their own fees (section 9.2.1)
   * Buys or sells that only appear in History (History is a viewer)
   * External / third-party swaps (Jupiter site, Uniswap, PancakeSwap,
@@ -1160,15 +1160,15 @@ Timers STOP when:
 
   | Feed                         | Source (free)                              | Idle behavior                   |
   |------------------------------|--------------------------------------------|---------------------------------|
-  | Market-data WebSocket        | Binance *active chain only* (1 ticker)     | Push only if â‰¥~0.2% move + â‰¥12s |
+  | Market-data WebSocket        | Binance *active chain only* (1 ticker)     | Push only if ≥~0.2% move + ≥12s |
   | RPC WebSocket (Solana)       | logsSubscribe mentions on *your* address   | Silent until a tx mentions you  |
-  | RPC WebSocket (EVM)          | (not used) â€” newHeads would fire every     | HTTP balance poll only          |
+  | RPC WebSocket (EVM)          | (not used) — newHeads would fire every     | HTTP balance poll only          |
   |                              | block and cause unnecessary load           |                                 |
   | On real Solana activity      | Debounced (min ~20s between refreshes)     | One light balance refresh       |
 
   * Custom Solana RPC / Helius (if set) is preferred for the Solana WS URL
   * With Solana mentions WS live, HTTP balance polls back off (~4 min safety net)
-  * Market WS fresh â†’ skip redundant HTTP majors polls on non-Solana chains
+  * Market WS fresh → skip redundant HTTP majors polls on non-Solana chains
   * Feeds stop when popup is hidden or you leave Home
 
 Rough monthly volume (order of magnitude):

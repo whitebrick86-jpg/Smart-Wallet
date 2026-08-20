@@ -1,4 +1,4 @@
-# Smart Wallet â€” Contact
+# Smart Wallet — Contact
 
 **Product:** Smart Wallet (Chrome / Opera MV3 browser wallet)  
 **Last updated:** 2026-08-08  
