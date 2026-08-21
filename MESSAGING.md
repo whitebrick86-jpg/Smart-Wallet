@@ -2,13 +2,13 @@
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
 **Audience:** Users, Chrome Web Store reviewers, operators  
-**Live unpacked product:** 0.11.397  
+**Documentation target:** Ledger Messaging authorization release (set the exact wallet version before publishing)  
 **Consent notice:** 2026-08-20 (`smart_wallet_messaging_consent_v1`)  
-**Date:** 2026-08-20  
+**Updated:** 2026-08-21  
 
 This page is the product map for **Inbox / Messaging**: every panel, folder, and button, and the difference between **Delete conversation**, **Delete for me**, and **Request deletion of my server messages**.
 
-**Ledger accounts are not currently supported for Messaging.** Personal send, reply, Inbox, Sent, block, report, and deletion require a **software** wallet. Ledger private keys stay on the device. Do not select a Ledger account expecting Messaging to work.
+Messaging supports software wallets and explicitly authorized Ledger accounts. A Ledger account must complete a one-time on-device authorization before it can send, reply, refresh personal mail, or manage its messaging data. The Ledger private key remains on the hardware device and is never exported to Smart Wallet.
 
 Related: [PRIVACY-POLICY.md](./Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md) · [CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md) · [DOCUMENTATION.txt](./DOCUMENTATION.txt)
 
@@ -25,13 +25,51 @@ Messaging is **optional wallet-to-wallet mail** inside Smart Wallet. It is not a
 - Messages are encrypted **in transit and at rest**. Authorized infrastructure can process contents. They are **not** end-to-end encrypted.
 - Personal Messaging stays **inside the wallet window**. Buttons do not open an external website, tab, or browser window.
 - Blockchain **Send / Swap / Bridge** is separate and is not blocked by a Messaging block list.
-- Inbox and Sent show **only the selected software wallet’s** conversations with each recipient. Switching wallets does not list another wallet’s threads.
+- Inbox and Sent show only the selected wallet identity’s conversations with each recipient. Switching wallets does not list another wallet’s threads.
 
 Announcements are **read-only notices** in the same Messaging panel. They are not personal mail.
 
-### Ledger (not supported)
+### 1.1 Ledger Messaging
 
-Messaging is **not currently supported on Ledger accounts** (Solana or EVM). Use a software / seed wallet. Ledger Nano connect, Link EVM, and on-device **transaction** signing are unchanged and are not Messaging.
+Ledger Messaging lets a supported EVM or Solana Ledger address authorize Smart Wallet’s separate, non-exportable messaging key. The Ledger signs an off-chain authorization; it does not reveal its private key and does not sign every ordinary message.
+
+The stable messaging identity is the selected Ledger address. The authorized messaging key may later be rotated without creating a different visible sender or a new conversation. Smart Wallet must resolve the recipient’s current authorized key before sending a new message instead of reusing a revoked key stored in an older message.
+
+Ledger Messaging authorization is separate from blockchain transaction signing:
+
+- It does not move tokens or authorize Send, Swap, or Bridge.
+- It does not expose, copy, or store the Ledger private key.
+- It does not allow a software-wallet key or infrastructure key to impersonate a Ledger address.
+- It does not require the Ledger to remain connected for every ordinary message after authorization succeeds.
+- EVM and Solana support are enabled separately and only after physical-device verification for that Ledger app and signing route.
+
+#### Enable Ledger
+
+**Enable Ledger** is the single authorization control. It handles both first-time authorization and authorization again after revocation, expiration, reinstall, or messaging-key rotation.
+
+1. Select the Ledger-backed account that will be used as the messaging identity.
+2. Unlock the Ledger, connect it to the computer, and allow the browser’s device connection when prompted.
+3. Open the Ethereum app for a supported EVM account or the Solana app for a supported Solana account.
+4. Press **Enable Ledger**.
+5. Smart Wallet prepares an authorization that binds the selected Ledger address to the current messaging public key, Smart Wallet application/domain, chain, nonce, audience, and expiration.
+6. Review the request and approve it on the physical Ledger.
+7. Smart Wallet verifies the returned signature against the exact selected Ledger address.
+8. Smart Wallet registers the verified messaging key with the mail service.
+9. The interface shows **Ledger Messaging Authorized** only after signature verification and registration both succeed.
+
+Expected control states are **Enable Ledger**, **Connecting to Ledger…**, **Approve on Ledger…**, and **Ledger Messaging Authorized**. Rejecting the request, disconnecting the Ledger, opening the wrong app, returning the wrong address, or failing backend registration leaves Messaging unauthorized. Smart Wallet never silently falls back to another account’s software key.
+
+#### Revoke
+
+**Revoke** invalidates all messaging authorization and active messaging sessions associated with the selected Ledger messaging identity in one action.
+
+- Revocation stops revoked sessions from sending or receiving new personal messages as that Ledger identity.
+- A new physical Ledger authorization is required before Ledger Messaging can be used again.
+- Revocation does not remove the Ledger account, move funds, or affect Send, Swap, Bridge, or transaction signing.
+- Revocation does not automatically delete conversation history or messages already delivered to another participant.
+- If old history depends on an old encryption key, Smart Wallet must describe whether that history remains readable; revocation must not silently present itself as message deletion.
+
+There is no separate **Reauthorize** button. After revocation or expiration, the same **Enable Ledger** control performs a fresh authorization. There is no **Revoke All** control when only one Ledger messaging identity is active; **Revoke** invalidates all sessions for the selected Ledger identity.
 
 ---
 
@@ -73,7 +111,7 @@ The Messaging header has **← Settings** and a vertical **⋮** (**Messaging op
 | **Compose** | New message form |
 | **Announcements** | Product notices. Not a personal conversation. Store builds can **read** these; they cannot **broadcast** new ones |
 
-**Refresh inbox** appears when Inbox is open. It signs a pull for the **selected software wallet**. It does not run in the background on Home, Send, Swap, or Bridge. Empty Inbox: **No conversations for this wallet yet.**
+**Refresh inbox** appears when Inbox is open. It authenticates the pull for the selected wallet identity. A Ledger account must already have a valid Ledger-authorized messaging key; Refresh does not request a new on-device signature every time. It does not run in the background on Home, Send, Swap, or Bridge. Empty Inbox: **No conversations for this wallet yet.**
 
 ---
 
@@ -81,7 +119,7 @@ The Messaging header has **← Settings** and a vertical **⋮** (**Messaging op
 
 | Control | What it does |
 |---------|----------------|
-| **From** | Selected **software** wallet on this device. Ledger accounts are not currently supported |
+| **From** | Selected software wallet or Ledger account with a valid Ledger Messaging authorization |
 | **To** | Saved contact |
 | **Or paste another wallet address** | Address that is not in contacts. From and To cannot be the same |
 | **Subject** | Optional; capped |
@@ -249,7 +287,7 @@ Owner-only (unpacked, not Store): Loading reported message… / Updating report�
 
 ## 12. What Store builds include vs omit
 
-**Included (customer):** Inbox, Sent, Compose, Announcements (read), Refresh, local delete conversation / selected / clear, Delete for me, Block, Blocked addresses, Report, Request deletion of my server messages, messaging consent, privacy copy.
+**Included (customer):** Inbox, Sent, Compose, Announcements (read), Refresh, local delete conversation / selected / clear, Delete for me, Block, Blocked addresses, Report, Request deletion of my server messages, messaging consent, privacy copy, and Ledger Messaging authorization/revocation when the applicable chain feature has passed physical-device validation and is enabled for that build.
 
 **Omitted (store strip):** Broadcast announcements composer, Owner tools / Message reports, owner device enrollment, admin-panel token, Managed RPC owner switches.
 
@@ -263,7 +301,67 @@ Canonical unpacked Messaging talks to the **production** mail host. A separate `
 - Personal mail rate limits exist on the relay (send, report, block).  
 - Report review is owner-only and stripped from Store.  
 - Blocking does not affect chain Send.  
-- Production Worker mail-privacy (delete-for-me, block, report, delete-all) is live on production **0.2.20**. **Ledger Messaging is not currently supported.**
+- Production Worker mail-privacy (delete-for-me, block, report, delete-all) is live on production **0.2.20**. Before publishing this document, verify that the deployed mail service accepts and verifies the Ledger Messaging authorization protocol described above.
+
+---
+
+## 14. Ledger Messaging FAQ
+
+### Does Enable Ledger import my Ledger private key?
+
+No. The private key remains inside the Ledger. The device signs an off-chain authorization linking the selected public Ledger address to Smart Wallet’s non-exportable messaging public key.
+
+### Why must I approve something on the physical Ledger?
+
+The messaging key is separate from the cryptocurrency wallet key. Physical approval proves that the selected Ledger address authorized that particular messaging key. A device key or another software wallet key cannot provide that proof.
+
+### Do I approve every message on the Ledger?
+
+No. The Ledger authorizes the messaging key. After that succeeds, the authorized messaging key handles ordinary messages until the authorization expires or is revoked.
+
+### What happens if I press Enable Ledger after previously authorizing?
+
+If the authorization is still valid, Smart Wallet shows the authorized state. If it was revoked, expired, lost during reinstall, or replaced during key rotation, **Enable Ledger** starts a fresh connection and physical authorization. A separate Reauthorize button is unnecessary.
+
+### What does Revoke do?
+
+Revoke invalidates all messaging authorization and active sessions for the selected Ledger identity. It does not remove the Ledger account or affect funds and blockchain activity. Messaging cannot resume for that identity until **Enable Ledger** completes a new physical authorization.
+
+### Does Revoke delete my messages?
+
+No. Revocation ends authorization and sessions; it is not a deletion command. Use the separate conversation and messaging-data deletion controls described in this document. Messages already delivered to another participant may remain in that participant’s copy.
+
+### Can I continue in the same conversation after revoking and enabling again?
+
+Yes. The thread is tied to the stable wallet addresses, not permanently to the old messaging key. After successful authorization, the same Reply field becomes available again. Before sending, Smart Wallet resolves the recipient’s current authorized key and uses the sender’s current authorized key. It must not send to a revoked key copied from an older message.
+
+### Does a new messaging key create a different sender?
+
+No. The visible identity remains the same Ledger address. Individual messages may internally reference different authorized key versions, but key rotation does not create a new visible wallet identity or conversation.
+
+### Can I type while authorization is revoked?
+
+The wallet may preserve an unsent draft locally, but it must disable sending and clearly show that Ledger Messaging authorization is required. It must not queue or claim delivery under a revoked identity.
+
+### Why is there only one Revoke button?
+
+One press revokes all sessions controlled by the selected Ledger messaging identity. Users should not need to revoke sessions individually. If Smart Wallet later supports several simultaneously authorized Ledger identities, each identity should still have its own Revoke action.
+
+### Is Revoke the same as Request deletion of my server messages?
+
+No. Revoke stops authorization and active sessions. **Request deletion of my server messages** submits a separate request concerning eligible stored messaging data. Neither action guarantees deletion of copies already held by another participant.
+
+### What if the browser never asks to connect or the Ledger never shows an approval?
+
+Authorization has not completed. Confirm that the Ledger is unlocked, connected, and running the correct Ethereum or Solana app; then try **Enable Ledger** again. Smart Wallet must not display **Ledger Messaging Authorized** unless it received and verified a physical-device signature and the mail service accepted the authorization.
+
+### Can another Ledger device control the same messaging identity?
+
+Only a device capable of producing a valid signature for the same Ledger-derived address can authorize that identity—for example, a replacement Ledger restored from the same recovery phrase. A Ledger with a different seed controls different addresses and cannot authorize the original identity.
+
+### Does Ledger Messaging change normal Ledger wallet features?
+
+No. Ledger Messaging authorization is separate from Ledger transaction signing. Enabling or revoking Messaging must not change Send, Swap, Bridge, account visibility, balances, or funds.
 
 ---
 
