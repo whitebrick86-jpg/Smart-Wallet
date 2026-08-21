@@ -1,510 +1,352 @@
 # Smart Wallet — Privacy Policy
 
-**Last updated:** 2026-08-20
+**Last updated:** August 20, 2026
 
-## Who we are
-
-Smart Wallet is a non-custodial browser extension that lets users hold and use cryptocurrency keys on their device, interact with supported blockchain networks, connect to decentralized applications (“dApps”), and use optional wallet-address messaging features.
+Smart Wallet is a non-custodial browser extension for managing cryptocurrency wallets, interacting with supported blockchain networks and decentralized applications, and using optional wallet-address messaging and service announcements.
 
 **Documentation:** https://github.com/whitebrick86-jpg/Smart-Wallet
 
-## Non-custodial design
+This policy explains what information Smart Wallet stores locally, what information is processed by Smart Wallet infrastructure and third-party providers, why it is processed, how long it may be retained, and the choices available to users.
 
-Smart Wallet does not take custody of your cryptocurrency.
+## 1. Non-custodial design
 
-* We do **not** operate a Smart Wallet cloud account that stores your seed phrase or private keys.
-* We do **not** intentionally transmit seed phrases, private keys, wallet passwords, or decrypted vault contents to Smart Wallet servers.
-* Smart Wallet infrastructure cannot approve or sign transactions for you.
-* Software-wallet transaction signing occurs locally on your device.
-* Ledger private keys remain on the Ledger hardware device.
-* Messaging authentication does not disclose your seed phrase or private wallet key.
-* We do **not** sell personal information for advertising.
-* We do **not** use wallet activity or message content for personalized advertising.
+Smart Wallet does not take custody of cryptocurrency or operate a cloud wallet account that stores users' seed phrases or private keys.
 
-Never send your seed phrase, private keys, wallet password, recovery information, authentication codes, or administrative credentials through Smart Wallet messaging or to Smart Wallet support.
+- Software-wallet transaction signing occurs locally on the user's device.
+- Ledger private keys remain on the Ledger hardware device.
+- Smart Wallet does not intentionally transmit seed phrases, private keys, wallet passwords, or decrypted vault contents to Smart Wallet infrastructure.
+- Smart Wallet infrastructure cannot approve or sign cryptocurrency transactions for users.
+- Messaging authentication signatures do not reveal the private key used to create them.
+- Smart Wallet does not sell personal information or use wallet activity or message content for personalized advertising.
 
-## Information stored on your device
+Never send a seed phrase, private key, wallet password, recovery information, authentication code, or administrative credential through Smart Wallet messaging, announcements, support, or any website.
 
-Smart Wallet stores wallet-related information locally in your browser profile. This may include:
+## 2. Information stored on the device
 
-* Public wallet addresses and account labels
-* Encrypted vault data for software wallets
-* Wallet and interface settings
-* Selected blockchain network
-* Auto-lock preferences
-* Optional Custom RPC configuration
-* Optional RPC credentials that you choose to enter
-* Recent transaction-history rows
-* Balance, token, metadata, and price caches
-* WalletConnect session information
-* dApp permissions and connection records
-* Pending-transaction and nonce information
-* A non-exportable infrastructure device-authentication key
-* Managed RPC registration status and related security metadata
-* Messaging conversations and locally displayed message copies
-* Outgoing-message delivery states such as Sending, Sent, or Not delivered
-* Cached announcements
-* Messaging refresh and synchronization metadata
-* Local privacy-consent records
+Depending on the features used, Smart Wallet may store the following information in the browser profile:
 
-Software-wallet vault data is encrypted at rest. Private wallet keys and seed phrases are not included in Managed RPC registration or messaging registration.
+- Public wallet addresses, account identifiers, and account labels
+- Encrypted software-wallet vault data
+- Network, interface, auto-lock, and wallet settings
+- User-configured Custom RPC endpoints and credentials
+- Transaction-history rows and pending-transaction records
+- Balance, token, price, metadata, and holdings caches
+- Nonce, confirmation, bridge, and transaction-resume records
+- WalletConnect sessions and dApp permission records
+- Ledger connection metadata, without the Ledger private key
+- A non-exportable infrastructure device-authentication key and related registration status
+- Messaging conversations and local message copies
+- Sending, Sent, and Not delivered states
+- Blocked-address information and messaging synchronization state
+- Cached announcements
+- Local consent records
+- Security, warning, connection, and diagnostic events generated by the extension
 
-Removing the extension or clearing its extension storage removes locally stored information from that browser profile. Clearing local storage may cause Smart Wallet to create a new infrastructure device identity if the extension is used again.
+Software-wallet vault data is encrypted locally at rest. Private wallet keys and seed phrases are not included in Managed RPC, messaging, announcement, or infrastructure-device registration.
 
-Removing local extension data does not necessarily delete messages, announcements, security records, rate-limit records, revoked-device records, or other information previously stored by Smart Wallet infrastructure.
+Removing the extension or clearing extension storage removes local information from that browser profile. It does not necessarily delete information already stored by Smart Wallet infrastructure, a blockchain, another participant's device, or a third-party provider.
 
-## Wallet-to-wallet messaging
+## 3. Optional wallet-to-wallet messaging
 
-Smart Wallet may provide an optional messaging system that lets one wallet address send a message to another wallet address.
+Smart Wallet may allow one public wallet address to send a personal message to another public wallet address. Messaging does not import, merge, transfer, or provide access to either participant's wallet.
 
-This messaging system does not import, merge, transfer, or provide access to the recipient’s wallet. The recipient proves control of the receiving address through a signed authentication request before Smart Wallet infrastructure returns messages addressed to that wallet.
+### Consent
+
+Personal messaging is optional. Before the first personal Send, Reply, or Inbox retrieval for the current notice version, Smart Wallet requires an affirmative messaging privacy choice.
+
+- Agreeing stores a local consent record and permits the requested messaging action.
+- Selecting **Not now**, closing the notice, or pressing Escape prevents that personal-mail request.
+- Declining messaging does not disable balances, Send, Swap, Bridge, Ledger, dApps, public RPC, or other wallet functions.
+- The consent record is stored locally and is not sent to the messaging Worker.
+- A materially revised notice may require consent again.
+
+Announcement retrieval and authorized owner Broadcast controls are separate from personal messaging consent.
 
 ### Information processed for messaging
 
-When a message is sent, stored, retrieved, or replied to, Smart Wallet infrastructure may process and store:
+When personal messaging is used, Smart Wallet infrastructure may process:
 
-* Sender public wallet address
-* Recipient public wallet address
-* Message body
-* Message or thread identifier
-* Reply or conversation metadata
-* Message creation and storage timestamps
-* Message retrieval or synchronization metadata
-* Request identifiers
-* Cryptographic authentication information
-* Public authentication keys or derived identifiers
-* IP address
-* Rate-limit, replay-prevention, security, error, and diagnostic metadata
+- Sender and recipient public wallet addresses
+- Message body and optional subject
+- Message, thread, reply, and idempotency identifiers
+- Creation, storage, retrieval, deletion, and synchronization timestamps
+- Cryptographic authentication signatures and public verification information
+- Nonces, timestamps, body hashes, and replay-prevention information
+- IP address and rate-limit information
+- Safe request, error, storage, and security metadata
 
-Wallet addresses and blockchain transaction information are generally public. However, a message body, the relationship between addresses, an IP address, and associated metadata may constitute personal information depending on its contents and applicable law.
+A wallet address may be public on a blockchain, but a message body, the relationship between addresses, an IP address, and associated metadata may be personal information.
 
-Do not include seed phrases, private keys, wallet passwords, recovery information, authentication tokens, sensitive financial information, or information you do not want stored by Smart Wallet infrastructure.
+### Authentication and Inbox isolation
 
-### Authentication and inbox access
+Personal-message sending and Inbox retrieval use signed requests intended to demonstrate control of the applicable wallet address. The signature is created locally, is bound to request information, and may be checked for freshness and replay.
 
-Inbox retrieval requires a signed request intended to demonstrate control of the receiving wallet address.
+Unsigned Inbox lookup is not supported. Knowing a public address alone does not authorize retrieval of that address's Inbox. Messaging authentication does not authorize cryptocurrency transactions or grant administrative privileges.
 
-The authentication signature:
+Personal messaging is currently unavailable for Ledger-only accounts unless a separately tested and enabled Ledger messaging authorization mechanism is provided. Smart Wallet does not silently fall back to another account's software key.
 
-* Is created locally using the applicable wallet or device authentication mechanism.
-* Does not reveal the private key used to create it.
-* Is bound to request information such as the address, timestamp, nonce, or request body.
-* May be checked for freshness and replay.
-* Does not authorize Smart Wallet to sign cryptocurrency transactions.
-* Does not give another user access to the receiving wallet.
-* Does not grant ordinary users administrative permission.
+### Encryption and human access
 
-Unsigned inbox lookup is not supported. A user should not be able to retrieve another address’s inbox merely by knowing that public address.
+Messages are encrypted in transit using HTTPS. Smart Wallet's Cloudflare storage encrypts stored values at rest. Cloudflare documents that Workers KV values and Durable Object data are automatically encrypted at rest.
 
-No authentication system is perfect. Users remain responsible for securing their device, wallet, passwords, private keys, recovery information, and active sessions.
+**Smart Wallet personal messages are not end-to-end encrypted.** Authorized Worker processes can process message bodies to store and return messages.
 
-### Message encryption and operator access
+Humans may access a specific message body only when:
 
-Smart Wallet messaging is protected using encrypted network connections, such as HTTPS, while messages are transmitted.
+- a participant expressly reports that message and consents to review;
+- access is necessary for a security or abuse investigation;
+- the user expressly requests support involving that specific information; or
+- access is required by applicable law or valid legal process.
 
-Smart Wallet’s cloud infrastructure provider encrypts stored messaging values at rest. Encryption and decryption of infrastructure values are handled by the infrastructure provider and authorized Worker processes.
+Report lists and ordinary operator views do not include message bodies. A specifically authorized review action is required to access the body of a reported message.
 
-**Smart Wallet messages are not end-to-end encrypted.**
+**Message bodies are prohibited from application diagnostics, production-monitoring metrics, ordinary Worker logs, correlation logs, and secret-scan reports.** Authentication headers, complete signatures, private keys, seeds, wallet passwords, and administrative credentials are also prohibited from those records.
 
-This means:
+### Message status
 
-* Message bodies are stored by Smart Wallet infrastructure.
-* Authorized Smart Wallet infrastructure can technically process or access message bodies when necessary to store, retrieve, secure, troubleshoot, moderate, or operate the service.
-* Infrastructure encryption at rest does not prevent authorized server-side processing.
-* Users should not treat Smart Wallet messaging as a private, end-to-end encrypted communications service.
-* Smart Wallet does not claim that only the sender and recipient can technically access message contents.
+- **Sending** means the request is in progress.
+- **Sent** means Smart Wallet infrastructure confirmed storage of the message and its recipient Inbox reference.
+- **Not delivered** means the request failed because of a network, authorization, quota, storage, validation, or server error.
 
-Access to stored message content should be limited to circumstances reasonably necessary for service operation, security, abuse investigation, legal compliance, or technical support. Smart Wallet does not use message bodies for personalized advertising or sell them to data brokers.
+Sent does not mean Delivered or Read. Smart Wallet does not display a sender-visible Delivered or Read claim without an authenticated recipient acknowledgment. Failed sends are not automatically retried when retrying could create a duplicate.
 
-### Message-delivery status
+### Blocking, reporting, and deletion
 
-Smart Wallet may display the following outgoing-message states:
+- **Block sender** prevents future personal messages from that address from being stored for the blocking wallet. Blocking does not affect blockchain transfers and does not disclose to the sender that the recipient blocked them.
+- Blocked addresses remain associated with the controlling wallet until that wallet unblocks them or completes a verified delete-all process. They do not expire under a routine 365-day TTL.
+- **Report message** submits a signed participant report for a specific server-stored message. Reporting records consent for authorized review of that specific message. Report indexes do not contain message bodies.
+- **Delete for me** removes the requesting wallet's eligible server-side reference to the selected message.
+- **Delete conversation** removes the requesting wallet's eligible server-side references for that conversation.
+- A **verified full-data deletion request** requests deletion of eligible server-stored personal-messaging data associated with a wallet address after cryptographic proof of control.
 
-* **Sending:** The request is still in progress.
-* **Sent:** Smart Wallet infrastructure confirmed storage of the message and its recipient inbox index.
-* **Not delivered:** The request failed because of a network, authorization, quota, storage, validation, or server error.
+Deletion by one participant does not automatically delete another participant's retained server reference, local copy, screenshot, export, or independently stored record. Resolved or dismissed reports do not by themselves delete participants' message copies.
 
-“Sent” does not mean that the recipient opened, read, or retrieved the message.
+## 4. Service announcements
 
-Smart Wallet currently does not claim “Delivered” or “Read” unless an authenticated recipient acknowledgment system is implemented and successfully confirms that event.
+Smart Wallet may retrieve announcements containing security, maintenance, service, or feature information.
 
-A failed outgoing message may remain stored locally on the sender’s device with a Not delivered status even though it was not stored by the server.
+- Customer builds may read announcements.
+- Customer builds do not include owner Broadcast controls or owner administrative authentication code.
+- Creating, editing, or deleting an announcement requires a separately authorized owner device or administrative credential.
+- Ordinary users and ordinary `rpc:use` devices cannot publish announcements.
+- Announcements are not personal Inbox messages or blockchain transactions and cannot approve or sign transactions.
+- Announcements may be cached locally to reduce network and storage requests.
 
-Smart Wallet does not automatically retry failed sends where doing so could create duplicate messages.
+Smart Wallet never uses an announcement to request a seed phrase, private key, wallet password, authentication code, or transfer of funds. Treat any such request as suspicious.
 
-## Announcements
+## 5. Messaging and announcement network behavior
 
-Smart Wallet may retrieve operator announcements intended for all supported wallet installations.
+Smart Wallet limits background messaging traffic:
 
-Announcements may contain:
+- Inbox retrieval occurs when the user opens Inbox or requests Inbox refresh.
+- Home, Send, Swap, and Bridge do not independently retrieve personal Inbox messages.
+- Announcements may be fetched when a visible, unlocked wallet opens or unlocks.
+- Announcement results may be shared within the browser profile and cached for a limited period.
+- Periodic announcement refresh stops while the wallet is hidden or locked.
+- Manual announcement refresh may request a fresh result.
 
-* Service information
-* Security notices
-* Maintenance notices
-* Feature information
-* Warnings
-* Other information related to Smart Wallet operation
+## 6. Infrastructure device authentication
 
-Announcement titles, bodies, identifiers, and timestamps may be stored by Smart Wallet infrastructure and cached locally by the extension.
+Smart Wallet may create a non-exportable ECDSA P-256 authentication key for the installation. This key is separate from cryptocurrency wallet keys.
 
-Customer builds may read announcements but do not receive administrative authority to create, edit, or delete global announcements.
+- The private device key remains on the device and is not intentionally exported.
+- The corresponding public key and a derived identifier may be sent to Smart Wallet infrastructure.
+- Ordinary installations receive only ordinary infrastructure permissions.
+- Administrative authority requires separate authorization.
+- Device authentication may support Managed RPC, protected infrastructure requests, replay prevention, revocation, rate limiting, and abuse prevention.
 
-Creating, editing, or deleting an announcement requires separate administrator or authorized owner-device authentication. Ordinary users and ordinary `rpc:use` devices are not authorized to publish global announcements.
+Clearing browser storage may create a new device identity. Previous revocation or security records may remain where necessary to protect the service.
 
-Announcements:
+## 7. Blockchain RPC and production routing
 
-* Do not provide the operator with access to user wallets.
-* Cannot approve or sign transactions.
-* Must not request seed phrases, private keys, passwords, or recovery information.
-* Are not blockchain transactions.
-* May be cached locally to reduce repeated network and storage requests.
-
-Users should treat any announcement requesting a seed phrase, private key, wallet password, authentication code, or transfer of funds as suspicious.
-
-## Messaging and announcement network behavior
-
-Smart Wallet limits messaging network activity to reduce unnecessary requests.
-
-Subject to the active version and feature configuration:
-
-* Inbox messages are retrieved when the user opens Inbox or manually requests an inbox refresh.
-* Home, Send, Swap, and Bridge should not independently retrieve the Inbox.
-* Announcements may be retrieved when a visible, unlocked wallet opens or unlocks.
-* Announcements may be cached locally for a limited period.
-* Announcement refreshes should stop while the wallet is hidden or locked.
-* A manual refresh may bypass a previous cached result.
-* Multiple extension windows in the same browser profile may share an announcement cache.
-* The operator’s publication of an announcement may update the owner wallet’s local cache.
-
-Network behavior may change as Smart Wallet improves reliability, security, or performance. Material changes to data collection will be disclosed when required.
-
-## Silent infrastructure device registration
-
-Smart Wallet may silently create a unique, non-exportable ECDSA P-256 authentication key for the installation.
-
-This device key is separate from your cryptocurrency wallet keys.
-
-* The private device-authentication key remains on the device and is not intentionally exported.
-* Only the corresponding public authentication key and a derived device identifier are sent to Smart Wallet infrastructure.
-* The server assigns ordinary infrastructure permission identified as `rpc:use`.
-* Ordinary installations do not receive administrative permission.
-* Device registration does not provide Smart Wallet with access to your seed phrase, private keys, password, encrypted vault, or funds.
-* Device registration may be used to authenticate Managed RPC or supported infrastructure requests, apply security controls, prevent replay, enforce rate limits, investigate abuse, and maintain service reliability.
-
-Automatic registration does not prove that a caller is a genuine Chrome installation. Smart Wallet therefore also uses server-side rate limits, request-signature checks, replay protection, device status, concurrency controls, and other abuse-prevention measures.
-
-A revoked device identity cannot use protected infrastructure features. Clearing browser storage may generate a different device identity, but the previous server record may remain for security and abuse-prevention purposes.
-
-## RPC routing and the production manager
-
-Smart Wallet may route supported blockchain requests through:
+Smart Wallet may use:
 
 1. Built-in public RPC providers;
-2. A Custom RPC provider configured by the user; or
-3. Developer-managed production RPC infrastructure.
+2. a Custom RPC configured by the user; or
+3. Smart Wallet managed infrastructure when that service is enabled and the installation is eligible.
 
-An authorized Smart Wallet operator may use a secured production manager to select the global RPC-routing mode:
+The secured production manager may select Public RPC, Managed RPC, or a paused/maintenance state for supported infrastructure. Changing routing does not grant Smart Wallet access to private keys and does not permit the operator to sign transactions.
 
-* **Managed RPC:** Eligible Smart Wallet installations use developer-managed RPC infrastructure for supported requests.
-* **Public RPC:** Smart Wallet uses built-in public RPC providers, subject to any applicable user-configured Custom RPC setting.
+Messaging and announcements are enabled independently of Managed RPC. Activating messaging does not activate Managed RPC.
 
-The active routing mode may be changed to support reliability, security, maintenance, provider availability, capacity management, or cost control.
+When an RPC request is made, Smart Wallet or the applicable provider may process the selected chain, RPC method and parameters, public addresses, public contract or token identifiers, transaction hashes, signed transaction data submitted for broadcast, timestamps, IP address, device authentication metadata, response status, latency, retry, quota, and error information.
 
-The production manager:
+A signed transaction contains information intended for submission to a public blockchain. It does not reveal the private key used to create the signature.
 
-* Changes the RPC route used for supported blockchain requests.
-* Does not download or execute remote extension code.
-* Does not provide access to seed phrases, private keys, passwords, or decrypted vault contents.
-* Does not allow the operator to approve, create, initiate, or sign transactions for a user.
-* Does not give ordinary wallet installations permission to change the global RPC mode.
-* Does not convert a customer device identity into an administrator.
-* Does not override the requirement for user approval and local signing.
-* Does not remotely disable a user-configured Custom RPC solely because Managed RPC is disabled.
+## 8. Swaps, bridges, and the Solana ALT verifier
 
-Administrative authorization is kept separate from ordinary Managed RPC authorization. Only a separately authorized owner device or secured administrative credential may change the global RPC-routing mode or perform other protected administrative operations.
+Smart Wallet may contact Jupiter, LiFi-related Smart Wallet infrastructure, and supported liquidity, swap, bridge, token, price, and status providers to obtain quotes, construct transactions, verify routes, submit user-approved transactions, and monitor status.
 
-The production-manager URL, administrative credentials, provider credentials, internal quota thresholds, and security-sensitive abuse controls are not included in customer extension packages.
+Typical information includes source and destination chains, token identifiers, amounts, public wallet addresses, route preferences, transaction hashes, public transaction fields, and technical request metadata.
 
-Messaging and announcements may be enabled or disabled independently of Managed RPC. Activating messaging does not activate Managed RPC, and switching RPC mode does not grant customers announcement-administration rights.
+For supported Solana Jupiter transactions, Smart Wallet may contact the dedicated Smart Wallet Solana Address Lookup Table verifier. The extension sends only:
 
-## Information processed during RPC requests
+- protocol version;
+- one to eight public Solana address-lookup-table addresses; and
+- a random correlation identifier.
 
-When Managed RPC is active, Smart Wallet infrastructure and its infrastructure providers may process information necessary to complete, secure, troubleshoot, rate-limit, and maintain RPC service, including:
+The ALT verifier does not receive the user's wallet address, swap amount, signed transaction, signature, seed phrase, or private key. It may query independent public Solana RPC providers and a server-held Helius RPC fallback to verify public lookup-table account data. Helius receives the public lookup-table query from Smart Wallet infrastructure rather than a user-held Helius credential.
 
-* Selected blockchain network
-* RPC method
-* RPC parameters
-* Public wallet addresses
-* Public token or contract addresses
-* Transaction hashes
-* Signed transaction data submitted for broadcasting
-* Block, balance, nonce, fee, gas, receipt, history, and token queries
-* Device identifier or device-key fingerprint
-* Request-signature and replay-protection metadata
-* Correlation or request identifiers
-* IP address
-* Timestamps
-* Response status
-* Latency, retry, quota, and error information
-* Provider-routing and failover results
+## 9. Other providers
 
-A signed transaction contains information intended for submission to a blockchain, including its public sender, destination, amount or contract call, signature, and other transaction fields. Submission of a signed transaction does not disclose the private key used to create its signature.
+Depending on the feature used, information may be sent to:
 
-Smart Wallet does not require or intentionally transmit a seed phrase or private key as part of an RPC request.
+| Provider category | Purpose | Typical information |
+| --- | --- | --- |
+| Cloudflare | Smart Wallet Workers, encrypted storage, rate limiting, security, and delivery | IP address, request metadata, disclosed feature data, safe operational metrics |
+| Blockchain RPC providers | Balances, fees, history, transaction submission, and confirmation | Public addresses, RPC methods and parameters, public transaction data, IP address |
+| User-selected Custom RPC | Blockchain access selected by the user | Public addresses, RPC methods and parameters, transaction data, IP address |
+| Jupiter and token/price providers | Solana swaps, token metadata, prices, and holdings information | Token mints, quote parameters, public transaction information, IP address |
+| LiFi and supported route providers | Swap/bridge quotes, transaction construction, and status | Chains, tokens, amounts, public addresses, route and transaction information |
+| Helius | Supported Solana history/RPC features or server-side ALT verification | Public Solana addresses or ALT addresses, transaction/history queries, technical metadata |
+| CoinGecko and price-data providers | Prices and charts | Public asset identifiers and IP address |
+| WalletConnect/Reown | User-initiated dApp pairing and sessions | Accounts, chains, session and request metadata |
+| On-ramp provider selected by the user | Cryptocurrency purchase | Information supplied directly to that provider |
+| Block explorers | User-opened address and transaction pages | Public addresses, transaction hashes, IP address |
+| Connected dApps | Connections and user-approved requests | Public account, selected network, permissions, approved request data |
 
-When Public RPC or Custom RPC is active, applicable requests may be sent directly from the browser to the selected third-party provider. That provider may process the request according to its own privacy and retention practices.
+Third-party providers process information under their own privacy and retention practices.
 
-## Active-network request controls
+## 10. Operational diagnostics and monitoring
 
-During normal wallet use, Smart Wallet limits automatic blockchain requests to the currently selected network.
+Smart Wallet may process privacy-limited operational information to maintain security, availability, capacity, and reliability. This may include endpoint category, safe error code, HTTP status class, latency, timeout/retry count, cache result, aggregate quota utilization, provider category, Worker version, deployment identifier, and a random correlation ID.
 
-Additional networks may be contacted temporarily when necessary for an explicit user-facing feature, including:
+Operational monitoring is not used for personalized advertising. Message bodies, seed phrases, private keys, wallet passwords, authentication headers, complete signatures, and full request or response bodies are excluded from ordinary operational monitoring and diagnostics.
 
-* Viewing balances across supported networks
-* Performing a cross-chain bridge
-* Using a swap on a selected network
-* Responding to an authorized dApp request
-* Monitoring confirmation of an already-submitted transaction
-* Validating a Custom RPC endpoint
-* Refreshing a network explicitly selected by the user
+The wallet may show a short service-availability message to users. Detailed infrastructure warnings, provider failures, quota status, and exception information remain in private operator systems.
 
-Smart Wallet uses caching, request deduplication, bounded concurrency, sequential provider failover, retry limits, and inactive-network controls to reduce unnecessary network traffic.
-
-Opening an explicit all-network balance view may cause Smart Wallet to refresh balances for the networks displayed in that view. Closing the view ends that temporary refresh activity, subject to bounded transaction-confirmation monitoring or another active user-requested operation.
-
-## Other network requests
-
-When you use Smart Wallet, the extension may contact Smart Wallet infrastructure and third-party services required for its features.
-
-| Destination or service                                                       | Purpose                                                                     | Typical information                                                                                                                     |
-| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Smart Wallet messaging infrastructure                                        | Store and retrieve wallet-address messages                                  | Sender and recipient public addresses, message body, identifiers, timestamps, authentication proof, IP address, and security metadata   |
-| Smart Wallet announcement infrastructure                                     | Retrieve and administer service announcements                               | Announcement title, body, identifier, timestamp, IP address, cache and request metadata                                                 |
-| Smart Wallet Managed RPC infrastructure                                      | Authenticated blockchain access, reliability, quotas, and abuse prevention  | Device public key or identifier, IP address, chain, RPC method and parameters, public addresses, transaction data, and request metadata |
-| Public Solana, EVM, Bitcoin, and Sui RPC providers                           | Balances, history, fees, transaction submission, confirmation, and fallback | Public addresses, transaction data, RPC methods and parameters, and IP address                                                          |
-| User-configured Custom RPC provider                                          | Blockchain access selected by the user                                      | Public addresses, transaction data, RPC methods and parameters, and IP address                                                          |
-| Helius, if configured or used for supported Solana features                  | Solana RPC or enhanced history                                              | Public Solana addresses, transaction and history queries, and IP address                                                                |
-| Jupiter and supported token or price services                                | Solana swaps, token information, holdings prices, and metadata              | Token mint addresses, public transaction information, quote parameters, and IP address                                                  |
-| CoinGecko and supported price-data fallbacks                                 | Native-asset prices and charts                                              | Public asset identifiers and IP address                                                                                                 |
-| LiFi-related Smart Wallet infrastructure and supported bridge/swap providers | Quotes, routes, transaction construction, status, swaps, and bridges        | Source and destination chains, tokens, amounts, public addresses, route and transaction information, and IP address                     |
-| WalletConnect/Reown relays                                                   | WalletConnect pairing and sessions initiated by the user                    | Pairing, session, chain, account, and request metadata                                                                                  |
-| On-ramp providers opened by the user                                         | Purchasing cryptocurrency                                                   | Information entered or provided directly to the on-ramp provider                                                                        |
-| Block explorers                                                              | Address and transaction links opened by the user                            | Public addresses, transaction hashes, and IP address                                                                                    |
-| Connected dApps and websites                                                 | dApp connections and requests authorized by the user                        | Public account, selected network, permissions, and approved request information                                                         |
-
-Third-party providers may receive ordinary web-request information such as IP address, timestamp, browser or network metadata, and the contents of requests sent to them. Their collection, use, security, and retention practices are governed by their own policies.
-
-## How information is used
+## 11. How information is used
 
 Smart Wallet uses information only as reasonably necessary to:
 
-* Provide wallet features requested by the user
-* Store, route, retrieve, and display wallet-address messages
-* Authenticate inbox access
-* Display service and security announcements
-* Maintain accurate outgoing-message status
-* Prevent unauthorized inbox access and announcement publication
-* Retrieve balances, prices, tokens, and transaction history
-* Construct, submit, and monitor user-approved transactions
-* Provide swaps, bridges, WalletConnect, Ledger, dApp, and on-ramp features
-* Route requests between Managed, Public, and Custom RPC providers
-* Authenticate eligible infrastructure devices
-* Apply per-device, per-IP, per-chain, per-method, concurrency, broadcast, messaging, and global limits
-* Prevent replay, fraud, spam, abuse, duplicate submissions, duplicate broadcasts, and unauthorized administrative actions
-* Diagnose failures and maintain performance, security, and reliability
-* Comply with applicable legal obligations
+- provide user-requested wallet functions;
+- store and retrieve optional personal messages;
+- authenticate message and infrastructure requests;
+- display service announcements;
+- retrieve balances, prices, token data, and history;
+- construct, submit, and confirm user-approved transactions;
+- provide swaps, bridges, Ledger, WalletConnect, dApp, and on-ramp functions;
+- apply security, replay, spam, abuse, quota, and duplicate-submission controls;
+- investigate reported messages with the required authorization;
+- process verified deletion requests;
+- diagnose failures and measure service security, performance, and reliability; and
+- comply with applicable legal obligations.
 
-Smart Wallet does not use messaging, RPC, or operational information to independently approve or sign cryptocurrency transactions.
+## 12. Sharing and human access
 
-## Information sharing
+Smart Wallet shares information with infrastructure and service providers only when necessary to provide, secure, maintain, measure, or troubleshoot disclosed wallet functions, or when required by law.
 
-Information may be shared with infrastructure providers only when necessary to provide, secure, maintain, or troubleshoot Smart Wallet’s disclosed functionality.
+Smart Wallet does not sell personal information, wallet activity, or message content. It does not transfer user information for personalized advertising, lending or credit decisions, or unrelated profiling.
 
-This may include:
+Human access to user data is restricted to:
 
-* Cloud infrastructure and storage providers
-* Blockchain RPC providers
-* Swap and bridge providers
-* Price and token-information providers
-* WalletConnect/Reown
-* Block explorers
-* On-ramp providers selected by the user
-* Security or abuse-prevention service providers
-
-Message bodies may be processed by the cloud infrastructure used to store and retrieve them. Smart Wallet does not sell message bodies, wallet activity, or personal information for personalized advertising.
-
-Smart Wallet may disclose information when reasonably necessary to:
-
-* Comply with applicable law or valid legal process
-* Protect users, Smart Wallet, or the public
-* Investigate fraud, spam, abuse, security incidents, or service misuse
-* Enforce applicable service rules
-* Establish, exercise, or defend legal claims
+- explicit consent to access specific information;
+- aggregated and anonymized internal operations;
+- security, fraud, spam, or abuse investigations; or
+- applicable legal requirements.
 
 Public blockchain information remains subject to the permanent and public nature of the applicable blockchain.
 
-## Data retention
+## 13. Retention
 
-Local extension data remains in the browser profile until it is deleted, replaced, cleared, or removed according to wallet functionality and browser behavior.
+Retention depends on the type and purpose of the record:
 
-Server-stored wallet messages may remain on Smart Wallet infrastructure until they are deleted under the service’s operational deletion process, removed in response to an applicable verified request, removed for security or abuse reasons, or deleted when the messaging service or applicable storage record is retired.
+| Record | Normal retention |
+| --- | --- |
+| Local extension data | Until deleted, replaced, cleared, or removed through extension/browser behavior |
+| Active personal message body | While at least one participant has an active server-side Inbox reference |
+| Message body with no participant reference | Removed from active storage, subject to an orphan/Inbox TTL of up to 30 days |
+| Body-less message tombstone | Up to 30 days for replay and idempotency safety |
+| Message idempotency record | Up to 24 hours; no plaintext message body |
+| Reported-message body and report record | Up to 90 days, unless earlier deleted or longer retention is legally/security required |
+| Security, rate-limit, authentication, and replay metadata | Up to 90 days under the messaging retention design, unless longer retention is necessary for an active security matter or legal requirement |
+| Blocked-address list | Until the controlling wallet unblocks the address or completes verified delete-all; no routine 365-day expiry |
+| Announcements | Until deleted by an authorized owner, expired, or retired from the service |
+| Device authorization/revocation records | As long as reasonably necessary to provide and protect infrastructure authorization |
 
-Unless the product provides a confirmed deletion function, users should not assume that deleting a local conversation, clearing browser storage, removing an account from the extension, or uninstalling Smart Wallet immediately deletes the server-stored copy.
+Provider-managed backups or replicas may persist for a limited period after deletion from active storage. Third-party services determine their own retention periods.
 
-Smart Wallet should retain message bodies and associated metadata only for as long as reasonably necessary to:
+## 14. User deletion and privacy requests
 
-* Deliver and synchronize messages
-* Maintain inbox integrity
-* Prevent duplicates, replay, spam, fraud, and abuse
-* Investigate security or reliability incidents
-* Comply with legal obligations
-* Resolve verified deletion or support requests
+Depending on applicable law, users may request access to, correction of, or deletion of personal information controlled by Smart Wallet.
 
-Announcements may be retained while they remain relevant to users, for operational records, or as required for security and legal purposes. Locally cached announcements expire or are replaced according to extension caching behavior.
+Because Smart Wallet does not operate conventional named user accounts, cryptographic proof of control of the applicable wallet address may be required. Smart Wallet will not ask for a seed phrase, private key, or wallet password to verify a request.
 
-Smart Wallet infrastructure may retain device-registration, revocation, security, quota, request, authentication, and operational records for as long as reasonably necessary to:
+Certain body-less security, replay, fraud-prevention, legal, or dispute records may be retained where necessary and permitted by law. Smart Wallet cannot delete blockchain records, another participant's independently retained copy, screenshots, exports, or information controlled by third-party providers.
 
-* Provide Managed RPC and messaging services
-* Maintain device and inbox authorization
-* Prevent replay, spam, fraud, and abuse
-* Enforce quotas and capacity limits
-* Investigate security or reliability incidents
-* Meet legal obligations
+Requests may be submitted through the contact information below or through a supported verified in-wallet deletion-request function.
 
-Backups, security records, and provider-managed replicas may persist for a limited period after deletion from active systems.
+## 15. Browser permissions
 
-Third-party providers determine their own retention periods under their respective privacy policies.
+| Permission | Purpose |
+| --- | --- |
+| Storage | Encrypted wallet state, settings, permissions, messaging state, caches, and local registration |
+| Clipboard | Copy addresses and support paste-safety functions |
+| Host access and scripting | Communicate with disclosed providers and inject the wallet provider on supported dApp hosts |
+| Tabs | Open or focus wallet approval and supported Ledger/dApp flows |
+| Alarms | Auto-lock, bounded maintenance, confirmation, and scheduled wallet tasks |
+| Offscreen | Local helper for supported signing-related operations |
+| HID | Communicate with Ledger hardware over USB |
 
-## User requests and deletion
+Smart Wallet requests permissions only for its disclosed wallet functions.
 
-Depending on applicable law, users may request information about, correction of, or deletion of personal information controlled by Smart Wallet.
+## 16. Security
 
-Because Smart Wallet does not operate conventional named user accounts, Smart Wallet may need reasonable cryptographic proof that the requester controls the relevant wallet address before acting on a message-related request.
+Smart Wallet uses measures intended to protect wallet and service operations, including local vault encryption, HTTPS/WSS, provider encryption at rest, signed requests, body-hash binding, timestamps and nonces, replay prevention, rate limits, bounded concurrency, device revocation, method and chain allowlists, transaction-broadcast protections, and separation between customer and administrative permissions.
 
-Smart Wallet will not ask for a seed phrase, private key, or wallet password to verify a request.
+No system is completely secure. Users are responsible for protecting their device, password, seed phrase, private keys, Ledger device, recovery information, active sessions, and transaction approvals. Cryptocurrency transactions may be irreversible.
 
-Certain information may be retained where reasonably necessary for security, fraud prevention, legal compliance, dispute resolution, or protection of other users.
-
-Deleting server-stored messages for one address may affect the other participant’s access or locally stored copy. Information independently retained on another user’s device cannot necessarily be deleted by Smart Wallet.
-
-Requests may be sent using the contact information below.
-
-## Permissions in plain language
-
-| Permission                     | Purpose                                                                                                                |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| Storage                        | Save encrypted wallet state, settings, permissions, messaging state, announcement caches, and local registration state |
-| Clipboard                      | Copy addresses and perform supported paste-safety checks                                                               |
-| Access to websites / scripting | Inject the Smart Wallet provider on supported allowlisted dApp hosts so users can connect and approve requests         |
-| Tabs                           | Open or focus the wallet for approvals, dApp requests, and Ledger workflows                                            |
-| Alarms                         | Support auto-lock, bounded maintenance, and scheduled wallet tasks                                                     |
-| Offscreen                      | Provide a local helper for supported signing-related work                                                              |
-| HID                            | Communicate with Ledger hardware wallets over USB                                                                      |
-
-Smart Wallet should request only permissions reasonably necessary for its disclosed wallet functionality.
-
-## Security
-
-Smart Wallet uses security measures intended to protect wallet and service operations, including:
-
-* Local encrypted vault storage
-* Infrastructure-provider encryption of stored cloud values
-* Encrypted HTTPS or WSS transmissions
-* Non-exportable infrastructure device-authentication keys
-* Signed inbox and Managed RPC requests
-* Timestamp and nonce validation
-* Body-hash and request binding
-* Replay protection
-* Device revocation
-* Rate limits and bounded concurrency
-* Method and chain allowlists
-* Transaction-broadcast protections
-* Separation between customer permission and administrative permission
-* Administrator-only announcement mutations
-* Fail-closed handling for unavailable authentication or storage
-
-These safeguards do not make Smart Wallet messaging end-to-end encrypted.
-
-No system is completely secure. Users remain responsible for protecting their device, password, seed phrase, private keys, Ledger device, recovery information, active sessions, and transaction approvals.
-
-Always verify dApp origins, networks, tokens, amounts, fees, and destination addresses before approving a transaction.
-
-Cryptocurrency transactions may be irreversible and may result in permanent loss.
-
-## User choices
+## 17. User choices
 
 Users may:
 
-* Choose whether to use wallet-to-wallet messaging
-* Avoid sending sensitive information through messaging
-* Refresh an Inbox or announcement list
-* Select supported blockchain networks
-* Configure a supported Custom RPC endpoint
-* Choose whether to use optional third-party features
-* Disconnect dApps and WalletConnect sessions
-* Remove local accounts or wallet data through supported wallet controls
-* Clear extension storage or remove the extension
-* Decline to approve or sign a transaction
-* Contact Smart Wallet regarding applicable privacy or deletion requests
+- decline optional personal messaging without disabling wallet functions;
+- avoid sending sensitive information through messages;
+- block and unblock personal-message senders;
+- report a specific message and consent to its review;
+- use supported message and conversation deletion controls;
+- submit a verified full-data deletion request;
+- select supported networks and configure a supported Custom RPC;
+- disconnect dApps and WalletConnect sessions;
+- decline any transaction approval or signature;
+- clear local extension storage or remove the extension; and
+- contact Smart Wallet regarding privacy requests.
 
-A recipient may receive a message addressed to a public wallet address without first accepting an invitation. Opening or retrieving the Inbox causes the wallet to request messages addressed to that wallet.
+A recipient may receive a server-stored message addressed to a public wallet address before accepting an invitation. The wallet does not retrieve that Inbox until the applicable signed retrieval and messaging-consent requirements are satisfied.
 
-Some wallet features require network requests. Disabling required connectivity may prevent those features from functioning.
+## 18. Chrome Web Store Limited Use
 
-## Chrome Web Store Limited Use
+Smart Wallet limits collection, use, and transfer of user data to providing, maintaining, securing, and measuring the performance and reliability of its disclosed single purpose as a non-custodial cryptocurrency wallet, including directly related wallet-address communication and service-notice functions.
 
-Smart Wallet limits the use of information obtained through extension permissions and wallet functionality to providing, maintaining, securing, and improving the extension’s disclosed single purpose as a non-custodial cryptocurrency wallet, including its wallet-address communication and service-notice features.
+Smart Wallet's use of information received through extension permissions adheres to the Chrome Web Store User Data Policy, including the Limited Use requirements.
 
-Smart Wallet does not use or transfer user information for:
+Smart Wallet does not use or transfer user data for personalized advertising, creditworthiness or lending decisions, sale to data brokers, or unrelated commercial profiling.
 
-* Personalized advertising
-* Creditworthiness or lending decisions
-* Sale to data brokers
-* Unrelated commercial profiling
+This policy does not replace a prominent in-product disclosure or affirmative consent required before a materially different data practice begins.
 
-Smart Wallet’s use of information is intended to comply with the Chrome Web Store User Data Policy, including its Limited Use requirements.
+## 19. International processing
 
-This privacy policy does not replace any prominent in-product disclosure or affirmative consent required before Smart Wallet begins a materially different data practice.
+Smart Wallet infrastructure and providers may process information in countries other than the user's country. Those countries may have different data-protection laws. Smart Wallet applies safeguards where required by applicable law.
 
-## International processing
+Smart Wallet messaging should not be used for emergencies or communications that must remain available in every country. Availability may be affected by network restrictions, local law, infrastructure, or provider reachability.
 
-Smart Wallet infrastructure and service providers may process information in countries other than the user’s country. Those countries may have data-protection laws that differ from the laws where the user resides.
+## 20. Children
 
-Smart Wallet will use applicable safeguards where required by law.
+Smart Wallet is not directed to children under 13 or the minimum age required in the user's jurisdiction. Do not use Smart Wallet messaging to collect children's personal information contrary to applicable law.
 
-Users should not rely on Smart Wallet messaging for emergency communications or communications that must remain available in every country or region. Service availability may be affected by network restrictions, infrastructure availability, local law, or provider reachability.
+## 21. Changes to this policy
 
-## Children
+Smart Wallet may update this policy when functionality, infrastructure, providers, law, or data practices change. The Last updated date will be revised. Materially different data practices will receive any additional notice or consent required by law or platform policy.
 
-Smart Wallet is not directed to children under 13 or the minimum age required in the user’s jurisdiction.
+## 22. Contact
 
-Do not knowingly use Smart Wallet messaging to collect personal information from children contrary to applicable law.
-
-## Changes to this policy
-
-We may update this policy when Smart Wallet’s functionality, infrastructure, providers, legal obligations, or data practices change.
-
-The “Last updated” date will be revised when the policy changes. Material changes to data practices should also be disclosed through the extension or another appropriate user-facing notice when required.
-
-Continued use after an update may be subject to any notice or consent required by applicable law or platform policy.
-
-## Contact
-
-| Role          | Address                                                           |
-| ------------- | ----------------------------------------------------------------- |
-| **Developer** | [Whitebrick86@gmail.com](mailto:Whitebrick86@gmail.com)           |
-| **Support**   | [smartwallethelp@outlook.com](mailto:smartwallethelp@outlook.com) |
+| Role | Address |
+| --- | --- |
+| Developer | [Whitebrick86@gmail.com](mailto:Whitebrick86@gmail.com) |
+| Support | [smartwallethelp@outlook.com](mailto:smartwallethelp@outlook.com) |
 
 Full contact page: [CONTACTS.md](./CONTACTS.md)
 
-You may also open an issue on the documentation repository:
+Documentation repository: https://github.com/whitebrick86-jpg/Smart-Wallet
 
-https://github.com/whitebrick86-jpg/Smart-Wallet
-
-Do not email or message seed phrases, private keys, wallet passwords, authentication tokens, administrative credentials, or recovery information.
-
-## Retention, deletion, blocking, and reports
-
-Active personal message bodies are retained on Smart Wallet infrastructure while a participant still has a server-side Inbox reference, and otherwise for up to 30 days of Inbox TTL. Delete for me removes the requester’s Inbox reference after a signed request. If no participant retains a reference, the active body is removed. Body-less tombstones may be kept up to 30 days for replay and idempotency safety and do not contain the message body. Security, rate-limit, replay, and report metadata may be kept up to 90 days. Idempotency records expire after 24 hours and do not contain plaintext bodies. Block lists are stored for up to 365 days and do not contain message bodies. Announcements are public operator content retained until the authorized owner deletes them or an expiration date removes them.
-
-Users may block a sender so future personal messages are not stored for that Inbox. Blocking does not affect blockchain transfers. Users may report a specific message; reporting records explicit consent for authorized review of that message only. Users may request deletion of eligible server-stored personal messages for a wallet they prove they control. Other participants’ copies, screenshots, exports, and legally retained records may remain. Humans may not read personal message bodies except with explicit consent for specific data, a specific report, security or abuse investigation, legal obligation, or properly aggregated anonymous operations.
+Do not send seed phrases, private keys, wallet passwords, authentication tokens, administrative credentials, or recovery information by email, issue, announcement, or message.
