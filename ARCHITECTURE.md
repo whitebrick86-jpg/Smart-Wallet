@@ -17,7 +17,7 @@ Items are marked **Shipped**, **Partial**, or **Planned**. Nothing is labeled sh
 |------------|--------|
 | Chains (software) | Solana, Ethereum, Bitcoin, Polygon, Sui, BNB Smart Chain, Robinhood ETH (4663), Base, **Arbitrum One (42161)**, **Optimism (10)**, **Avalanche C-Chain (43114)** |
 | Ledger | Solana + EVM after Link EVM (not BTC / Sui on device) |
-| Keys | Local software vault (always encrypted at rest) or hardware Ledger |
+| Keys | Local software vault (always encrypted at rest; JavaScript engine or optional Rust/WASM migrate) or hardware Ledger |
 | dApps | Wallet Standard + EIP-1193 on an **allowlisted** host set only |
 | In-wallet | Send, Receive (Onramper buy), Swap, Bridge, History, PnL |
 | Live data | Idle-first free market WS + Solana mentions; HTTP fallbacks |

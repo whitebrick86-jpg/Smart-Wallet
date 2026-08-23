@@ -1,22 +1,20 @@
 # Smart Wallet — product map
 
-**Live product version:** **0.11.298** (extension `manifest.json`)  
-**This repository:** public extension source + documentation  
-**Last aligned:** 2026-08-18  
-**Batch 5:** Worker hardening, logo-host control, residual-fee removal, store package built  
-**Worker:** **1.6.0** at `https://smart-wallet-lifi-proxy.smart-wallet.workers.dev`  
-**Store ZIP:** built from this source as **0.11.298**; the zip artifact is not published here
+**Live product version:** **0.11.473** (extension `manifest.json`)  
+**This repository:** documentation only — extension source is **not** published here.  
+**Last aligned:** 2026-08-16
 
-Smart Wallet (this repository) and the separate LiFi Cloudflare Worker are parts of the **same product**. Worker source is **not** published here. Never copy a LiFi API key into the extension, this repository, source, logs, chat, or Git.
+Smart Wallet and its LiFi backend are **separate folders** but parts of the **same product**. Keep backups and version histories separate. Treat changes to either folder as **cross-project** and compatibility-test quote / routes / step-transaction.
 
 | Piece | Location |
 |-------|----------|
-| **Extension** | this repository (`manifest.json` at repo root) |
-| **Production Worker** | `https://smart-wallet-lifi-proxy.smart-wallet.workers.dev` |
-| **Worker version** | 1.6.0 |
-| **Staging Worker** | explicit development option only; live MODE is production |
+| **Extension** | `C:\Users\levyr\Desktop\Gladiator-Wallet-0.6.55` |
+| **Backend** | `C:\Users\levyr\Desktop\lifi backend fee distributor` |
+| **Backend type** | Cloudflare Worker LiFi proxy: server-side `LIFI_API_KEY`, CORS allowlisting, endpoint rate limits, caching/deduplication, Durable Object shared quota |
+| **Staging Worker** | `smart-wallet-lifi-proxy-staging` |
+| **Staging URL** | `https://smart-wallet-lifi-proxy-staging.smart-wallet.workers.dev` |
 
-The unpacked extension calls the production Worker for LiFi **quote / routes / step-transaction / status / tokens**. The Worker is the only place that talks to `li.quest` with the integrator key.
+The unpacked extension calls this backend for LiFi **quote / routes / step-transaction / status / tokens**. The Worker is the only place that talks to `li.quest` with the integrator key.
 
 **Never** copy the LiFi API key into the extension, this repository, source, logs, chat, or Git.
 
