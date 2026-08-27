@@ -1,11 +1,11 @@
 # Error System
 
 **Product:** Smart Wallet (Chrome / Opera MV3 extension)  
-**Error-system snapshot:** **0.11.233** (this document’s Logs / Warnings / Connections body)  
+**Error-system snapshot:** **0.11.616** (Logs tab membership: Log / Errors / Alerts / Warnings / Connections)  
 **Live product:** **0.11.257** — see [PRODUCT.md](./PRODUCT.md)  
 **Original architecture snapshot:** **0.11.159** (inspect → classify → present → stamp)  
-**Later additions (not in 0.11.159):** Logs store **0.11.145**; in-wallet Log / Errors / Alerts UI **0.11.191–0.11.197**; **Connections** tab **0.11.204**; newest-first **0.11.205**; Connections-only rows **0.11.206**; tab-scoped Clear **0.11.208**; SW-serialized log writes + `originalErr` isolation **0.11.209**; external DEX swap failures in Logs **0.11.210**; external DEX failure **reason** on the Swap row **0.11.211**; external dApp **intent** (not hostname=swap) + RPC host-failure rows **0.11.212**; expanded structured diagnostic catalog + 500/1000 cap + recovery **0.11.213**; four-level severity (critical/error/warning/info) **0.11.214**; muted four-color palette **0.11.215**; dApp **Warnings** tab **0.11.216**; vault / seed-reveal / unrecognized-outgoing Warnings **0.11.217**; muted palette + red Connections disconnect **0.11.218**; Home critical-warning badge **0.11.219**; badge copy **review logs** **0.11.220**; Error System docs: selected-tab Clear, plaintext-boundary claim, Ledger seed-warning guidance **0.11.220**; Logs UI chrome polish **0.11.221**; light-mode Logs canvas fill + banner removed **0.11.222**; Logs leftover `#3d3e46`, dock/home/send/history/accounts untouched **0.11.223**; Logs top-chip hover stays Home plates **0.11.224**; Logs gold tab / `#3d4d60` box border restored **0.11.225**; Logs rounded `#121a24` shell **0.11.226**; leftover `#121a24` / inner outline `#3d3e46` **0.11.227**; vault-watcher false-positive fix **0.11.228**; scoped vault-write protocol **0.11.229**; unauthorized vault warning no longer pauses signing **0.11.230**; owner-write stamp so only non-owner vault changes warn **0.11.231**; critical tx mismatches ask to proceed **0.11.232**; Logs Settings switches persist across popup close **0.11.233**; Error System §9.3.1 documents **Hide routine success**; Error System §9.7 **Warnings that may be triggered by owner** **2026-08-16**  
-**Last updated:** 2026-08-16  
+**Later additions (not in 0.11.159):** Logs store **0.11.145**; in-wallet Log / Errors / Alerts UI **0.11.191–0.11.197**; **Connections** tab **0.11.204**; newest-first **0.11.205**; Connections-only rows **0.11.206**; tab-scoped Clear **0.11.208**; SW-serialized log writes + `originalErr` isolation **0.11.209**; external DEX swap failures in Logs **0.11.210**; external DEX failure **reason** on the Swap row **0.11.211**; external dApp **intent** (not hostname=swap) + RPC host-failure rows **0.11.212**; expanded structured diagnostic catalog + 500/1000 cap + recovery **0.11.213**; four-level severity (critical/error/warning/info) **0.11.214**; muted four-color palette **0.11.215**; dApp **Warnings** tab **0.11.216**; vault / seed-reveal / unrecognized-outgoing Warnings **0.11.217**; muted palette + red Connections disconnect **0.11.218**; Home critical-warning badge **0.11.219**; badge copy **review logs** **0.11.220**; Error System docs: selected-tab Clear, plaintext-boundary claim, Ledger seed-warning guidance **0.11.220**; Logs UI chrome polish **0.11.221**; light-mode Logs canvas fill + banner removed **0.11.222**; Logs leftover `#3d3e46`, dock/home/send/history/accounts untouched **0.11.223**; Logs top-chip hover stays Home plates **0.11.224**; Logs gold tab / `#3d4d60` box border restored **0.11.225**; Logs rounded `#121a24` shell **0.11.226**; leftover `#121a24` / inner outline `#3d3e46` **0.11.227**; vault-watcher false-positive fix **0.11.228**; scoped vault-write protocol **0.11.229**; unauthorized vault warning no longer pauses signing **0.11.230**; owner-write stamp so only non-owner vault changes warn **0.11.231**; critical tx mismatches ask to proceed **0.11.232**; Logs Settings switches persist across popup close **0.11.233**; Error System §9.3.1 documents **Hide routine success**; Error System §9.7 **Warnings that may be triggered by owner** **2026-08-16**; Logs tab membership separated **0.11.616** (**2026-08-27**)  
+**Last updated:** 2026-08-27  
 **Repository:** Documentation only — extension source is **not** published here.
 
 This is the account of the **in-wallet Error System**: how a raw RPC, Ledger, provider, or contract failure becomes a named code, a single honest user sentence, a privacy-safe diagnostic, and (on the verified paths below) a local Logs row.
@@ -297,7 +297,7 @@ Open stays **inside the wallet** (`#panel-logs`). There is no separate browser w
 | **Where** | Settings → Logs → **Open**. Back link returns to Settings. |
 | **Storage** | Local only — `chrome.storage.local` key `smart_wallet_diag_logs` |
 | **Cap** | Default **500** events, optional Advanced **1,000**. FIFO (oldest dropped first). Shipped 0.11.213 (was 300 at 0.11.193, 100 at 0.11.145). |
-| **Same store, five views** | **Log**, **Errors**, **Alerts**, **Warnings**, and **Connections** do **not** record separately. One bag; each tab only filters / formats it. A row may appear in more than one tab; it is persisted once. |
+| **Same store, five views** | **Log**, **Errors**, **Alerts**, **Warnings**, and **Connections** do **not** record separately. One bag; each tab only filters / formats it. A row is persisted once. **Alerts and Warnings do not share an event.** Critical security events can still appear in both **Errors** and **Warnings** because they are simultaneously critical failures and security conditions. |
 | **Pills** | `errors N` · `warnings N` · `events N` — `errors` is **critical + error** |
 | **Stats line** | “Errors now · Warnings · Events logged · last 500 on this device” |
 | **Dedupe** | The same event inside **8 seconds** collapses to one row with a repeat count (`xN`) |
@@ -314,11 +314,13 @@ Nothing is written *to* a tab. Send / Swap / Bridge / Ledger / DApp write **one 
 
 | Tab | What it shows | What it hides | Layout |
 |-----|----------------|---------------|--------|
-| **Log** | All non-Connections rows: `critical`, `error`, `warning`, and `info`. | **dApp connect / disconnect** (those live only on Connections). | **Newest first — earliest logs shown last.** One short line per event: **timestamp**, `CRITICAL`/`ERROR`/`WARNING`/`INFO`, subsystem, chain, code, message. Separated by `---`. |
-| **Errors** | `critical` and `error` only. | Warnings, info, and Connections rows. | **Newest first — earliest logs shown last.** Two-tone list: **timestamp** + severity + repeat on the left; subsystem · chain and `[code]` detail on the right. Critical rows are red; error rows are orange. Click a row, then **Copy selected log**. |
-| **Alerts** | `critical`, `error`, and `warning` (the things that need attention). | Info and Connections rows. | **Newest first — earliest logs shown last.** Blocks: `[timestamp] CRITICAL/ERROR/WARNING code= role=` then Chain / Repeat / Detail. No `---` separators. |
-| **Warnings** | dApp origin / approval / review-integrity **and** vault, seed-reveal, plaintext-sink, and unrecognized-outgoing events (by code). Severity colors stay red/orange/yellow/green. | Unrelated send/RPC rows and Connections. | **Newest first.** Same stream layout as Log. Critical mismatches stay red. |
+| **Log** | Routine successful and informational activity — the normal green `info` events. | `critical`, `error`, `warning`, and dApp connect / disconnect (those live only on Connections). | **Newest first — earliest logs shown last.** One short line per event: **timestamp**, `INFO`, subsystem, chain, code, message. Separated by `---`. |
+| **Errors** | Error-level and critical-level failures. | Ordinary warnings, info, and Connections rows. | **Newest first — earliest logs shown last.** Two-tone list: **timestamp** + severity + repeat on the left; subsystem · chain and `[code]` detail on the right. Critical rows are red; error rows are orange. Click a row, then **Copy selected log**. |
+| **Alerts** | Ordinary warning-level events only, such as timeouts, delays, rate limits, or fallbacks. No errors, criticals, or security warnings. | `critical`, `error`, info, Connections, and classified security-warning events. | **Newest first — earliest logs shown last.** Blocks: `[timestamp] WARNING code= role=` then Chain / Repeat / Detail. No `---` separators. |
+| **Warnings** | Critical events and specifically identified security warnings, including suspicious dApp requests, account/origin mismatches, signing-integrity problems, and vault-security conditions. | Ordinary operational warnings, info, Connections, and non-security errors that are not critical. | **Newest first.** Same stream layout as Log. Critical mismatches stay red. |
 | **Connections** | **dApp connect and disconnect only** (injected sites + WalletConnect). Same store, filtered to `DAPP_CONNECT` / `DAPP_DISCONNECT`. Stored as `info`. | Send / swap / bridge / Ledger rows. | **Newest first — earliest logs shown last.** Each row has a **timestamp**. **Connect is green. Disconnect is red.** |
+
+The categories are separated so **one event should not appear in both Alerts and Warnings**. Critical security events can still appear in both **Errors** and **Warnings** because they are simultaneously critical failures and security conditions. Error-level security events (for example an unauthorized-account request) follow the same overlap: **Errors** and **Warnings**, never **Alerts**.
 
 All five tabs use the same order: the **latest** log is at the top; the **earliest** log is shown last. Every row has a timestamp (`YYYY-MM-DD HH:MM:SS`). A missing `ts` is filled with “now” when the row is stored or painted.
 
@@ -351,9 +353,9 @@ This tab is the dApp connection history. It is **not** a live list of who is con
 
 - Reloading a page you already approved (silent rehydrate)
 - Signing / swapping on a site that is already connected
-- Failed connect prompts the user rejected (that is a warning on Log / Alerts, not a Connections connect)
+- Failed connect prompts the user rejected (that is an ordinary warning on **Alerts**, not a Connections connect and not a Warnings-tab security event)
 
-Those DApp rows appear **only** on **Connections**. They do **not** appear on **Log**, **Errors**, or **Alerts**.
+Those DApp rows appear **only** on **Connections**. They do **not** appear on **Log**, **Errors**, **Alerts**, or **Warnings**.
 
 **Privacy:** Connections is **local dApp connection history** on this device (which sites you connected or disconnected). It is **never uploaded**. Clear the Connections tab to delete that history. The Logs banner states this.
 
@@ -397,13 +399,13 @@ The presenter / classifier supplies the **code** and the **user sentence** when 
 | **DApp** | External site `eth_sendTransaction` / Solana `signTransaction` / `signAndSendTransaction` / `signAllTransactions` fail or user reject | **Action** from verified selector / program evidence only (not hostname). Root cause kept (`INSUFFICIENT_CONFIRMED_BALANCE`, `SIMULATION_REVERT`, `USER_REJECTED` warning, …). Message is `External {action} failed — hostname — reason`. Unknown calldata → `External dApp transaction failed`. |
 | **DApp** | External `signMessage` / `personal_sign` / `eth_sign` / typed-data fail or reject | `EXTERNAL_SIGN_MESSAGE_UNSUPPORTED`, `EXTERNAL_SIGN_MESSAGE_REJECTED` (warning), `EXTERNAL_SIGN_MESSAGE_FAILED`. Off-chain — not a swap, no hash, no fee, nothing broadcast. |
 | **DApp** | First-time inject connect and disconnect | `DAPP_CONNECT` / `DAPP_DISCONNECT` — **Connections only** |
-| **RPC** | Gateway host failed and another host completed the request | Warning. `RPC_TIMEOUT`, `RPC_RATE_LIMITED`, `RPC_AUTH_REQUIRED`, `RPC_DNS_FAILURE`, `RPC_ENDPOINT_NOT_FOUND`, `RPC_SERVER_ERROR`, `RPC_MALFORMED_RESPONSE`, `RPC_CHAIN_MISMATCH`, `RPC_METHOD_UNSUPPORTED`, `RPC_WEBSOCKET_FAILURE`. Copy: `{chain} RPC host unavailable; fallback succeeded.` Log + Alerts, not Errors. |
-| **RPC** | Every eligible host failed | Error `RPC_ALL_HOSTS_FAILED`. `{chain} RPC request failed — no configured host completed the request.` Log + Errors + Alerts. |
+| **RPC** | Gateway host failed and another host completed the request | Warning. `RPC_TIMEOUT`, `RPC_RATE_LIMITED`, `RPC_AUTH_REQUIRED`, `RPC_DNS_FAILURE`, `RPC_ENDPOINT_NOT_FOUND`, `RPC_SERVER_ERROR`, `RPC_MALFORMED_RESPONSE`, `RPC_CHAIN_MISMATCH`, `RPC_METHOD_UNSUPPORTED`, `RPC_WEBSOCKET_FAILURE`. Copy: `{chain} RPC host unavailable; fallback succeeded.` **Alerts** only (ordinary warning), not Errors or Warnings. |
+| **RPC** | Every eligible host failed | Error `RPC_ALL_HOSTS_FAILED`. `{chain} RPC request failed — no configured host completed the request.` **Errors** (not Alerts; not Log). |
 | **Bridge** | Internal bridge execute catch | Same presenter family on the send/fee legs |
 | **Ledger** | Device connect / disconnect failures (including Solana Ledger) | `LEDGER_DISCONNECTED`, `LEDGER_WRONG_APP`, `LEDGER_BLIND_SIGN_REQUIRED`, `LEDGER_ERROR` |
 | **Ledger** | Sequential broadcast **proof** — first host reject after a signed raw | `PENDING_BALANCE_RESERVED` (queued native), `INSUFFICIENT_CONFIRMED_BALANCE`, nonce / revert — the row is written **before** failover stops |
 
-Send / swap / bridge / Ledger still write errors. **DApp connect/disconnect** appear **only** on **Connections**. External dApp **transaction / sign** failures appear on Log / Errors / Alerts (warnings skip Errors). RPC host failures never appear in Connections.
+Send / swap / bridge / Ledger still write errors. **DApp connect/disconnect** appear **only** on **Connections**. External dApp **transaction / sign** failures appear on **Errors** (error/critical) or **Alerts** (ordinary warning) or **Warnings** (classified security events). Ordinary warnings skip Errors. RPC host failures never appear in Connections.
 
 **External action proof (0.11.212):** hostname, page URL, and dApp brand do **not** prove a swap. Proven actions require an allowlisted function selector (ERC-20 `approve`/`transfer`, WETH `deposit`/`withdraw` on a known wrapped-native, Uniswap/Pancake/Velodrome swap or liquidity selectors) or a recognized Solana program **and** instruction (pump.fun buy/sell vs create; System/SPL transfer; Jupiter program). Unknown selector, unknown program, or undecodable instruction → generic `External dApp transaction failed`. Action codes (`EXTERNAL_SWAP_FAILED`, `EXTERNAL_APPROVAL_FAILED`, …) are stored when there is no better root cause; a useful root cause is never replaced.
 
@@ -467,8 +469,8 @@ That is the whole hide list. Not every green / info row.
 |-----|--------------------|
 | **Log** | Those six success rows disappear. This is the tab the Settings copy is talking about. |
 | **Errors** | Unchanged — critical + error only |
-| **Alerts** | Unchanged — critical + error + warning |
-| **Warnings** | Unchanged — vault / dApp / seed / outgoing warnings |
+| **Alerts** | Unchanged — ordinary warning-level events only |
+| **Warnings** | Unchanged — critical events + classified security warnings |
 | **Connections** | Unchanged — connect / disconnect are not on the hide list |
 
 The top pills use the filtered list, so the **events** count can drop when success rows are hidden. Errors and warnings counts stay the same.
@@ -524,7 +526,7 @@ Ambiguous-case rules (structured facts win over raw message text):
 
 #### Code-to-severity matrix
 
-**Critical (red)** — every code in `diag-severity.js` `CRITICAL`. These appear on Log, Errors, Alerts, and (when they are Warnings-tab events) Warnings. None of them mean “seed definitely stolen” or “malware definitely present.”
+**Critical (red)** — every code in `diag-severity.js` `CRITICAL`. These appear on **Errors** and **Warnings**. They do **not** appear on Log or Alerts. None of them mean “seed definitely stolen” or “malware definitely present.”
 
 | Code | Meaning |
 |------|---------|
@@ -592,15 +594,15 @@ Chain-specific / persist: `SOLANA_SIMULATION_FAILED`, `SOLANA_ATA_CREATION_FAILE
 
 | Tab | Shows | Hides |
 |-----|--------|--------|
-| Log | critical, error, warning, info except Connections | `DAPP_CONNECT` / `DAPP_DISCONNECT` |
-| Errors | critical + error | warning, info, Connections |
-| Alerts | critical + error + warning | info, Connections |
-| Warnings | dApp / vault / seed / plaintext-sink / unrecognized-outgoing codes | unrelated send/RPC and Connections |
+| Log | green `info` except Connections | `critical`, `error`, `warning`, `DAPP_CONNECT` / `DAPP_DISCONNECT` |
+| Errors | critical + error | ordinary warning, info, Connections |
+| Alerts | ordinary `warning` that is **not** a classified security event | critical, error, info, Connections, security-warning events |
+| Warnings | all `critical` plus classified dApp / vault / seed / plaintext-sink / unrecognized-outgoing / signing-integrity events | ordinary operational warnings, info, Connections |
 | Connections | `DAPP_CONNECT` / `DAPP_DISCONNECT` only (connect green, disconnect red) | everything else |
 
-One stored row may appear in several tabs. It is persisted once.
+A row is persisted once. **Alerts and Warnings never share an event.** Critical security events (and error-level security events) can appear in both **Errors** and **Warnings**.
 
-**Clear (selected tab, not the entire store):** Log removes non-Connections rows. Errors removes critical + error. Alerts removes critical + error + warning. Warnings removes Warnings-filter rows. Connections removes connect/disconnect. Other tabs keep their remaining rows. Shared rows disappear from every view they were in. Every clear immediately repaints all five views. Cap remains 500 default / 1,000 optional; FIFO drops the oldest.
+**Clear (selected tab, not the entire store):** Log removes non-Connections info rows. Errors removes critical + error. Alerts removes ordinary warnings only. Warnings removes critical rows and classified security-warning rows. Connections removes connect/disconnect. Other tabs keep their remaining rows. A shared Errors+Warnings row disappears from both views when either tab is cleared. Every clear immediately repaints all five views. Cap remains 500 default / 1,000 optional; FIFO drops the oldest.
 
 **Legacy migration:** existing rows may only have `error` / `warning` / `info`. Known codes are remapped through `severityForDiagnostic` on read and write. Existing `error` + a critical code (`BROADCAST_UNCERTAIN`, …) becomes `critical`. Ordinary `error` stays `error`. `warning` / `info` stay unless structured facts prove otherwise. Unknown codes are **never** promoted to critical. Migration is idempotent: timestamps, ids, and repeat counts are kept; rows are not duplicated; `originalErr` is never written.
 
@@ -614,7 +616,7 @@ Shipped **0.11.145** (store + redaction). Redaction hardened **0.11.153**. In-wa
 
 **Warnings reports observable request, origin, approval and transaction-integrity conditions. It does not provide general malicious-dApp reputation or guarantee that a contract is safe.**
 
-It is another filter on the same store. A critical recipient mismatch appears in Log, Errors, Alerts, and Warnings, stored once. Severity colors are not remapped because a row is on Warnings.
+It is another filter on the same store. A critical recipient mismatch appears in **Errors** and **Warnings**, stored once — not in Log or Alerts. Severity colors are not remapped because a row is on Warnings.
 
 Module: `dapp-security-warn.js` (`classifyDappSecurity`, `isWarningsTabEvent`). Severity still comes from `severityForDiagnostic`.
 
@@ -639,7 +641,7 @@ Module: `dapp-security-warn.js` (`classifyDappSecurity`, `isWarningsTabEvent`). 
 
 **Not claimed live** unless the classifier is given those facts: unexpected simulation value-flow, general contract reputation, Solana instruction mismatch on every program, remote URL scanning.
 
-**Clear:** Warnings removes only Warnings-filter rows. Shared rows leave Log/Errors/Alerts too. Connections stay. All five views repaint. Cap remains 500/1000.
+**Clear:** Warnings removes critical rows and classified security-warning rows. Shared Errors+Warnings rows leave Errors too. Ordinary Alerts warnings and Connections stay. All five views repaint. Cap remains 500/1000.
 
 **Home:** the Total balance line shows a red-dot count of stored **critical** Warnings-tab rows (`1`, `2`, …) plus **review logs**. Click opens Logs → Warnings. The badge hides when that count is 0 (including after Clear Warnings).
 
@@ -670,7 +672,7 @@ Same-ciphertext container rewrites (open/close/reopen, lock/unlock, auto-lock, n
 
 An unauthorized ciphertext change records **one** `VAULT_STORAGE_CHANGED_UNEXPECTEDLY` (critical). It does not lock software wallets or block Send, Buy, Sell, Swap, or Bridge. The row does not claim the seed was stolen, malware is present, or funds moved. Ledger secrets are not implicated. The previous and new vault blobs are not overwritten automatically. Auth-tag / decrypt / structure failures stay `VAULT_AUTH_TAG_INVALID`, `VAULT_DECRYPTION_FAILED`, `VAULT_STRUCTURE_INVALID`. Historical critical rows are not auto-deleted; they may be relabeled `VAULT_CONTAINER_REWRITE_IGNORED` (info) only when a later canonical compare proves the ciphertext was identical. Stripping plaintext before persist → `SENSITIVE_PLAINTEXT_PERSISTENCE_BLOCKED` (error).
 
-**Vault critical codes** (Warnings tab + Errors/Alerts because they are red; severity from `severityForDiagnostic`). None of these rows store ciphertext, salt, iv, tag, password, or seed. Unlock-form wrong password is **not** a logged row.
+**Vault critical codes** (Warnings tab + Errors because they are critical; they do **not** appear on Alerts; severity from `severityForDiagnostic`). None of these rows store ciphertext, salt, iv, tag, password, or seed. Unlock-form wrong password is **not** a logged row.
 
 | Code | Severity | Wired today | What the row means |
 |------|----------|-------------|--------------------|
@@ -887,6 +889,7 @@ The injected provider **must not invent `0x1`**. Unknown chain throws. `PROVIDER
 | **0.11.230** | Unauthorized vault warning no longer locks software wallets or blocks Send, Buy, Sell, Swap, or Bridge. Watcher still records one critical row. |
 | **0.11.231** | Owner-write stamp on every Smart Wallet persist. `VAULT_STORAGE_CHANGED_UNEXPECTEDLY` only when the encrypted vault changes without that owner stamp (outside the wallet). Docs include the full critical-code table (every `CRITICAL` mapper code + meaning). |
 | **0.11.232** | Critical review/sign mismatches no longer hard-block. They record a critical Logs row and ask **Proceed** or **Cancel**. |
+| **0.11.616** | Logs tab membership separated by purpose. **Log** = routine green info. **Errors** = error + critical. **Alerts** = ordinary warnings only (timeouts, delays, rate limits, fallbacks) — no errors, criticals, or security warnings. **Warnings** = critical events plus classified dApp/vault/signing-integrity security warnings. **Connections** unchanged. Alerts and Warnings do not share an event. Critical security events can still appear in both Errors and Warnings. |
 | **0.11.233** | **Hide routine success** and **Keep more logs** persist across popup close / reopen. One local storage read on open. No extra RPC. Docs §9.3.1 explain the hide-success switch (what it hides, which tabs change, and that it does not log external-DEX “swap confirmed”). |
 | **Docs 2026-08-16** | §9.7 **Warnings that may be triggered by owner** — outsider/fault-shaped codes that the owner can still produce by accident. A row the owner can trigger is not full proof of vault integrity; confirm it was not accidental. |
 
