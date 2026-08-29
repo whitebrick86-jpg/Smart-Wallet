@@ -1,16 +1,18 @@
 # Smart Wallet — Network Loads (Pings, RPC, APIs)
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
-**Code snapshot:** load-count **0.11.159** · **Live product:** **0.11.349** ([PRODUCT.md](./PRODUCT.md))  
-**Last updated:** 2026-08-19  
+**Code snapshot:** load-count **0.11.159** · **Live product:** **0.11.660** ([PRODUCT.md](./PRODUCT.md))  
+**Last updated:** 2026-08-29  
 
-**Live scan (0.11.349):** rough HTTP max-use and stored-payload numbers are in **§0** below. They come from the current unpacked tree (`Gladiator-Wallet-0.6.55`), not a Chrome Network HAR. Order-of-magnitude only.  
+**Live scan (0.11.660):** max-use numbers in **§0** are a code-read of the live unpacked tree (`manifest.json` **0.11.660**, last committed **0.11.657**). Not a Chrome Network HAR. Typical vs MAX envelopes. Failover multiplies **tries**, not logical rounds, except the 450 ms delayed hedge which can fire host #2 in parallel.
 
-**Architecture note (0.11.34+ through 0.11.159):** Chain RPC calls go through a shared **rpc-gateway** (UI + service worker) with sequential multi-RPC failover, per-host cooldown after 429, hard timeouts (especially `eth_getLogs`), in-flight request dedupe, and **provider scoring** (latency / reliability / 429 history; still sequential — no free-RPC fan-out). Host lists come from a single **chain-registry**. Solana and EVM JSON-RPC from the popup can proxy via the service worker (`smart-wallet-sol-rpc` / `smart-wallet-evm-rpc`). Transaction confirmation can multi-vote RPC hosts via the transaction manager.
+**Architecture:** Chain RPC goes through **rpc-gateway** (UI + service worker): sequential multi-RPC failover, per-host cooldown after 429, hard timeouts (`eth_getLogs`), in-flight dedupe, provider scoring. **No free-RPC fan-out.** Host lists: **chain-registry**. Popup Solana/EVM JSON-RPC can proxy via the service worker (`smart-wallet-sol-rpc` / `smart-wallet-evm-rpc`); if that transport fails the popup **replays** the same walk (failed path ≈ 2×).
 
-**0.11.156–159 networks:** Arbitrum One, Optimism, Avalanche C-Chain use the **same** idle-first timers as other EVMs. Adding them does **not** multiply idle Home HTTPS. See §14 and [CHAINS.md](./CHAINS.md).
+**0.11.656–657 delayed hedge:** account-family reads (`getBalance`, Solana token accounts, gateway EVM account reads, BTC/Sui REST) start host #2 after **450 ms** if host #1 is still in flight. Happy path **+0**. Slow first host **+1**. Both fail, then the rest of the sequential walk still runs. Home EVM `eth_getBalance` / Multicall use **raw `fetch`** and **do not** take this hedge (or the global inflight 8).
 
-**Load controls added 0.11.146–0.11.155 (do not remove):** request budgets, gateway read cache, price-path inflight join, History skipped unless the panel is open, deterministic rejects stop host walks, later-receipt **receipt-only** probes, residual-fee alarm (no success-path await). See [ARCHITECTURE.md](./ARCHITECTURE.md) §3–§4, [ERROR-SYSTEM.md](./ERROR-SYSTEM.md), [INTERNAL-DEX.md](./INTERNAL-DEX.md).
+**0.11.416+ Solana ALT verifier:** If the local Solana.com + PublicNode lookup-table quorum is unavailable, the extension may POST only ALT public keys (`MAX_KEYS = 8`) to `smart-wallet-solana-alt-verifier.smart-wallet.workers.dev`. Not a general RPC proxy.
+
+**Load controls (do not remove):** request budgets, gateway read cache, price-path inflight join, History skipped unless the panel is open, deterministic rejects stop host walks, later-receipt **receipt-only** probes, residual-fee alarm. See [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 **How to read a “count” in this file**
 
@@ -26,70 +28,138 @@
 
 ---
 
-## 0. Live scan — 2026-08-19 (product 0.11.349)
+## 0. Live scan — 2026-08-29 (product 0.11.660)
 
-Code-read of the live unpacked wallet. **Not** a Chrome DevTools capture (no remote-debugging port on this machine). Numbers are **caps and typical envelopes**, not a promise of exact traffic.
+Code-read of the live unpacked wallet. **Not** a Chrome DevTools HAR. Numbers are **caps and typical envelopes**.
 
-### 0.1 Hard request ceilings (cannot exceed these at once)
+**Round** = one logical job (one balance, one quote, one History fetch). Failover may add **tries**. Hedge may add **1 parallel try**. `<img>` logos are extra HTTPS, counted separately.
 
-| Control | Live value | What it means |
-|---------|------------|----------------|
-| Global inflight | **8** | All automatic chain work across the wallet |
-| Per-chain inflight | **4** | One selected chain |
-| Portfolio picker | **2** concurrent | Networks tab while open |
-| Screen budget (non-critical) | Home **16** / Send **20** / Swap **24** / Bridge **24** / History **12** / Settings **4** per **15 s** | Critical send/swap/sign/broadcast/confirm **bypass** |
-| RPC walk | Sequential **1–5** hosts, no `Promise.all` fan-out | One logical round can become several tries |
-| Confirm (EVM) | Poll **~0.5–1.5 s**, overall **~12–90 s**, **maxHosts 2–5** | ~8–40 receipt calls per hash, then stop |
-| Confirm (Solana) | **≤16** `getSignatureStatuses` tries | Shared `waitSolConfirmed` path |
-| Price batch | **≤50** mints / Jupiter request | One HTTPS round |
-| EVM discovery | **≤32** unknown contracts / pass | Holdings cache **48** rows / chain |
-| History open | Helius **≤50** rows **or** **≤60** sigs in batches of **5** | **0** unless History is open |
+### 0.1 Hard request ceilings
 
-Idle Home still uses the 0.11.0+ timers: price reconcile **90 s**, balance fallback **105 s**, Solana+WS safety **4 min**. Hidden popup/tab **stops** those loops.
+| Control | Live value | Where / meaning |
+|---------|------------|-----------------|
+| Global inflight | **8** | `rpc-active-network.js` `GLOBAL_MAX` — gateway/automatic chain work |
+| Per-chain inflight | **4** | `PER_CHAIN_MAX` |
+| Networks picker | **2** concurrent | `PORTFOLIO_MAX`; lease 45 s; cancelled on close |
+| Screen budget (non-critical) | Home **16** / Send **20** / Swap **24** / Bridge **24** / History **12** / Holdings **16** / dApp **20** / Settings **4** / Logs **2** per **15 s** | `sw-request-budget.js`. Critical send/swap/sign/broadcast/preflight/confirm **bypass**. **Only Home live-balance currently calls `allow()`** — other screens are not actually gated by this table |
+| RPC walk | Sequential; Solana **≤7 hosts / 3 attempts**; EVM gateway **≤3**; raw EVM `eth_call` **≤4** | No `Promise.all` fan-out of free RPCs |
+| Account-read hedge | **450 ms** | Host #2 starts if host #1 still pending (`rpc-gateway.js`, BTC/Sui in `app.js`) |
+| Confirm (EVM) | Poll **~0.4–1.5 s**, overall **~90 s**, **maxHosts 2–5** (BSC **2**) | Then stop; timeout stays **pending**, not failed |
+| Confirm (Solana) | **≤16** `getSignatureStatuses` (`default 8`) | Shared `waitSolConfirmed` |
+| Price batch | **≤50** mints / Jupiter Price v3 | One HTTPS round |
+| EVM DexScreener enrich | **8**/batch, **24** mints, parallel **1** | `evm-holdings-enrichment.js` |
+| Logo fallback | **12** cap, concurrency **3** | Then allowlisted CDN `<img>` |
+| EVM unknown-mint probe | **≤32** / pass, **5** workers | First-open / full Sync only |
+| History | Helius **20** incremental / **50** full **or** RPC **20** / **60** sigs in batches of **5** | **0** unless History is open (or 60 s job while that panel is showing) |
+| Mail pull | **≤12** addresses sequential; cooldown **15 s** (force Refresh bypasses) | Sends **40 / hour** (server 429) |
+| Announcements | **1 GET**, cache **12 min** | Stops when hidden or vault locked |
+| Swap quote debounce | **180 ms** | Cache **8 s**, max **16** entries, auto-refresh **≤2** |
+| Bridge LiFi status | **10 s** (Solana source **12 s**), **≤50** tries (Sol **90**) | Per bridge, not idle |
+| Jobs | Pause when locked / offline / hidden | Resume stagger **140 ms** |
 
-### 0.2 Rough HTTP / RPC max-use
+Idle Home timers: price **90 s**, balance **105 s**, Solana+WS safety **4 min**, sticky native skip **25 s**. Hidden popup/tab **stops** those loops and both WebSockets.
 
-| Situation | Logical rounds | With failover tries (×1–4) | Notes |
-|-----------|----------------|----------------------------|--------|
-| Idle Home, 1 hour, Solana + healthy WS | **~45–70** | **~60–150** | + **2** long-lived WS (Binance ticker + Solana mentions) |
-| Idle Home, 1 hour, no WS (EVM / WS down) | **~80–120** | **~120–300** | Price 90 s + balance 105 s + occasional majors |
-| Theoretical Home budget ceiling | **64 / min** = **~3,800 / hr** | n/a | 16 per 15 s if every slot is used. Live timers do **not** fire that fast |
-| One EVM send / swap confirm | **~8–40** | same (already sequential) | Then submitted/confirming, not endless poll |
-| One Solana swap confirm | **≤16** | **≤16** | Timeout stays pending, not failed |
-| Networks picker open | **~11–22** | **~11–40** | 11 chains, concurrency 2, then cancel on close |
-| Heavy trading day (see §6 C) | **~600–1,600** | **~1k–3k** | Quotes + 15 swaps + 5 bridges + History + Syncs |
-| Worst stress hour (see §6 D) | **~300–550** | **~800–2,000** | User spam Sync/History/quotes, WS down |
-| Popup closed, no due fee/confirm | **0** | **0** | SW alarms are local unless a residual/await row is due |
+**Gating caveat:** Home EVM native + Multicall + mint probes use raw `fetch()`, so they can run **outside** the global inflight **8**. dApp `eth_call` is also not budget-gated (only 8/4 inflight). Solana dApp RPC (`injected` → background allowlist) walks **5** public hosts and **bypasses** `GLOBAL_MAX`.
 
-**Rule of thumb for operators:** plan free-tier around **~50–80 HTTP rounds/hour idle**, **~1,000–2,000 rounds on a hard trading day**, and treat **~3,000+ tries** as a user-driven stress day, not the idle product.
+### 0.2 Max usage by surface (one action)
 
-Typical payload **per** request (rough):
+**11 display chains:** Solana, Ethereum, Bitcoin, Polygon, Sui, Robinhood, Base, BSC, Arbitrum, Optimism, Avalanche.
+
+| Surface | Typical HTTP/RPC rounds | MAX one action | Extra / notes |
+|---------|-------------------------|----------------|---------------|
+| **Open wallet (Home, Solana, known bag)** | **6–9** + **2 WS** | **~20–40** | `getBalance` + 3 token-account scans + Jupiter price + CoinGecko majors + 0–1 sparkline + 0–1 announcements GET. WS: Binance `solusdt` + Solana `logsSubscribe` |
+| **Open wallet (Home, EVM, known tokens)** | **4–8** + **1 WS** | **~15–25** | Native `eth_getBalance` + Multicall3 + CoinGecko + 0–3 DexScreener batches. After **120 ms**, a **background full discovery** may start if last full ≥ **2 min** |
+| **Open wallet (first EVM / empty bag / Sync)** | **40–80** in ~30 s | **~120** (timeout-bound) | Blockscout pages (≤4; Polygon 2) + `eth_getLogs` chunks + ≤32 mint probes. Theoretical 400+ `eth_call`s is **not** reached; wall clock **~22–35 s** |
+| **Open wallet (BTC)** | **2–4** | **~6** | Blockstream + 450 ms hedge to mempool.space + CoinGecko + sparkline |
+| **Open wallet (Sui)** | **2 + N coins** | **~(2+N)× hedge** | `suix_getBalance` + `suix_getAllBalances` + metadata per coin |
+| **Networks tab open** | **~24–30** | **~80–150** if hosts fail | **11** natives + token USD (EVM Multicall, Solana 3 SPL scans) at concurrency **2**, then **cancel on close**. 45 s skip if already fresh. Optional CoinGecko if majors > **2 min**. Does **not** run Blockscout / logs |
+| **Switch network** | **2–6** + WS reconnect | **1 full discovery** of the **new** chain | Paints 60 s portfolio cache first. Identity prewarm **1** `eth_chainId` / `getVersion` (3.5 s, 60 s/host throttle). **Not** an 11-chain fan-out |
+| **Trending / Discover open** | **1–3** + card images | **~6 HTTPS** + **≤15–40 imgs** | Market-data `GET /v1/trending?chain=` (15 s). Empty → DexScreener tokens batch. Cache **3 min**. Sites list is **local** |
+| **Latest CTOs** | **2** | **2** | DexScreener `community-takeovers/latest/v1` + `latest/dex/tokens/{batch}`. Cache **3 min**. Chain-scoped |
+| **Pumpfun Movers (Solana only)** | **1** + ≤10 imgs | **1** | Market-data `GET /v1/pumpfun/trending?limit=40`, then filter **$25k mcap AND $5k volume**, show **10**. Hidden on non-Solana. Cache **60 s** |
+| **Discover search** | **1** | **1** | DexScreener `token-pairs/v1/{chain}/{q}` while typing (debounced) |
+| **History (Solana, Helius key)** | **1** | **1** | Enhanced `limit=20` incremental / **50** full. Cache **45 s**. Incremental if durable rows exist |
+| **History (Solana, public RPC)** | **13** (1 sig list + 12 `getTransaction` batches of 5) | **~13–50** with failover | **20** or **60** sigs. Batches paused to reduce 429 |
+| **History (EVM, reopen / tip)** | **~3–6** `eth_getLogs` | **~6 × 1–3 hosts** | lookback hundreds of blocks, `maxChunks 3`, concurrency **2** |
+| **History (EVM, full / empty store)** | **~16–40** log chunks | **~40–80** + Blockscout | `maxChunks` **16–20** (BSC 20). UI keeps **60** rows. 60 s auto-refresh **only while History is open** |
+| **History (BTC / Sui)** | **1–4** explorer/RPC | **~8** | Address txs APIs |
+| **Send (preflight, no broadcast)** | **3–8** | **~12** | Balance, nonce/`getLatestBlockhash`, fee/gas, optional simulate. Screen budget **20/15 s** but send is **critical** (bypass) |
+| **Send (broadcast + confirm)** | **+1 submit + 8–16 confirm** | EVM **~8–40** receipts; Solana **≤16** | Same signed raw on failover. Timeout = pending |
+| **Receive panel** | **0** | **0** | Address + QR are local. Copy uses clipboard, not HTTP |
+| **Receive → Buy** | Onramper **iframe** | 1 widget session | `buy.onramper.com` only when Buy is used |
+| **Native sparkline (Total Balance)** | **0–1** | **1** | CoinGecko `market_chart` days=1, TTL **15 min**, inflight join |
+| **Open token chart** | **1–2** | **4** | Native/stable: CoinGecko chart + optional `/coins/{id}`. Token: contract chart → GeckoTerminal → DexScreener meta. Cache **60 s** |
+| **Manual Sync** | Same as a full Home refresh | EVM full discovery MAX | Forces prices + balances; skips staged light path |
+| **Messaging Inbox/Sent open** | **1–2 POST /v1/mail/pull** | **12** (one per signed address) | 15 s cooldown; Refresh `force` bypasses. Extra 2.5 s join on paint |
+| **Home unread chip** | **0–2 pulls** | same as Inbox | `paintMessagingBadges` → `messagingMergeRemote(false)` — **does** hit the Worker even if Messaging is closed |
+| **Announcements** | **0–1 GET** | **1** | 12 min cache + interval while visible and unlocked |
+| **Send / reply a message** | **1 POST /v1/mail** | **1** | Server **40/hour**. Single-flight `relayBusy` |
+| **Block / report / delete-for-me** | **1 POST** each | 1 | Blocked list fetch when that pane opens (not polled) |
+| **Enable / Revoke Ledger mail** | **1 POST** authorize or revoke | 1 | 15 s timeout. Production Worker |
+| **Owner reports / broadcast** | **1** list (limit 25) | pagination clicks | Unpacked owner tools only; stripped from store zip |
+| **Swap quote (LiFi or Jupiter)** | **1** after debounce | many while typing | Debounce **180 ms** (was ~450). Cache 8 s. LiFi via production Worker only — **no `li.quest`** |
+| **Swap execute** | quote/build + send + fee legs + short polls | **~10–25** + confirm | Atomic 45 bps. Post-tx light balance waves |
+| **Bridge execute** | quote + send + fee + status | status **≤50–90** | 10–12 s interval. 85 bps fail-closed |
+| **dApp EVM (Uniswap-class)** | 1 RPC per `eth_call` / estimate / logs | **8 inflight / 4 per chain** | `eth_call` **not cached**. Can saturate that cap for as long as the tab is connected |
+| **dApp Solana RPC** | 1 method / 5-host walk | **outside GLOBAL_MAX** | Allowlisted methods only |
+| **WalletConnect** | **0** unless paired | relay WS + HTTPS while session lives | Needs user Project ID |
+| **Token logos (after holdings paint)** | **0** if cached | **≤12** fallbacks conc **3** + 1–3 list fetches | Uniswap / 1inch / LiFi token maps; CDN imgs (Jupiter, CoinGecko, IPFS gateway, DuckDuckGo IP3 for dApp favicons) |
+| **ALT verifier** | **0** | **1 POST / pubkey** | Only if local ALT quorum fails on a Solana tx |
+| **Managed RPC Worker** | **0** store / unenrolled | **1 POST /v1/rpc per logical call** | `production-managed` **cannot activate** in this build. Unpacked enrolled + `FULL_SERVICE` only |
+| **Settings / Logs / address book / privacy / session / vault** | **0** | **0** | Local storage / WASM. Diagnostics: **no network, no telemetry** |
+| **Popup closed, no due fee/confirm** | **0** | **0** | SW alarms local unless a residual or swap-await row is due |
+
+### 0.3 Combined max-use scenarios (planning)
+
+Assumptions: one account, popup **visible**, healthy hosts unless stated. Hedge + failover can multiply the **try** column.
+
+| Scenario | Logical rounds | Tries (failover ×1–4 + hedge) | What is included |
+|----------|----------------|--------------------------------|------------------|
+| **Idle Home 1 hour, Solana, WS healthy** | **~45–80** | **~60–160** | Price 90 s, balance ~4 min, 0–5 announcement GETs, 0–4 Home badge pulls if session can sign. **2 WS** |
+| **Idle Home 1 hour, EVM / WS down** | **~80–130** | **~120–350** | Price 90 s + balance 105 s + majors |
+| **Open → Networks tab → switch 5 chains → Discover (Solana) → History → 1 send → 1 receive → 3 token charts → Inbox** | **~80–160** | **~120–400** | One of each user action in this table. Receive = **0**. Charts mostly CoinGecko. Inbox 1–2 pulls |
+| **Heavy trading day (§6 C updated)** | **~700–1,800** | **~1.2k–3.5k** | 4 h Home + 40 quotes (180 ms debounce) + 15 swaps + 5 bridges (status-heavy) + 20 History + 10 Syncs + messaging 40 sends + dApp **not** included |
+| **Stress hour: spam Sync + History + quotes + Inbox Refresh + Discover** | **~400–800** | **~1k–2.5k** | Quotes unbounded by screen budget (critical). Inbox Refresh bypasses 15 s. Still capped by inflight 8 on gateway paths |
+| **dApp Uniswap 1 hour on the connected chain** | saturates **4/chain** inflight | **thousands of `eth_call`** | Dominates every other wallet surface. Plan RPC limits around **this**, not idle Home |
+| **Popup hidden** | **0** | **0** | Except due swap-await / fee-residual SW probes |
+
+**Operator rule of thumb (0.11.660):**
+
+- Idle visible Home: **~50–90 HTTP rounds/hour**
+- Power user, no dApp: **~1,000–2,000 rounds/day**
+- Uniswap/Jupiter **in-page dApp**: treat as **continuous RPC** at **4 inflight / chain** for the whole session
+- Messaging: **~5 announcement GET/hour** + **≤40 sends/hour** + pulls **~4–8/hour** typical, **~240 merge rounds/hour** only if Inbox stays open and keeps painting
+- **~3,000+ tries** is user-driven stress or a dApp tab, not the idle product
+
+Typical payload **per** request (unchanged class):
 
 | Kind | Request | Response |
 |------|---------|----------|
 | JSON-RPC read | **0.2–1 KB** | **0.5–8 KB** (getLogs chunks larger but bounded) |
 | Jupiter price batch | **~0.5 KB** | **2–20 KB** |
 | Jupiter / LiFi quote | **1–4 KB** | **5–50 KB** |
+| Mail pull/send | **0.5–2 KB** | **1–20 KB** |
 | Solana signed tx | **≤1.3 KB** | small sig |
 | Icon / chart | **0.5 KB** | **5–80 KB** |
 
-Idle hour **on the wire** is therefore about **~0.1–2 MB** transferred. A hard trading day is closer to **~5–30 MB**, not hundreds of megabytes.
+Idle hour on the wire: **~0.1–2 MB**. Hard trading day: **~5–30 MB**. A busy dApp hour can exceed that in JSON-RPC alone.
 
-### 0.3 Rough stored payload the wallet can accumulate
+### 0.4 Stored payload the wallet can accumulate
 
-Chrome **does not** grant `unlimitedStorage`. `chrome.storage.local` quota is **10 MB**. `localStorage` is typically **5–10 MB** on the extension origin. Encrypted vault + caches share that envelope.
+Chrome **does not** grant `unlimitedStorage`. `chrome.storage.local` quota is **10 MB**.
 
 | Store | Cap in code | Rough bytes if full |
 |-------|-------------|---------------------|
 | Logs (`smart_wallet_diag_logs`) | **500** default / **1000** max; message **280** chars | **~0.3–0.8 MB** |
 | History UI store | **240** rows | **~0.1–0.4 MB** |
 | History manager cache | **40** keys | **~0.5–1.6 MB** |
-| Portfolio cache | **60** keys × **48** holdings | **~0.4–1.2 MB** |
+| Portfolio cache | **60** keys × holdings | **~0.4–1.2 MB** |
 | Local tx list | **80** rows | **~40 KB** |
 | Tx lifecycle durable | **40** records (100 in memory) | **~20–50 KB** |
+| Mail local (`smart_wallet_messages_v1`) | **200** messages; deleted ids **500** | **~0.1–0.5 MB** |
 | Token visibility / catalog | grows with discovered mints | **~0.1–0.4 MB** |
-| Swap/bridge await + fee residual | 7-day retain, no huge row cap | **~50–200 KB** typical |
-| Encrypted vault `smart_wallet_v1` | accounts + settings | **~20–200 KB** |
+| Swap/bridge await + fee residual | 7-day retain | **~50–200 KB** typical |
+| Encrypted vault | accounts + settings | **~20–200 KB** |
 | Other keys (consent, trusted origins, nonce, UI) | small maps | **~50–200 KB** |
 
 | Envelope | Rough total |
@@ -99,34 +169,38 @@ Chrome **does not** grant `unlimitedStorage`. `chrome.storage.local` quota is **
 | Packed worst before quota pressure | **~8–10 MB** |
 | Chrome hard stop | **10 MB** `chrome.storage.local` |
 
-Secrets stay in the encrypted vault blob. Logs, history, lifecycle, and portfolio caches are **not** allowed to store seed / private key fields.
+Secrets stay in the encrypted vault blob. Logs, history, mail cache, and portfolio caches must **not** store seed / private key fields.
 
-### 0.4 What this scan did **not** measure
+### 0.5 What this scan did **not** measure
 
-- Live Chrome Network HAR of idle Home (DevTools protocol was not exposed).
-- Production Managed RPC traffic (not enabled).
-- Worker LiFi volume (separate service).
+- Live Chrome Network HAR (no DevTools protocol on this pass).
+- Production Managed RPC (cannot activate in this build).
+- Worker-side LiFi / mail / market-data quotas (separate services).
+- CDN `<img>` byte totals (logos vary 5–80 KB).
 
-Historical idle/trading tables in §2–§10 are still the evolution story. Use **§0** for current 0.11.349 planning numbers.
+Historical idle/trading tables in §2–§10 are the evolution story. Use **§0** for current 0.11.660 planning.
 
 ---
 
-### Payload endpoints still in use (0.11.159)
+### Payload endpoints still in use (0.11.660)
 
 | Category | Endpoints (representative) |
 |----------|----------------------------|
 | **Swap quotes/build (Solana)** | `https://lite-api.jup.ag/swap/v1` · price `…/price/v3` · token search `…/tokens/v2/search` |
-| **Bridge / EVM routes** | LiFi quote + tx APIs (via bridge/swap managers) — now includes Arb / OP / Avalanche |
-| **Prices** | Jupiter Price v3, CoinGecko `simple/price` (ids now include `avalanche-2`) + market chart, DexScreener token fallback |
-| **Market WS** | `wss://stream.binance.com` — **1** ticker (ETHUSDT, or **AVAXUSDT** when Avalanche is active) |
-| **History (optional)** | Helius enhanced (`api.helius.xyz` / Helius RPC) when user sets key/URL |
+| **Bridge / EVM routes** | LiFi **Worker only**: `smart-wallet-lifi-proxy.smart-wallet.workers.dev` `/v1/lifi/quote` · `/advanced/routes` · `/advanced/step-transaction` · `/status` · `/tokens`. No direct `li.quest` |
+| **Prices** | Jupiter Price v3, CoinGecko `simple/price` + `market_chart` + `/coins/{id}`, DexScreener token fallback, GeckoTerminal chart fallback |
+| **Discover / Trending** | Market-data Worker `…/v1/trending?chain=` · `…/v1/pumpfun/trending?limit=40` · DexScreener `community-takeovers/latest/v1` · `latest/dex/tokens/{batch}` · `token-pairs/v1/{chain}/{q}` |
+| **Market WS** | `wss://stream.binance.com` — **1** ticker for the **active** native (SOL, ETH, BTC, BNB, POL, SUI, AVAX). No Robinhood/Base-only ticker |
+| **Solana activity WS** | `logsSubscribe` mentions, publicnode / solana.com / drpc |
+| **History (optional)** | Helius enhanced (`api.helius.xyz`) when user sets key; else public RPC `getSignaturesForAddress` + `getTransaction` |
+| **Messaging** | Production RPC-gateway Worker `/v1/mail`, `/v1/mail/pull`, `/v1/mail/announcements`, block/report/delete, `/v1/mail/ledger-authorize` |
 | **EVM discovery** | Chain multi-RPC + Blockscout / Snowtrace-class explorers (per chain-registry) |
-| **New official RPCs** | `arb1.arbitrum.io` · `mainnet.optimism.io` · `api.avax.network/ext/bc/C/rpc` |
-| **New explorers** | arbiscan.io · optimistic.etherscan.io · snowtrace.io |
+| **Official extra RPCs** | `arb1.arbitrum.io` · `mainnet.optimism.io` · `api.avax.network/ext/bc/C/rpc` |
 | **BTC** | `blockstream.info` / mempool.space APIs |
 | **Sui** | public Sui HTTP RPCs from chain-registry |
+| **ALT verifier** | `smart-wallet-solana-alt-verifier.smart-wallet.workers.dev/v1/solana/alt/verify` (fallback only) |
 | **WC / Onramp** | Reown / WalletConnect relays when user pairs; Onramper when Buy is used |
-| **Icons (CDN)** | DuckDuckGo IP3 favicons; CoinGecko asset images (allowlisted) |
+| **Icons (CDN)** | DuckDuckGo IP3 favicons; CoinGecko / Jupiter / 1inch / IPFS gateway (allowlisted) |
 
 This document is a full outlook of **network load**: what we used to fire, what we fire now, and **maximum-use totals** (order-of-magnitude) so operators can plan free-tier limits and rate-limit risk.
 
@@ -231,6 +305,8 @@ This was the **first** idle-first design (still quieter than pre-0.10). Kept for
 ---
 
 ## 4. Current load model (0.11.0+ — event-driven + cache)
+
+**0.11.660 live numbers are in §0.** This section is the idle-first design. Quote debounce in live code is **180 ms** (not the ~450 ms shown in older rows below).
 
 **Architecture:** WebSocket / event → **cache** → **UI**, with HTTP as **authoritative reconcile**, not continuous UI polling.
 
