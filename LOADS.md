@@ -74,21 +74,21 @@ Idle Home timers: price **90 s**, balance **105 s**, Solana+WS safety **4 min**,
 | **Open wallet (Sui)** | **2 + N coins** | **~(2+N)× hedge** | `suix_getBalance` + `suix_getAllBalances` + metadata per coin |
 | **Networks tab open** | **~24–30** | **~80–150** if hosts fail | **11** natives + token USD (EVM Multicall, Solana 3 SPL scans) at concurrency **2**, then **cancel on close**. 45 s skip if already fresh. Optional CoinGecko if majors > **2 min**. Does **not** run Blockscout / logs |
 | **Switch network** | **2–6** + WS reconnect | **1 full discovery** of the **new** chain | Paints 60 s portfolio cache first. Identity prewarm **1** `eth_chainId` / `getVersion` (3.5 s, 60 s/host throttle). **Not** an 11-chain fan-out |
-| **Trending / Discover open** | **1–3** + card images | **~6 HTTPS** + **≤15–40 imgs** | Market-data `GET /v1/trending?chain=` (15 s). Empty → DexScreener tokens batch. Cache **3 min**. Sites list is **local** |
+| **Trending / Discover open** | **Solana 4** / **EVM 3** JSON + site/token imgs | **Solana 7** / **EVM 6** JSON + **~20–48 imgs** | Parallel: Worker `/v1/trending` + CTO (2) + Pumpfun (Solana). Worker miss → DexScreener `token-profiles/latest/v1` + `token-boosts/top/v1` + tokens batch. Cache **3 min**. Bitcoin Discover JSON **0** (sites only). Sites use DuckDuckGo IP3 |
 | **Latest CTOs** | **2** | **2** | DexScreener `community-takeovers/latest/v1` + `latest/dex/tokens/{batch}`. Cache **3 min**. Chain-scoped |
 | **Pumpfun Movers (Solana only)** | **1** + ≤10 imgs | **1** | Market-data `GET /v1/pumpfun/trending?limit=40`, then filter **$25k mcap AND $5k volume**, show **10**. Hidden on non-Solana. Cache **60 s** |
-| **Discover search** | **1** | **1** | DexScreener `token-pairs/v1/{chain}/{q}` while typing (debounced) |
-| **History (Solana, Helius key)** | **1** | **1** | Enhanced `limit=20` incremental / **50** full. Cache **45 s**. Incremental if durable rows exist |
-| **History (Solana, public RPC)** | **13** (1 sig list + 12 `getTransaction` batches of 5) | **~13–50** with failover | **20** or **60** sigs. Batches paused to reduce 429 |
-| **History (EVM, reopen / tip)** | **~3–6** `eth_getLogs` | **~6 × 1–3 hosts** | lookback hundreds of blocks, `maxChunks 3`, concurrency **2** |
-| **History (EVM, full / empty store)** | **~16–40** log chunks | **~40–80** + Blockscout | `maxChunks` **16–20** (BSC 20). UI keeps **60** rows. 60 s auto-refresh **only while History is open** |
+| **Discover search** | **1** after **350 ms** | **2** (address path) | Name: DexScreener `latest/dex/search`. Address: tokens then `token-pairs/v1/{chain}/{q}` |
+| **History (Solana, Helius key)** | **1** | **1** + optional mint labels | Enhanced `limit=20` incremental / **50** full. Cache **45 s**. Incremental if durable rows exist. Unknown mints may then hit Jupiter search (≤40) |
+| **History (Solana, public RPC)** | **21** incr / **61** full (1 sig list + `getTransaction` batches of 5, 80 ms pause) | **~21–61** + failover + mint labels | **20** or **60** sigs. `resolveMintMeta` worst **≤40 × 3 HTTPS** if labels are cold |
+| **History (EVM, reopen / tip)** | **~20–80** RPC | log chunks **≤6** × hosts + native blocks + ≤18 tx hashes | lookback hundreds of blocks, `maxChunks 3`, concurrency **2**. Blockscout skipped when durable rows exist |
+| **History (EVM, full / empty store)** | **~80–200** in the wall-clock window | coded ceiling is higher (`maxChunks` 16–20, native `getBlockByNumber` cap, ≤48 tx hashes, ≤20 timestamps) + **2** Blockscout | ETH lookback **4500** / chunk **220**. UI keeps **60** rows. 60 s auto-refresh **only while History is open**. Do not plan on 400+ completing — deadlines **8–20 s** stop the walk |
 | **History (BTC / Sui)** | **1–4** explorer/RPC | **~8** | Address txs APIs |
 | **Send (preflight, no broadcast)** | **3–8** | **~12** | Balance, nonce/`getLatestBlockhash`, fee/gas, optional simulate. Screen budget **20/15 s** but send is **critical** (bypass) |
 | **Send (broadcast + confirm)** | **+1 submit + 8–16 confirm** | EVM **~8–40** receipts; Solana **≤16** | Same signed raw on failover. Timeout = pending |
 | **Receive panel** | **0** | **0** | Address + QR are local. Copy uses clipboard, not HTTP |
 | **Receive → Buy** | Onramper **iframe** | 1 widget session | `buy.onramper.com` only when Buy is used |
 | **Native sparkline (Total Balance)** | **0–1** | **1** | CoinGecko `market_chart` days=1, TTL **15 min**, inflight join |
-| **Open token chart** | **1–2** | **4** | Native/stable: CoinGecko chart + optional `/coins/{id}`. Token: contract chart → GeckoTerminal → DexScreener meta. Cache **60 s** |
+| **Open token chart** | **1–2** | **8** | Native: CoinGecko `market_chart` + `/coins/{id}`. Token: CG contract chart → GeckoTerminal pools/token/OHLCV (≤4 pools) → DexScreener meta. Cache **60 s**. Changing **1H/1D/1W/1M** can fire another bundle |
 | **Manual Sync** | Same as a full Home refresh | EVM full discovery MAX | Forces prices + balances; skips staged light path |
 | **Messaging Inbox/Sent open** | **1–2 POST /v1/mail/pull** | **12** (one per signed address) | 15 s cooldown; Refresh `force` bypasses. Extra 2.5 s join on paint |
 | **Home unread chip** | **0–2 pulls** | same as Inbox | `paintMessagingBadges` → `messagingMergeRemote(false)` — **does** hit the Worker even if Messaging is closed |
