@@ -2,7 +2,7 @@
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
 **Code snapshot:** load-count **0.11.159** · **Live product:** **0.11.660** ([PRODUCT.md](./PRODUCT.md))  
-**Last updated:** 2026-08-29  
+**Last updated:** 2026-08-29 (totals + 1…1M user scale + cap solutions)  
 
 **Live scan (0.11.660):** max-use numbers in **§0** are a code-read of the live unpacked tree (`manifest.json` **0.11.660**, last committed **0.11.657**). Not a Chrome Network HAR. Typical vs MAX envelopes. Failover multiplies **tries**, not logical rounds, except the 450 ms delayed hedge which can fire host #2 in parallel.
 
@@ -144,6 +144,100 @@ Typical payload **per** request (unchanged class):
 
 Idle hour on the wire: **~0.1–2 MB**. Hard trading day: **~5–30 MB**. A busy dApp hour can exceed that in JSON-RPC alone.
 
+### 0.3a Total pings per person (RPC vs HTTP vs Worker)
+
+**Ping** = one logical outbound HTTP attempt (JSON-RPC **or** REST). WebSockets are listed separately and are **not** added into Total pings.
+
+Three planning personas (healthy hosts, one account, popup **visible**). Mid of the §0.3 ranges.
+
+| Bucket | What it is | **Idle Home 1 hour** (Solana + WS) | **Typical day** (~2 h Home, 1 Discover, 1 History, 0–1 send, a few messages) | **Heavy trading day** (4 h Home, quotes + 15 swaps + 5 bridges, no dApp) |
+|--------|------------|--------------------------------------|-------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| **Chain RPC** | Solana / EVM / BTC / Sui JSON-RPC or explorer HTTP | **~20** | **~80** | **~600** |
+| **Public HTTPS** | Jupiter, CoinGecko, DexScreener, GeckoTerminal, Blockscout, CDN logos | **~20** | **~70** | **~400** |
+| **Smart Wallet Workers** | Mail + LiFi proxy + market-data + ALT (all `*.smart-wallet.workers.dev`) | **~10** | **~35** | **~200** |
+| **Total pings** | RPC + public HTTPS + Workers | **~50** | **~185** | **~1,200** |
+| **WebSockets** | Binance ticker + Solana `logsSubscribe` | **2** sessions | **2** sessions × hours open | **2** sessions × hours open |
+
+Idle hour split (the **~50**):
+
+| Source | Pings |
+|--------|-------|
+| Solana balance safety (~4 min) | **~15 RPC** |
+| Jupiter Price reconcile (often skipped while WS fresh) | **~10 HTTPS** |
+| CoinGecko majors / sparkline | **~0–5 HTTPS** |
+| Announcements `GET /v1/mail/announcements` (12 min) | **~5 Worker** |
+| Home mail-badge pulls (15 s cooldown, unlocked) | **~4 Worker** |
+| **Total** | **~50 pings + 2 WS** |
+
+Closed popup: **0 pings** (except a due swap-await / fee-residual). Receive panel: **0**. Settings / Logs: **0**.
+
+Public APIs (Jupiter, CoinGecko, DexScreener, public RPC) are **per user IP**. They do **not** add together on one quota when user count grows. **Workers and LiFi `li.quest` (from the Worker’s IP)** are **shared** — that is what 10 / 100 / 1M people stress.
+
+### 0.3b Scale: 1 → 10 → 100 → 1k → 10k → 100k → 1M people
+
+**N = daily active wallets** (people who actually open the extension that day). Installed-but-closed copies are **0**. If only 10% of N have Home open at once, divide the “all N idle 1 hour at once” column by 10.
+
+#### If all N have Home open for the same idle hour
+
+| People (N) | Chain RPC | Public HTTPS | **Workers (shared)** | **Total pings** | WS sessions |
+|------------|-----------|--------------|----------------------|-----------------|-------------|
+| **1** | 20 | 20 | **10** | **50** | 2 |
+| **10** | 200 | 200 | **100** | **500** | 20 |
+| **100** | 2,000 | 2,000 | **1,000** | **5,000** | 200 |
+| **1,000** | 20,000 | 20,000 | **10,000** | **50,000** | 2,000 |
+| **10,000** | 200,000 | 200,000 | **100,000** | **500,000** | 20,000 |
+| **100,000** | 2,000,000 | 2,000,000 | **1,000,000** | **5,000,000** | 200,000 |
+| **1,000,000** | 20,000,000 | 20,000,000 | **10,000,000** | **50,000,000** | 2,000,000 |
+
+#### If those N are typical-day DAU (not all open at once)
+
+| People (N) | Chain RPC / day | Public HTTPS / day | **Workers / day (shared)** | **Total pings / day** | Workers / month |
+|------------|-----------------|--------------------|----------------------------|-----------------------|-----------------|
+| **1** | 80 | 70 | **35** | **185** | ~1k |
+| **10** | 800 | 700 | **350** | **1,850** | ~11k |
+| **100** | 8,000 | 7,000 | **3,500** | **18,500** | ~105k |
+| **1,000** | 80,000 | 70,000 | **35,000** | **185,000** | ~1.1M |
+| **10,000** | 800,000 | 700,000 | **350,000** | **1.85M** | ~11M |
+| **100,000** | 8M | 7M | **3.5M** | **18.5M** | ~105M |
+| **1,000,000** | 80M | 70M | **35M** | **185M** | ~1.05B |
+
+Heavy-trading DAU is ~**6×** the typical Worker column (≈200 Worker pings/user/day). A Uniswap tab is **not** in these tables; it is extra public RPC on **that user’s IP** (thousands of `eth_call` / hour), not extra Worker load.
+
+#### When the shared backends cap
+
+| People (typical DAU) | Cloudflare Workers Free **100k/day** | CF Workers Paid **10M/mo** then $0.30/M | LiFi **unauth** 75 quotes / 2 h (Worker IP) | LiFi **API key** default **100 RPM** (~12k / 2 h) | Jupiter (browser, per IP) | CoinGecko (browser, per IP) | Public RPC (per IP) |
+|----------------------|--------------------------------------|------------------------------------------|---------------------------------------------|---------------------------------------------------|---------------------------|-----------------------------|---------------------|
+| **1** | OK | OK | OK for light quoting | OK | OK idle; typing quotes can 429 keyless **30/min** | OK idle; chart spam can 429 **10–30/min** | OK in-wallet; dApp can 429 |
+| **10** | OK | OK | Tight if several people quote at once | OK | per-IP, still OK | per-IP, still OK | per-IP |
+| **100** | OK (~3.5k Worker/day) | OK | **Need LiFi API key** | OK | per-IP | per-IP | per-IP |
+| **1,000** | **Near/over Free day** if many wallets stay open (announcements+mail). Typical DAU 35k/day still under 100k | OK | **LiFi key required** | OK unless a quote storm | per-IP | per-IP | per-IP |
+| **10,000** | **Free Workers fail** | ~11M/mo → **just over included 10M** (~$5 + $0.30) | **LiFi key**; watch 100 RPM | Raise LiFi plan if >1% quote at once | per-IP | per-IP | per-IP; start **paid RPC** for in-wallet if public 429s rise |
+| **100,000** | Fail | ~105M/mo Worker ≈ **$34** requests + $5 | **LiFi enterprise / higher RPM** | 100 RPM is ~1% concurrent quoters | Still per-IP | Still per-IP | **Dedicated RPC** (Helius/Alchemy/Ankr paid). Turn on **production-managed RPC** |
+| **1,000,000** | Fail | ~1.05B/mo Worker ≈ **$315** requests + CPU. Cache harder or it is more | **LiFi enterprise + SLA** | Required | Optional **Jupiter paid key** if you later proxy quotes | Optional **CoinGecko Basic/Analyst** if you later proxy prices | **Paid multi-region RPC**. Do not run 1M users on `api.mainnet-beta.solana.com` |
+
+Cloudflare Workers Paid (public 2026-08-28): **$5/mo**, **10 million requests included**, then **$0.30 per extra million**. Subrequests from the Worker to LiFi/Jupiter are **not** billed as extra Worker requests. KV: Free 100k reads/day; Paid 10M reads/mo.
+
+### 0.3c Solutions when amounts cap
+
+Do these in order. None of them require putting API keys in the extension.
+
+| When you hit it | Solution | Notes |
+|-----------------|----------|--------|
+| Cloudflare Workers **100k/day** (Free) | **Workers Paid** ($5/mo, 10M req/mo) | Needed before ~1k DAU if wallets stay open (mail + announcements). Already implied by live production Workers |
+| CF requests beyond 10M/mo | Pay overage **$0.30/M** and **cache** announcements, trending, LiFi tokens at the edge (TTL minutes) | 10k typical DAU is ~11M/mo — cache can keep it in the included 10M |
+| LiFi **75 quotes / 2 hours** (no key, Worker IP) | **Free LiFi Partner Portal API key** (`x-lifi-api-key` on the Worker only) → default **100 RPM** (12,000 quotes / 2 h) | Integrator string stays `smart-wallet`. Key never ships in the Chrome zip |
+| LiFi 100 RPM not enough | **LiFi paid / enterprise plan** (higher RPM, SLA) — [li.fi/plans](https://li.fi/plans/) | Roughly when **>1% of DAU** quote at the same minute (10k DAU → 100 quotes/min) |
+| Jupiter keyless **30/min** on one IP | Keep quotes in the **browser** (today) so each user has their own 30/min; or **Jupiter Free key** 60/min / **Developer $25** 10 RPS if you later proxy via Worker | `lite-api.jup.ag` is being retired; plan `api.jup.ag` + key on a Worker when they cut keyless |
+| CoinGecko **10–30/min** or Demo **10k/mo** | Keep majors on **Binance WS** (already). Charts stay on-demand. If you proxy CG, buy **Basic ~$35/mo** (100k credits) or Analyst | One user typical day is tens of CG calls, not thousands |
+| Public Solana **~100 req / 10 s / IP** or EVM 429s | Sequential failover (already). Then **Helius Developer $49** / Alchemy / Ankr paid. Last: enable **production-managed RPC** on the RPC-gateway Worker | dApp Uniswap is the first to need this, not idle Home |
+| Mail 40 sends/hour / pull storms | Already server-enforced. Raise Worker mail quotas + Durable Object limits on Paid | Do not lift the client 40/hour without a product decision |
+| Market-data / Pumpfun / Dex 429 | Worker already aggregates. Add **Cache-Control** / KV TTL (60–180 s) so 10k Discover opens are **1 upstream fetch** | DexScreener pairs **300/min**, profiles **60/min** |
+| ALT verifier storms | Rare (fallback only). KV cache verified ALTs | |
+| Logos / DuckDuckGo | Already capped 12 fallbacks. Prefer bundled `icons/` | |
+| 100k–1M DAU | Paid CF + LiFi enterprise + paid RPC + Worker caches + **do not** put every user on one public RPC URL | Managed RPC (`rpc:use`) is the product path; `production-managed` is still off in this build |
+
+**Do not** put LiFi, Jupiter, Helius, or CoinGecko secrets in `app.js` / `manifest.json` / GitHub. Keys live only in Worker secrets.
+
 ### 0.4 Stored payload the wallet can accumulate
 
 Chrome **does not** grant `unlimitedStorage`. `chrome.storage.local` quota is **10 MB**.
@@ -175,8 +269,9 @@ Secrets stay in the encrypted vault blob. Logs, history, mail cache, and portfol
 
 - Live Chrome Network HAR (no DevTools protocol on this pass).
 - Production Managed RPC (cannot activate in this build).
-- Worker-side LiFi / mail / market-data quotas (separate services).
+- Exact LiFi Partner Portal RPM on the live integrator key (defaults documented as 100 RPM; confirm in the portal).
 - CDN `<img>` byte totals (logos vary 5–80 KB).
+- Real DAU vs installs — §0.3b treats **N as daily active wallets**.
 
 Historical idle/trading tables in §2–§10 are the evolution story. Use **§0** for current 0.11.660 planning.
 
