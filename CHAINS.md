@@ -1,11 +1,11 @@
-# Networks (including Arbitrum, Optimism, Avalanche)
+# Supported networks
 
 **Product:** Smart Wallet  
-**Docs snapshot:** network-add **0.11.159** · **Live product:** **0.11.257** ([PRODUCT.md](./PRODUCT.md))  
-**Last updated:** 2026-08-13  
+**Docs snapshot / live product:** **0.11.673**
+**Last updated:** 2026-08-30
 **Repository:** Documentation only — extension source is **not** published here.
 
-This is the account of **which networks the wallet supports**, how they are ordered, and what was added for **Arbitrum One**, **Optimism**, and **Avalanche C-Chain** (0.11.156–0.11.159).
+This is the current account of **which networks the wallet supports** and how they are ordered. It includes **Sonic**, the newest supported EVM network.
 
 Loads (ping / HTTPS / RPC counts): **[LOADS.md](./LOADS.md)**.  
 Internal swap path: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**.
@@ -31,6 +31,7 @@ Both Bridge dropdowns use `bridgeableChains()` from that same list. Bitcoin and 
 | 9 | `arbitrum` | **Arbitrum One** | evm | ETH | **42161** | Yes |
 | 10 | `optimism` | **Optimism** | evm | ETH | **10** | Yes |
 | 11 | `avalanche` | **Avalanche C-Chain** | evm | AVAX | **43114** | Yes |
+| 12 | `sonic` | **Sonic** | evm | S | **146** | Yes |
 
 Regression: `tools/test-chain-order-bridge.js`.
 
@@ -101,7 +102,24 @@ Regression: `tools/test-chain-order-bridge.js`.
 
 ---
 
-## 5. What 0.11.159 added (Base-template hooks)
+## 5. Sonic
+
+| | |
+|--|--|
+| chainId / gas | **146** · **S** |
+| Official RPC | `https://rpc.soniclabs.com` |
+| Additional RPCs | `https://sonic-rpc.publicnode.com` · `https://sonic.drpc.org` |
+| Explorer | `https://sonicscan.org` |
+| Wrapped native | `0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38` |
+| Native USDC | `0x29219dd400f2Bf60E5a23d13Be72B486D4038894` |
+| Prices | CoinGecko `sonic-3` |
+| Internal DEX / Bridge | LiFi-supported route discovery; availability depends on the selected pair, amount and current liquidity |
+| dApp | EIP-1193 chain ID `0x92`; supported allowlisted Sonic dApps use the shared approval flow |
+| Ledger | Uses the Ethereum Ledger application with Sonic chain metadata shown by the wallet |
+
+---
+
+## 6. Shared network hooks
 
 Registry-only was not enough. These tables now include the three nets the same way Base is wired:
 
@@ -116,7 +134,7 @@ Registry-only was not enough. These tables now include the three nets the same w
 
 ---
 
-## 6. Rules that did not change
+## 7. Rules that did not change
 
 - Sequential RPC only (no parallel fan-out)
 - Sign-once; receipt status 1 / 0 / missing
@@ -133,7 +151,6 @@ Registry-only was not enough. These tables now include the three nets the same w
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Whole-wallet build |
 | [LOADS.md](./LOADS.md) | Ping / HTTPS / RPC counts including the new nets |
 | [INTERNAL-DEX.md](./INTERNAL-DEX.md) | Quote / execute / fee due |
-| [BUGS-AND-FIXES.md](./BUGS-AND-FIXES.md) | 0.11.156–159 in Part D |
 
 ---
 

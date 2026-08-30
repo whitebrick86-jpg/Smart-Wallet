@@ -869,10 +869,10 @@ Password protection is GLOBAL for all software wallets:
 
   PASSWORD ON + UNLOCKED:
     * Vault still ciphertext on disk
-    * JavaScript vault: session password in memory; plain keys only during
-      sign/approve (JIT), then purged
-    * Rust/WASM vault (after migrate): no JavaScript password copy; signing
-      stays inside WASM; reveal is one field after a password step-up
+    * Rust/WASM owns routine software signing; JavaScript keeps a session handle,
+      not the password or private keys
+    * Required key material stays inside WASM during routine signing; reveal is
+      one explicit field after a password step-up
     * Connect / approve / sign do not re-ask password until lock / auto-lock
 
   PASSWORD OFF:
@@ -886,11 +886,8 @@ Password protection is GLOBAL for all software wallets:
   REMOVE ACCOUNT (X):
     * Only explicit way to discard a software seed (user confirms)
 
-Crypto (current):
-  * AES-256-GCM
-  * PBKDF2-HMAC-SHA-256 ~650,000 iterations
-  * 32-byte salt
-  * Older vaults (310k / 16-byte salt) still open; upgraded on successful login
+Cryptographic implementation details are maintained in
+Key-protection-in-Smart-Wallet.md and the tested Rust/WASM vault source.
 
 UI brute-force throttle (user password mode):
   * 10 wrong passwords -> 1 hour lockout (persists across popup close)

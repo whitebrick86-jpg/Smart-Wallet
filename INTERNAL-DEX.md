@@ -1,7 +1,7 @@
 # Internal DEX
 
 **Product:** Smart Wallet (Chrome / Opera MV3 extension)  
-**Docs snapshot:** **0.11.257** (quote coordinator history through 0.11.159 still applies)  
+**Docs snapshot:** **0.11.673**
 **Last updated:** 2026-08-16  
 **Repository:** Documentation only — extension source is **not** published here.
 
@@ -407,7 +407,6 @@ After a **confirmed** internal swap or bridge, leftover USDC that should have go
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Whole-wallet build |
 | [CHAINS.md](./CHAINS.md) | Arb / OP / Avalanche tokens and RPC |
 | [LOADS.md](./LOADS.md) | Quote / probe / fee HTTPS + RPC counts |
-| [BUGS-AND-FIXES.md](./BUGS-AND-FIXES.md) | Fixed vs open |
 | [Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md](./Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md) | Store fee disclosure |
 
 ---

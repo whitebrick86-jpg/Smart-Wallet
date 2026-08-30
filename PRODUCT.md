@@ -1,18 +1,20 @@
 # Smart Wallet — product map
 
-**Live product version:** **0.11.473** (extension `manifest.json`)  
+**Live product version:** **0.11.673** (extension `manifest.json`)
 **This repository:** documentation only — extension source is **not** published here.  
-**Last aligned:** 2026-08-16
+**Last aligned:** 2026-08-30
 
 Smart Wallet and its LiFi backend are **separate folders** but parts of the **same product**. Keep backups and version histories separate. Treat changes to either folder as **cross-project** and compatibility-test quote / routes / step-transaction.
 
 | Piece | Location |
 |-------|----------|
-| **Extension** | `C:\Users\levyr\Desktop\Gladiator-Wallet-0.6.55` |
+| **Extension** | `C:\Users\levyr\Desktop\Smart-Wallet-0.6.55` |
 | **Backend** | `C:\Users\levyr\Desktop\lifi backend fee distributor` |
 | **Backend type** | Cloudflare Worker LiFi proxy: server-side `LIFI_API_KEY`, CORS allowlisting, endpoint rate limits, caching/deduplication, Durable Object shared quota |
 | **Staging Worker** | `smart-wallet-lifi-proxy-staging` |
 | **Staging URL** | `https://smart-wallet-lifi-proxy-staging.smart-wallet.workers.dev` |
+| **Production Worker** | `smart-wallet-lifi-proxy` · service version `1.6.4` |
+| **Production URL** | `https://smart-wallet-lifi-proxy.smart-wallet.workers.dev` |
 
 The unpacked extension calls this backend for LiFi **quote / routes / step-transaction / status / tokens**. The Worker is the only place that talks to `li.quest` with the integrator key.
 

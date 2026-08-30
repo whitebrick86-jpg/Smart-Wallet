@@ -1,10 +1,10 @@
 # Smart Wallet
 
-**Current checkpoint:** **0.11.298** (Batch 5 verified). Worker is **1.6.0**. Store ZIP is built locally and is not published in this repository.
+**Current checkpoint:** **0.11.673**. Production LiFi Worker is **1.6.4**. Store ZIP is built locally and is not published in this repository.
 
 Non-custodial multi-chain **Chrome / Opera MV3** browser wallet.
 
-- Solana, Ethereum (and EVM: Base, Polygon, BNB, Robinhood ETH), Bitcoin, Sui  
+- Solana, Ethereum, Bitcoin, Polygon, Sui, Robinhood Chain, Base, BNB Smart Chain, Arbitrum One, Optimism, Avalanche C-Chain and Sonic
 - Local keys always encrypted at rest · optional software password · Ledger (Solana + EVM)  
 - dApp connect (Wallet Standard / EIP-1193) · WalletConnect · optional Helius History  
 

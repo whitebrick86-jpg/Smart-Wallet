@@ -39,8 +39,9 @@ Non-custodial multi-chain crypto wallet. Solana, Ethereum & more. dApp connect, 
 --------------------------------------------------------------------------------
 DETAILED DESCRIPTION
 --------------------------------------------------------------------------------
-Smart Wallet is a non-custodial browser wallet for Solana, Ethereum (and EVM
-chains such as Base, Polygon, BNB Smart Chain), Bitcoin, and Sui.
+Smart Wallet is a non-custodial browser wallet supporting Solana, Ethereum,
+Bitcoin, Polygon, Sui, Robinhood Chain, Base, BNB Smart Chain, Arbitrum One,
+Optimism, Avalanche C-Chain, and Sonic.
 
 • Create or import software wallets (seed / private key)
 • Software keys always encrypted at rest; optional software password (or device wrap when off)

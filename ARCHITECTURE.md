@@ -1,7 +1,7 @@
 # Smart Wallet — Architecture
 
 **Product:** Smart Wallet (Chrome / Opera MV3 extension)  
-**Live product:** **0.11.257** · **Architecture snapshot:** **0.11.159** (shared EVM path, sequential RPC, 45/85 bps)  
+**Live product / architecture snapshot:** **0.11.673**
 **Repository:** Documentation only — extension source is **not** published here.  
 **Product map:** [PRODUCT.md](./PRODUCT.md) (extension + LiFi Worker are separate folders of the same product)  
 **Last architecture update:** 2026-08-16 (live version / Worker transport noted; 0.11.159 body kept as the shipped-module snapshot)  
@@ -15,9 +15,9 @@ Items are marked **Shipped**, **Partial**, or **Planned**. Nothing is labeled sh
 
 | Capability | Notes |
 |------------|--------|
-| Chains (software) | Solana, Ethereum, Bitcoin, Polygon, Sui, BNB Smart Chain, Robinhood ETH (4663), Base, **Arbitrum One (42161)**, **Optimism (10)**, **Avalanche C-Chain (43114)** |
+| Chains (software) | Solana, Ethereum, Bitcoin, Polygon, Sui, Robinhood Chain, Base, BNB Smart Chain, Arbitrum One, Optimism, Avalanche C-Chain, **Sonic (146)** |
 | Ledger | Solana + EVM after Link EVM (not BTC / Sui on device) |
-| Keys | Local software vault (always encrypted at rest; JavaScript engine or optional Rust/WASM migrate) or hardware Ledger |
+| Keys | Rust/WASM software vault (always encrypted at rest) or hardware Ledger |
 | dApps | Wallet Standard + EIP-1193 on an **allowlisted** host set only |
 | In-wallet | Send, Receive (Onramper buy), Swap, Bridge, History, PnL |
 | Live data | Idle-first free market WS + Solana mentions; HTTP fallbacks |
@@ -387,7 +387,6 @@ Public GitHub repo remains **docs only**.
 | [ERROR-SYSTEM.md](./ERROR-SYSTEM.md) | Inspect / classify / present / Logs |
 | [INTERNAL-DEX.md](./INTERNAL-DEX.md) | In-wallet Swap: sequential quotes, confirm truth, 45 bps |
 | [LOADS.md](./LOADS.md) | Network load / idle-first pings / comprehensive RPC counts |
-| [BUGS-AND-FIXES.md](./BUGS-AND-FIXES.md) | Bugs vs by-design vs fixed |
 | [Chrome-extension-store-for-reviewers/](./Chrome-extension-store-for-reviewers/) | CWS reviewer pack |
 | [DOCUMENTATION.txt](./DOCUMENTATION.txt) | Full user guide |
 | [EXTENSION-README.md](./EXTENSION-README.md) | Install / package / Helius |

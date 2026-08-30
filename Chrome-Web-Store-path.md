@@ -30,7 +30,6 @@ Use the **live extension folder** on the machine (Load unpacked), not a stale co
 | [STORE-LISTING.txt](./STORE-LISTING.txt) | Listing copy to paste |
 | [Chrome-extension-store-for-reviewers/](./Chrome-extension-store-for-reviewers/) | Privacy, fees, host permissions, contacts |
 | [EXTENSION-README.md](./EXTENSION-README.md) | Install and package notes |
-| [BUGS-AND-FIXES.md](./BUGS-AND-FIXES.md) | Open vs fixed issues |
 
 ---
 

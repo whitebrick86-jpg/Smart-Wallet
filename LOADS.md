@@ -949,7 +949,6 @@ Dead hosts that were **not** left in the walk (they would have been wasted failo
 | [INTERNAL-DEX.md](./INTERNAL-DEX.md) | Quote / execute / later-receipt jobs |
 | [DOCUMENTATION.txt](./DOCUMENTATION.txt) §19 | User-facing load pings table |
 | [CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md) | Store readiness |
-| [BUGS-AND-FIXES.md](./BUGS-AND-FIXES.md) | Known issues |
 
 ---
 

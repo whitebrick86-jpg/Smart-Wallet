@@ -4,7 +4,7 @@
 
 User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 extension). Extension source code is **not** published in this repo.
 
-**Docs / privacy:** this repository · **Live product:** **0.11.473** · **Product map:** [PRODUCT.md](./PRODUCT.md)
+**Docs / privacy:** this repository · **Live product:** **0.11.673** · **Product map:** [PRODUCT.md](./PRODUCT.md)
 
 ## Chrome Web Store reviewers
 
@@ -18,7 +18,7 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 | **[MESSAGING.md](./MESSAGING.md)** | Inbox / Messaging: folders, buttons, Delete conversation vs Delete for me vs server deletion request |
 | **[Chrome-extension-store-for-reviewers/](./Chrome-extension-store-for-reviewers/)** | **CWS reviewer pack** (privacy, fees, host permissions, contacts) |
 | **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Build architecture: surfaces, storage, signing, live feeds, dApp inject, fees, security, packaging |
-| **[CHAINS.md](./CHAINS.md)** | **Networks:** order, Arbitrum / Optimism / Avalanche C-Chain (0.11.156–159) |
+| **[CHAINS.md](./CHAINS.md)** | **Networks:** current 12-chain list, including Sonic |
 | **[NONCE-GUARD.md](./NONCE-GUARD.md)** | **Nonce Guard:** what an EVM nonce is, pending queues, Wait / Speed Up / Cancel |
 | **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)** | **Error System:** inspect → classify → present → stamp → **Logs** (Log / Errors / Alerts / Connections) |
 | **[INTERNAL-DEX.md](./INTERNAL-DEX.md)** | **Internal DEX:** LiFi Worker quotes, atomic 45 bps in the same tx, disabled 0x/V2/V3 fallbacks |
@@ -26,7 +26,6 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 | **[Chrome-Web-Store-path.md](./Chrome-Web-Store-path.md)** | Short operator checklist: verify → rebuild zip → screenshots → listing → submit |
 | **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)** | Operator gap analysis for CWS submission / approval (readiness snapshot **0.11.388**; not for reviewers) |
 | **[LOADS.md](./LOADS.md)** | Network loads: comprehensive ping / HTTPS / RPC counts (idle + trading + new EVM nets) |
-| **[BUGS-AND-FIXES.md](./BUGS-AND-FIXES.md)** | Known bugs vs by-design vs fixed (historical through **0.11.159**; live product **0.11.257**) |
 | **[allow-list/](./allow-list/)** | Inject + network host lists (105 apex inject hosts; unpacked LiFi uses the staging Worker, not direct `li.quest`) |
 | [DOCUMENTATION.txt](./DOCUMENTATION.txt) | Full user guide |
 | [HOW-TO-MULTIPLE-LEDGER-WALLETS.txt](./HOW-TO-MULTIPLE-LEDGER-WALLETS.txt) | Ledger multi-wallet how-to |
@@ -37,7 +36,7 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 
 ## Architecture (short)
 
-**Live product: 0.11.473.** Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Networks (Arb / OP / Avalanche): **[CHAINS.md](./CHAINS.md)**. Error System: **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**. Module list: **[MODULES.md](./MODULES.md)**. Key protection: **[Key-protection-in-Smart-Wallet.md](./Key-protection-in-Smart-Wallet.md)**. Store readiness: **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)**.
+**Live product: 0.11.673.** Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Current networks: **[CHAINS.md](./CHAINS.md)**. Error System: **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**. Module list: **[MODULES.md](./MODULES.md)**. Key protection: **[Key-protection-in-Smart-Wallet.md](./Key-protection-in-Smart-Wallet.md)**. Store readiness: **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)**.
 
 ```text
 UI (popup / full page)  ←→  Service worker  ←→  Offscreen signer
@@ -100,7 +99,7 @@ UI (popup / full page)  ←→  Service worker  ←→  Offscreen signer
 
 | Account type | Behavior |
 |--------------|----------|
-| **All software** (seed / imported) | Seeds **always encrypted at rest**. Global Settings switch: **ON** = your password after lock; **OFF** = still encrypted (device wrap), no password prompt. JavaScript vault uses a session password for JIT sign. After optional Rust/WASM migrate, signing stays inside WASM (no JavaScript password copy). Seed delete = **✕** only. |
+| **All software** (seed / imported) | Rust/WASM owns software-key custody. Seeds remain encrypted at rest. With Password ON, unlock requires the user password; with Password OFF, the encrypted vault uses the wallet's device-wrap flow. Routine signing stays inside WASM and returns only the signature or signed transaction. Seed removal remains an explicit **✕** action. |
 | **Ledger** | Optional global Ledger password; keys stay on device |
 
 Full detail: **DOCUMENTATION §15**, **§17.2**, and [Key-protection-in-Smart-Wallet.md](./Key-protection-in-Smart-Wallet.md).
