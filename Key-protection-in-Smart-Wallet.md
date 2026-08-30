@@ -12,8 +12,8 @@ This document describes the current software-key and Ledger protection model. RP
 
 - Software-wallet secrets are encrypted at rest.
 - Rust/WASM owns software-wallet creation, import, unlock, mutation, backup, recovery, reveal and routine signing.
-- While unlocked, JavaScript holds a session handle rather than the password, seed phrase or private keys.
-- For routine signing, the required secret material is decrypted or derived inside WASM. Only a signature or signed transaction returns to JavaScript.
+- While unlocked, the wallet interface holds only a WASM session handle rather than the password, seed phrase or private keys.
+- For routine signing, the required secret material is decrypted or derived inside WASM. Only a signature or signed transaction leaves the vault boundary.
 - Application-controlled Rust password, blob and engine buffers are zeroized when their operation or session ends.
 - Ledger account keys remain on the Ledger device and are never imported into the software vault.
 - Public addresses and non-secret settings may be stored and displayed by the extension.
@@ -39,7 +39,7 @@ Encryption at rest reduces exposure from copied storage, but device wrapping is 
 
 ## Locked and unlocked states
 
-| State | Software secrets on disk | What JavaScript retains | Can routine signing proceed? |
+| State | Software secrets on disk | What the wallet interface retains | Can routine signing proceed? |
 |---|---|---|---|
 | Locked | Encrypted | No live vault session | No |
 | Unlocked | Encrypted | WASM session handle and public data | Yes, inside WASM |
@@ -68,7 +68,7 @@ Changing password mode does not create a new wallet or intentionally change its 
 
 ## Signing boundaries
 
-| Operation | Private key intentionally exposed to ordinary JavaScript? |
+| Operation | Private key intentionally exposed outside the vault? |
 |---|---|
 | Balance, price, quote or history lookup | No |
 | Send, swap, bridge or dApp signature | No; routine software signing occurs inside WASM |
@@ -83,7 +83,6 @@ Smart Wallet does not claim that:
 
 - secret material never exists in process memory;
 - every browser, WASM, renderer, clipboard or operating-system copy can be physically erased;
-- software isolation provides the same protection as a hardware wallet;
 - the wallet can protect keys from a fully compromised operating system while they are being used;
 - encryption compensates for a weak password, malicious extension, phishing approval or unsafe backup.
 
