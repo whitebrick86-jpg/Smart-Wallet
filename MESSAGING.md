@@ -2,9 +2,10 @@
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
 **Audience:** Users, Chrome Web Store reviewers, operators  
-**Documentation target:** Ledger Messaging authorization release (set the exact wallet version before publishing)  
+**Wallet version:** **0.11.673**
+**Production mail Worker:** **0.2.29** (`PUBLIC_FULL_SERVICE`; Managed RPC remains separate and off)
 **Consent notice:** 2026-08-20 (`smart_wallet_messaging_consent_v1`)  
-**Updated:** 2026-08-21  
+**Updated:** 2026-08-30
 
 This page is the product map for **Inbox / Messaging**: every panel, folder, and button, and the difference between **Delete conversation**, **Delete for me**, and **Request deletion of my server messages**.
 
@@ -106,12 +107,12 @@ The Messaging header has **← Settings** and a vertical **⋮** (**Messaging op
 
 | Folder | What it is |
 |--------|------------|
-| **Inbox** | Personal messages to a wallet on this device |
-| **Sent** | Personal messages you sent, after the relay confirmed storage |
+| **Inbox** | Personal messages to the selected wallet identity |
+| **Sent** | Personal messages you sent, after the relay confirmed storage. Sent also pulls so replies can arrive while this folder is open |
 | **Compose** | New message form |
 | **Announcements** | Product notices. Not a personal conversation. Store builds can **read** these; they cannot **broadcast** new ones |
 
-**Refresh inbox** appears when Inbox is open. It authenticates the pull for the selected wallet identity. A Ledger account must already have a valid Ledger-authorized messaging key; Refresh does not request a new on-device signature every time. It does not run in the background on Home, Send, Swap, or Bridge. Empty Inbox: **No conversations for this wallet yet.**
+**Refresh inbox** authenticates the pull for the selected wallet identity. Pull is supported from Inbox and Sent. A Ledger account must already have a valid Ledger-authorized messaging key; Refresh does not request a new on-device signature every time. Home may perform the wallet's bounded unread check and show the Total Balance message alert; opening that alert takes the user to Inbox. Empty Inbox: **No conversations for this wallet yet.**
 
 ---
 
@@ -126,7 +127,7 @@ The Messaging header has **← Settings** and a vertical **⋮** (**Messaging op
 | **Message** | Body; maximum **4,000 UTF-8 bytes** |
 | **Send** | After consent, posts to the mail relay. Pending is honest. Success becomes **Sent** only after confirmed storage. Failure stays **Not delivered**. No retry loop. |
 
-Reply in an open conversation uses the same storage rule: **Reply** does not toast success until storage is confirmed.
+Reply in an open conversation uses the same storage rule: **Reply** does not toast success until storage is confirmed. Plain **Enter** sends through the existing Reply path; **Shift+Enter** inserts a new line. Ctrl/Alt/Meta+Enter and active text composition are not intercepted.
 
 Delivery labels on outgoing bubbles: **Sending…**, **Sent**, **Not delivered**. Color is not the only signal.
 
@@ -156,11 +157,11 @@ Toasts: `Deleted N.` / `Inbox cleared.` / `Inbox already empty.` / `Select a mes
 |--------|--------|----------------|
 | **Back to list** | Top row, left | Closes the conversation and returns to the folder list. Does not delete. |
 | **Delete conversation** | Top row, right | **Local only.** Removes that conversation from this device. Toast: **Conversation deleted.** The other participant may still have their copy. This is **not** Delete for me and **not** a server deletion request. |
-| **⋮ Message actions** | Upper-right of the conversation meta row (near the message count) | Opens a menu: Delete for me, Block sender, Report message |
+| **⋮ Message actions** | On each individual message bubble | Opens the actions available for that selected message. Delete for me and Report apply to that message; Block sender remains a conversation-level sender action |
 
 ### 7.1 Delete for me
 
-Menu: **Delete for me**
+Per-message menu: **Delete for me**
 
 1. You confirm: “Delete this message for you?” The copy explains the other participant may retain their copy.  
 2. Pending toast: **Deleting message…**  
@@ -187,7 +188,7 @@ Menu: **Block sender**
 
 ### 7.3 Report message
 
-Menu: **Report message**
+Per-message menu: **Report message**
 
 1. You explicitly confirm consent to review **that selected message** (not unrelated conversations).  
 2. Pending: **Submitting report…**  
@@ -287,7 +288,7 @@ Owner-only (unpacked, not Store): Loading reported message… / Updating report�
 
 ## 12. What Store builds include vs omit
 
-**Included (customer):** Inbox, Sent, Compose, Announcements (read), Refresh, local delete conversation / selected / clear, Delete for me, Block, Blocked addresses, Report, Request deletion of my server messages, messaging consent, privacy copy, and Ledger Messaging authorization/revocation when the applicable chain feature has passed physical-device validation and is enabled for that build.
+**Included (customer):** Inbox, Sent, Compose, Announcements (read), Refresh, local delete conversation / selected / clear, Delete for me, Block, Blocked addresses, Report, Request deletion of my server messages, messaging consent, privacy copy, and Ledger Messaging authorization/revocation.
 
 **Omitted (store strip):** Broadcast announcements composer, Owner tools / Message reports, owner device enrollment, admin-panel token, Managed RPC owner switches.
 
@@ -301,7 +302,9 @@ Canonical unpacked Messaging talks to the **production** mail host. A separate `
 - Personal mail rate limits exist on the relay (send, report, block).  
 - Report review is owner-only and stripped from Store.  
 - Blocking does not affect chain Send.  
-- Production Worker mail-privacy (delete-for-me, block, report, delete-all) is live on production **0.2.20**. Before publishing this document, verify that the deployed mail service accepts and verifies the Ledger Messaging authorization protocol described above.
+- Production mail is live on Worker **0.2.29**. Software-wallet send, receive, pull and privacy actions use production. Ledger send, receive, pull, block, enable and revoke are supported in production.
+- Ledger-only **Delete for me**, **Report**, and **Request deletion of my server messages** may return `401` on production `0.2.29`. Their corrected authorization path exists in reviewed Worker source `0.2.30` but must not be described as live until that Worker version is separately deployed and verified.
+- Enabling a new Ledger messaging key when five are already active replaces the oldest active key. A revoked-key response clears the local Authorized state and requires **Enable Ledger** again.
 
 ---
 
