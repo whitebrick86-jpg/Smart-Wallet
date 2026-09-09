@@ -28,7 +28,8 @@ TABLE OF CONTENTS
   13. Ledger hardware wallet
   14. WalletConnect & dApps
   15. Settings, password model, custom RPC, manage tokens
-      15.4 Messaging
+      15.1 Appearance
+      15.5 Messaging
   16. Backup & import
   17. SECURITY MODEL (full mechanics + attack vectors)
   18. Fees
@@ -671,6 +672,7 @@ After Reload: hard-refresh the dApp tab and reconnect.
 15. SETTINGS, PASSWORD MODEL, CUSTOM RPC, MANAGE TOKENS
 --------------------------------------------------------------------------------
 Settings typically includes:
+  * Appearance: theme, density, accent, motion, and text size
   * Password protection + auto-lock interval
   * Contacts / rename / manage tokens
   * WalletConnect
@@ -683,7 +685,55 @@ fully separate -- locking or unlocking one never affects the other. Ledger keys
 stay on the device. Full detail: ARCHITECTURE.md section 4.
 
 
-15.1 Password model (important) — always encrypted at rest
+15.1 Appearance
+---------------
+Where:
+  * Settings -> Appearance
+
+Appearance changes presentation only. It does not change wallet addresses,
+balances, transaction behavior, signing rules, network selection, fees, or
+security settings.
+
+Theme:
+  * Dark (default) -- dark navy wallet surfaces with the standard product look.
+  * Light -- lighter, softer surfaces with purplish outlines.
+  * The Light mode switch is OFF for Dark and ON for Light.
+
+Density:
+  * Comfortable (default) -- standard spacing, row heights, balance-card
+    padding, and action-button sizes.
+  * Compact -- reduces selected spacing and row/button heights so more wallet
+    information fits on screen. It does not hide balances or features.
+
+Accent:
+  * Gold (default) -- uses the standard warm-gold highlight color.
+  * Violet -- changes supported highlights and active accents to violet.
+  * Teal -- changes supported highlights and active accents to teal.
+  * Accent changes highlights only; it does not select Dark or Light mode.
+
+Motion:
+  * Match device (default) -- follows the operating system or browser's
+    reduced-motion preference. Normal animation remains enabled when the
+    device does not request reduced motion.
+  * Reduce motion -- disables wallet animations and transitions, including
+    decorative and numeric motion, for a steadier interface.
+
+Text size:
+  * Default -- uses the standard interface type scale.
+  * Larger -- increases the wallet's base text size by about 6 percent.
+
+Balance privacy eye:
+  * The eye beside Total Balance temporarily obscures balance amounts across
+    wallet surfaces.
+  * This choice is session-only and is reset when the wallet session closes or
+    reloads. It does not alter balances or transaction data.
+
+Persistence:
+  * Theme and the four Appearance selectors are remembered locally on this
+    browser profile. They do not sync to another browser or device.
+
+
+15.2 Password model (important) — always encrypted at rest
 ----------------------------------------------------------
 Password protection is GLOBAL for all software wallets, and OPTIONAL global for
 all Ledger wallets (two independent Settings switches).
@@ -715,7 +765,7 @@ Auto-lock options (when software password ON and/or Ledger password ON):
   * Lock now clears session unlock material; vault stays ciphertext on disk
 
 
-15.2 Custom Solana RPC / Helius (History boost)
+15.3 Custom Solana RPC / Helius (History boost)
 -----------------------------------------------
 Where:
   * Accounts -> Advanced - RPC (field: Custom Solana RPC / Helius)
@@ -746,7 +796,7 @@ Cost / privacy notes:
   * Locations: chrome.storage.local + localStorage mirror under wallet state
 
 
-15.3 Manage tokens
+15.4 Manage tokens
 ------------------
 Where:
   * Settings -> Manage tokens
@@ -770,7 +820,7 @@ Optional import:
 You can hide or manage listed tokens from the Manage tokens list for the
 active wallet + selected chain.
 
-15.4 Messaging
+15.5 Messaging
 --------------
 Full control map (every button, including the three delete paths):
   MESSAGING.md
@@ -1255,7 +1305,7 @@ When product behavior changes, update:
   * README.md snapshot version
   * Section 14.2 inject allowlist if hosts are added/removed
   * Section 15 password model if software/Ledger rules change
-  * Section 15.4 Messaging and MESSAGING.md if send/receive, delete, or
+  * Section 15.5 Messaging and MESSAGING.md if send/receive, delete, or
     the mail relay changes
   * Section 17 security if crypto / lockout / approve policy changes
   * Section 19 load pings if intervals or providers change
