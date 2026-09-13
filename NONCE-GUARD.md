@@ -353,4 +353,3 @@ The Nonce Guard exists so a stuck nonce `28` cannot quietly become a pile of lat
 - [ERROR-SYSTEM.md](./ERROR-SYSTEM.md) — how “pending reserved,” underpriced, and nonce errors are named  
 - [CHAINS.md](./CHAINS.md) — supported networks  
 - [INTERNAL-DEX.md](./INTERNAL-DEX.md) — swap confirm truth (approval must confirm before a dependent swap signs)  
-- [MODULES.md](./MODULES.md) — runtime module inventory  
