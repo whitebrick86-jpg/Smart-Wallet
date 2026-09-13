@@ -1,10 +1,10 @@
 # Smart Wallet — Network Loads (Pings, RPC, APIs)
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
-**Code snapshot:** load-count **0.11.159** (scan body 0.11.660) · **Live product:** **0.11.698** ([PRODUCT.md](./PRODUCT.md))  
+**Code snapshot:** load-count **0.11.159** (scan body 0.11.660) · **Live product:** **0.11.698** (stamp **w41**) ([PRODUCT.md](./PRODUCT.md))  
 **Last updated:** 2026-08-29 (totals + 1…1M user scale + cap solutions)  
 
-**Live product stamp:** 0.11.698. The §0 max-use tables remain the 0.11.660 code-read; they are not re-HAR'd for 0.11.698.
+**Live product stamp:** 0.11.698 / **w41**. The §0 max-use tables remain the 0.11.660 code-read; they are not re-HAR'd for 0.11.698. **Do not** treat production-managed RPC as live default — it is **blocked**; normal use is **public RPC**.
 
 **Live scan (0.11.660):** max-use numbers in **§0** are a code-read of the live unpacked tree (`manifest.json` **0.11.660**, last committed **0.11.657**). Not a Chrome Network HAR. Typical vs MAX envelopes. Failover multiplies **tries**, not logical rounds, except the 450 ms delayed hedge which can fire host #2 in parallel.
 
@@ -214,7 +214,7 @@ Heavy-trading DAU is ~**6×** the typical Worker column (≈200 Worker pings/use
 | **100** | OK (~3.5k Worker/day) | OK | **Need LiFi API key** | OK | per-IP | per-IP | per-IP |
 | **1,000** | **Near/over Free day** if many wallets stay open (announcements+mail). Typical DAU 35k/day still under 100k | OK | **LiFi key required** | OK unless a quote storm | per-IP | per-IP | per-IP |
 | **10,000** | **Free Workers fail** | ~11M/mo → **just over included 10M** (~$5 + $0.30) | **LiFi key**; watch 100 RPM | Raise LiFi plan if >1% quote at once | per-IP | per-IP | per-IP; start **paid RPC** for in-wallet if public 429s rise |
-| **100,000** | Fail | ~105M/mo Worker ≈ **$34** requests + $5 | **LiFi enterprise / higher RPM** | 100 RPM is ~1% concurrent quoters | Still per-IP | Still per-IP | **Dedicated RPC** (Helius/Alchemy/Ankr paid). Turn on **production-managed RPC** |
+| **100,000** | Fail | ~105M/mo Worker ≈ **$34** requests + $5 | **LiFi enterprise / higher RPM** | 100 RPM is ~1% concurrent quoters | Still per-IP | Still per-IP | **Dedicated RPC** (Helius/Alchemy/Ankr paid). (Production-managed RPC remains **blocked** in this build — not a live default) |
 | **1,000,000** | Fail | ~1.05B/mo Worker ≈ **$315** requests + CPU. Cache harder or it is more | **LiFi enterprise + SLA** | Required | Optional **Jupiter paid key** if you later proxy quotes | Optional **CoinGecko Basic/Analyst** if you later proxy prices | **Paid multi-region RPC**. Do not run 1M users on `api.mainnet-beta.solana.com` |
 
 Cloudflare Workers Paid (public 2026-08-28): **$5/mo**, **10 million requests included**, then **$0.30 per extra million**. Subrequests from the Worker to LiFi/Jupiter are **not** billed as extra Worker requests. KV: Free 100k reads/day; Paid 10M reads/mo.
@@ -231,12 +231,12 @@ Do these in order. None of them require putting API keys in the extension.
 | LiFi 100 RPM not enough | **LiFi paid / enterprise plan** (higher RPM, SLA) — [li.fi/plans](https://li.fi/plans/) | Roughly when **>1% of DAU** quote at the same minute (10k DAU → 100 quotes/min) |
 | Jupiter keyless **30/min** on one IP | Keep quotes in the **browser** (today) so each user has their own 30/min; or **Jupiter Free key** 60/min / **Developer $25** 10 RPS if you later proxy via Worker | `lite-api.jup.ag` is being retired; plan `api.jup.ag` + key on a Worker when they cut keyless |
 | CoinGecko **10–30/min** or Demo **10k/mo** | Keep majors on **Binance WS** (already). Charts stay on-demand. If you proxy CG, buy **Basic ~$35/mo** (100k credits) or Analyst | One user typical day is tens of CG calls, not thousands |
-| Public Solana **~100 req / 10 s / IP** or EVM 429s | Sequential failover (already). Then **Helius Developer $49** / Alchemy / Ankr paid. Last: enable **production-managed RPC** on the RPC-gateway Worker | dApp Uniswap is the first to need this, not idle Home |
+| Public Solana **~100 req / 10 s / IP** or EVM 429s | Sequential failover (already). Then **Helius Developer $49** / Alchemy / Ankr paid. Last: paid dedicated RPC (production-managed RPC remains **blocked** / not live default) | dApp Uniswap is the first to need this, not idle Home |
 | Mail 40 sends/hour / pull storms | Already server-enforced. Raise Worker mail quotas + Durable Object limits on Paid | Do not lift the client 40/hour without a product decision |
 | Market-data / Pumpfun / Dex 429 | Worker already aggregates. Add **Cache-Control** / KV TTL (60–180 s) so 10k Discover opens are **1 upstream fetch** | DexScreener pairs **300/min**, profiles **60/min** |
 | ALT verifier storms | Rare (fallback only). KV cache verified ALTs | |
 | Logos / DuckDuckGo | Already capped 12 fallbacks. Prefer bundled `icons/` | |
-| 100k–1M DAU | Paid CF + LiFi enterprise + paid RPC + Worker caches + **do not** put every user on one public RPC URL | Managed RPC (`rpc:use`) is the product path; `production-managed` is still off in this build |
+| 100k–1M DAU | Paid CF + LiFi enterprise + paid RPC + Worker caches + **do not** put every user on one public RPC URL | Normal use stays **public / dedicated RPC**; `production-managed` is **blocked** and not the live default |
 
 **Do not** put LiFi, Jupiter, Helius, or CoinGecko secrets in `app.js` / `manifest.json` / GitHub. Keys live only in Worker secrets.
 
@@ -295,7 +295,9 @@ Historical idle/trading tables in §2–§10 are the evolution story. Use **§0*
 | **Official extra RPCs** | `arb1.arbitrum.io` · `mainnet.optimism.io` · `api.avax.network/ext/bc/C/rpc` |
 | **BTC** | `blockstream.info` / mempool.space APIs |
 | **Sui** | public Sui HTTP RPCs from chain-registry |
-| **ALT verifier** | `smart-wallet-solana-alt-verifier.smart-wallet.workers.dev/v1/solana/alt/verify` (fallback only) |
+| **ALT verifier** | `smart-wallet-solana-alt-verifier.smart-wallet.workers.dev/v1/solana/alt/verify` (production; fallback only) |
+| **Mail / RPC-gateway** | `https://smart-wallet-rpc-gateway.smart-wallet.workers.dev` (production mail; Managed RPC blocked) |
+| **Market-data** | production `*.smart-wallet.workers.dev` market-data Worker |
 | **WC / Onramp** | Reown / WalletConnect relays when user pairs; Onramper when Buy is used |
 | **Icons (CDN)** | DuckDuckGo IP3 favicons; CoinGecko / Jupiter / 1inch / IPFS gateway (allowlisted) |
 

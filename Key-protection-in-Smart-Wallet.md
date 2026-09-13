@@ -2,7 +2,7 @@
 
 **Product:** Smart Wallet (Chrome / Opera MV3 browser extension)
 **Repository:** Documentation only; extension source is not published here
-**Product snapshot:** **0.11.698**
+**Product snapshot:** **0.11.698** (stamp **w41**)
 **Software-key owner:** **Rust/WASM vault**
 **Last updated:** 2026-09-13
 
@@ -12,7 +12,7 @@ This document describes the current software-key and Ledger protection model. RP
 
 - Software-wallet secrets are encrypted at rest.
 - Rust/WASM owns software-wallet creation, import, unlock, mutation, backup, recovery, reveal and routine signing.
-- While unlocked, the wallet interface holds only a WASM session handle rather than the password, seed phrase or private keys. While Rust is active there is **no plaintext popup password**.
+- While unlocked, the wallet interface holds only a WASM session handle rather than the password, seed phrase or private keys. `rustJsVaultForbidden` is **always true**: there is **no plaintext popup `SESSION_VAULT_PASSWORD`** while Rust owns the vault.
 - For routine signing, the required secret material is decrypted or derived inside WASM. Only a signature or signed transaction leaves the vault boundary.
 - Application-controlled Rust password, blob and engine buffers are zeroized when their operation or session ends.
 - Ledger account keys remain on the Ledger device and are never imported into the software vault.
@@ -94,6 +94,7 @@ For high-value accounts, prefer Ledger, a strong wallet password, operating-syst
 - Lock and account changes must invalidate stale signing work.
 - External requests and provider responses must be validated before any signing request is presented.
 - Routine signing must remain inside Rust/WASM.
+- While `rustJsVaultForbidden` is true (always in this product), do not store or mirror a plaintext popup `SESSION_VAULT_PASSWORD`.
 - Reveal must remain explicit, narrowly scoped and visibly sensitive.
 - Logs and telemetry must never contain passwords, seed phrases or private keys.
 

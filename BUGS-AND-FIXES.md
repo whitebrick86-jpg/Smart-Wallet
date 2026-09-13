@@ -1,8 +1,8 @@
 # Smart Wallet — Bugs and fixes (plain language)
 
 **Product:** Smart Wallet (Chrome / Opera browser wallet)  
-**Historical audit snapshot:** desktop folder `Smart-Wallet-0.6.55` (this file’s tables through **0.11.159**)  
-**Live product:** **0.11.698** — see [PRODUCT.md](./PRODUCT.md)  
+**Historical audit snapshot:** production desktop folder `Smart-Wallet-0.6.55` (tables through **0.11.159**). Live authenticity for **0.11.698** is **Smart Wallet R** (`React-Wallet`) — separate tree.  
+**Live product:** **0.11.698** (stamp **w41**; authenticity tree Smart Wallet R / React-Wallet) — see [PRODUCT.md](./PRODUCT.md)  
 **Last updated:** 2026-09-13 (historical tables through 0.11.159; live product stamp only)
 
 This list is written for people using or shipping the wallet **and for other AI agents**.  

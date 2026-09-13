@@ -4,7 +4,7 @@
 
 User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 extension). Extension source code is **not** published in this repo.
 
-**Docs / privacy:** this repository · **Live product:** **0.11.698** · **Product map:** [PRODUCT.md](./PRODUCT.md)
+**Docs / privacy:** this repository · **Live product:** **0.11.698** (stamp **w41**) · **Product map:** [PRODUCT.md](./PRODUCT.md)
 
 ## Chrome Web Store reviewers
 
@@ -21,12 +21,12 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 | **[CHAINS.md](./CHAINS.md)** | **Networks:** current 12-chain list, including Sonic |
 | **[NONCE-GUARD.md](./NONCE-GUARD.md)** | **Nonce Guard:** what an EVM nonce is, pending queues, Wait / Speed Up / Cancel |
 | **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)** | **Error System:** inspect → classify → present → stamp → **Logs** (Log / Errors / Alerts / Connections) |
-| **[INTERNAL-DEX.md](./INTERNAL-DEX.md)** | **Internal DEX:** LiFi Worker quotes, atomic 45 bps in the same tx, disabled 0x/V2/V3 fallbacks |
+| **[INTERNAL-DEX.md](./INTERNAL-DEX.md)** | **Internal DEX:** LiFi Worker quotes, atomic 45/85 bps treasury; Jupiter fee-free rebuild OK; LiFi carve-out only; disabled 0x/V2/V3 fallbacks |
 | **[Chrome-Web-Store-path.md](./Chrome-Web-Store-path.md)** | Short operator checklist: verify → rebuild zip → screenshots → listing → submit |
 | **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)** | Operator gap analysis for CWS submission / approval (readiness snapshot **0.11.698**; not for reviewers) |
 | **[LOADS.md](./LOADS.md)** | Network loads: comprehensive ping / HTTPS / RPC counts (idle + trading + new EVM nets) |
 | **[BUGS-AND-FIXES.md](./BUGS-AND-FIXES.md)** | Known bugs vs by-design vs fixed (historical through **0.11.159**; live product **0.11.698**) |
-| **[allow-list/](./allow-list/)** | Inject + network host lists (~118 apex inject hosts; live LiFi MODE is the **production** Worker, not direct `li.quest`) |
+| **[allow-list/](./allow-list/)** | Inject + network host lists (**118** apex inject hosts; live LiFi MODE is the **production** Worker, not direct `li.quest`) |
 | [DOCUMENTATION.txt](./DOCUMENTATION.txt) | Full user guide |
 | [HOW-TO-MULTIPLE-LEDGER-WALLETS.txt](./HOW-TO-MULTIPLE-LEDGER-WALLETS.txt) | Ledger multi-wallet how-to |
 | **[TERMS-OF-SERVICE.md](./TERMS-OF-SERVICE.md)** | Terms of Service |
@@ -36,7 +36,7 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 
 ## Architecture (short)
 
-**Live product: 0.11.698.** Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Current networks: **[CHAINS.md](./CHAINS.md)**. Error System: **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**. Key protection: **[Key-protection-in-Smart-Wallet.md](./Key-protection-in-Smart-Wallet.md)**. Store readiness: **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)**.
+**Live product: 0.11.698** (stamp **w41**). Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Current networks: **[CHAINS.md](./CHAINS.md)**. Error System: **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**. Key protection: **[Key-protection-in-Smart-Wallet.md](./Key-protection-in-Smart-Wallet.md)**. Store readiness: **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)**.
 
 ```text
 UI (popup / full page)  ←→  Service worker  ←→  Offscreen signer

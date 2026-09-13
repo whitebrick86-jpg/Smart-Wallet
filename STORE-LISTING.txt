@@ -1,4 +1,5 @@
 Smart Wallet — Chrome Web Store listing copy
+Live product: 0.11.698 (stamp w41). Named host_permissions: 367. Inject apexes: 118.
 ============================================
 Use this file for the developer dashboard (listing text + permission justifications).
 Do not treat it as a second privacy/fee/host policy — those live in dedicated docs:
@@ -73,7 +74,8 @@ dApp hosts. Localhost and 127.0.0.1 are not in the production package.
 Full explanation: Chrome-extension-store-for-reviewers/HOST-PERMISSIONS.md.
 
 • storage — local wallet state and settings
-• clipboardWrite / clipboardRead — copy addresses; paste-safety on Send/Bridge
+• clipboardWrite — copy addresses
+• clipboardRead (OPTIONAL) — paste-safety on Send/Bridge only when granted in-flow
 • scripting — inject provider on allowlisted dApps only
 • tabs — open or focus wallet for approvals and Ledger
 • alarms — auto-lock when password protection is on

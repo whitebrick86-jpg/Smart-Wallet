@@ -1,6 +1,6 @@
 # Smart Wallet — product map
 
-**Live product version:** **0.11.698** (extension `manifest.json`)  
+**Live product version:** **0.11.698** (extension `manifest.json`) · cache-bust stamp **w41**  
 **This repository:** documentation only — extension source is **not** published here.  
 **Last aligned:** 2026-09-13
 
@@ -9,12 +9,16 @@ Smart Wallet and its LiFi backend are **separate folders** but parts of the **sa
 | Piece | Location |
 |-------|----------|
 | **Extension (production)** | `C:\Users\levyr\Desktop\Smart-Wallet-0.6.55` |
-| **Extension (React UI experiment)** | `C:\Users\levyr\Desktop\React-Wallet` (Smart Wallet R) |
+| **Extension (React UI experiment / Smart Wallet R)** | `C:\Users\levyr\Desktop\React-Wallet` — live docs authenticity tree for **0.11.698** |
+| **Note** | **Smart Wallet R** (React-Wallet) ≠ production folder `Smart-Wallet-0.6.55`; do not conflate trees |
 | **Backend** | `C:\Users\levyr\Desktop\lifi backend fee distributor` |
 | **Backend type** | Cloudflare Worker LiFi proxy: server-side `LIFI_API_KEY`, CORS allowlisting, endpoint rate limits, caching/deduplication, Durable Object shared quota |
 | **Live LiFi MODE** | **production** |
 | **Production Worker** | `smart-wallet-lifi-proxy` · service version `1.6.4` |
 | **Production URL** | `https://smart-wallet-lifi-proxy.smart-wallet.workers.dev` |
+| **Market-data Worker** | production `*.smart-wallet.workers.dev` (not a general RPC proxy) |
+| **Solana ALT verifier** | production `smart-wallet-solana-alt-verifier.smart-wallet.workers.dev` (ALT keys only) |
+| **Mail / RPC-gateway Worker** | `https://smart-wallet-rpc-gateway.smart-wallet.workers.dev` (mail relay; Managed RPC stays off) |
 | **Staging Worker** | `smart-wallet-lifi-proxy-staging` (explicit developer option; not the live MODE) |
 | **Staging URL** | `https://smart-wallet-lifi-proxy-staging.smart-wallet.workers.dev` |
 
@@ -35,7 +39,11 @@ The atomic verifier compares **only** the encoded Smart Wallet treasury distribu
 
 **Best-effort platform fees.** Never block an otherwise-safe swap or bridge solely because a platform-fee insert failed. Never sign malformed, misdirected, or unverifiable fee payloads.
 
-- **Jupiter:** if a fee-bearing quote cannot be used, the client may rebuild a fresh fee-free quote and sign **only** that rebuild.
-- **LiFi routes:** narrow fee-unavailable carve-out; no client fee-free rebuild yet; never sign a flagged fee payload.
+- **Jupiter** (`allowsSignAfterFeeFailure`): if a fee-bearing quote cannot be used, the client may rebuild a fresh **fee-free** quote and sign **only** that rebuild.
+- **LiFi routes:** **no** Jupiter-style fee-free rebuild. Narrow fee-unavailable carve-out only; never sign a flagged fee payload.
 
 Full fee copy: [FEE-DISCLOSURE.md](./Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md).
+
+## Network defaults
+
+Normal use is **public RPC**. Production-managed RPC is **blocked** in this build and is **not** the live default.

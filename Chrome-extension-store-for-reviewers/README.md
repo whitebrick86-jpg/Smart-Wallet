@@ -2,7 +2,7 @@
 
 **Product:** Smart Wallet — Chrome / Opera Manifest V3 non-custodial multi-chain wallet  
 **Audience:** Chrome Web Store reviewers, security reviewers, compliance readers  
-**Docs snapshot:** 0.11.698  
+**Docs snapshot:** 0.11.698 (stamp **w41**)  
 
 This folder is a **single place** with the documents most relevant to Chrome Web Store review.  
 You do not need to search the rest of the repository for privacy, fees, host permissions, or contacts.

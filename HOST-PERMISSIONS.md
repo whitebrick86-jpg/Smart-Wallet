@@ -3,9 +3,9 @@
 **Product:** Smart Wallet (Chrome / Opera Manifest V3 extension)  
 **Audience:** Users, operators, security reviewers, Chrome Web Store reviewers  
 **Related code concepts:** `host_permissions` vs content-script `matches` / inject allowlist  
-**Docs snapshot:** 0.11.698
+**Docs snapshot:** 0.11.698 (stamp **w41**)
 
-**Live product 0.11.698 (after host trim):** named required `host_permissions` are **~360+**. Inject allowlist is **~118** apex hosts. `clipboardRead` is **optional**. `https://*/*` and `wss://*/*` remain **optional** for user-selected Custom RPC.
+**Live product 0.11.698 (after host trim):** named required `host_permissions` are **367**. Inject allowlist is **118** apex hosts. `clipboardRead` is **optional**. Optional host patterns: `https://*/*`, `wss://*/*`, and `http://*/*` (Custom RPC / relays at runtime only).
 
 Live LiFi MODE is the **production** Worker. Staging is an explicit developer option only.
 
@@ -28,7 +28,7 @@ Required `host_permissions` are **named** RPC, API, explorer, and WalletConnect 
 | Permission class | Scope in Smart Wallet | Purpose |
 |------------------|----------------------|---------|
 | **Required `host_permissions`** | Named RPC / API / explorer / WC hosts | Stock network access |
-| **Optional `https://*/*` + `wss://*/*`** | User-selected origin at runtime | Advanced / custom RPC only |
+| **Optional `https://*/*` + `wss://*/*` + `http://*/*`** | User-selected origin at runtime | Advanced / custom RPC only |
 | **Content scripts / inject allowlist** | Listed dApp hosts | Wallet Standard + EIP-1193 |
 | **Localhost** | Development builds only | Never shipped in production |
 

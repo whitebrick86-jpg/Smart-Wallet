@@ -2,8 +2,8 @@
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
 **Audience:** Users, Chrome Web Store reviewers, operators  
-**Wallet version:** **0.11.698**
-**Production mail Worker:** **0.2.29** (`PUBLIC_FULL_SERVICE`; Managed RPC remains separate and off)
+**Wallet version:** **0.11.698** (stamp **w41**)
+**Production mail Worker:** **0.2.29** via `https://smart-wallet-rpc-gateway.smart-wallet.workers.dev` (`PUBLIC_FULL_SERVICE`; Managed RPC remains separate, **blocked**, and **not** the live default)
 **Consent notice:** 2026-08-20 (`smart_wallet_messaging_consent_v1`)  
 **Updated:** 2026-09-13
 
@@ -21,7 +21,7 @@ Messaging is **optional wallet-to-wallet mail** inside Smart Wallet. It is not a
 
 - You write to another **wallet address** you choose (saved contact or pasted address).
 - Mail uses the Smart Wallet mail relay, not the chain.
-- **“Sent”** means the relay **confirmed storage**. It does **not** mean the other person opened the message.
+- **“Sent”** is the **normal success** state: the relay **confirmed storage**. Do **not** present **Delivered** as the usual outcome. Sent does **not** mean the other person opened the message.
 - Contents, public addresses, timestamps, IP address, and security metadata can be stored on Smart Wallet infrastructure for delivery, abuse prevention, and legal compliance.
 - Messages are encrypted **in transit and at rest**. Authorized infrastructure can process contents. They are **not** end-to-end encrypted.
 - Personal Messaging stays **inside the wallet window**. Buttons do not open an external website, tab, or browser window.
@@ -129,7 +129,7 @@ The Messaging header has **← Settings** and a vertical **⋮** (**Messaging op
 
 Reply in an open conversation uses the same storage rule: **Reply** does not toast success until storage is confirmed. Plain **Enter** sends through the existing Reply path; **Shift+Enter** inserts a new line. Ctrl/Alt/Meta+Enter and active text composition are not intercepted.
 
-Delivery labels on outgoing bubbles: **Sending…**, **Sent**, **Not delivered**. Color is not the only signal.
+Delivery labels on outgoing bubbles: **Sending…**, **Sent** (normal success), **Not delivered**. Do not treat **Delivered** as a usual sender-visible state. Color is not the only signal.
 
 ---
 

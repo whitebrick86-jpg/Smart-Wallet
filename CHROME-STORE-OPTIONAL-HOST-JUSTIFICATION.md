@@ -8,7 +8,7 @@ This document is the submission-ready justification. It is **not** packed into t
 
 ## What is requested
 
-`https://*/*` and `wss://*/*` are declared only as **optional** host permissions. They are **not** in required `host_permissions` and **not** in content-script matches.
+`https://*/*`, `wss://*/*`, and `http://*/*` are declared only as **optional** host permissions. They are **not** in required `host_permissions` and **not** in content-script matches.
 
 ## Why the wildcard declaration exists
 

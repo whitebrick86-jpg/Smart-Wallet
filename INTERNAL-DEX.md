@@ -1,7 +1,7 @@
 # Internal DEX
 
 **Product:** Smart Wallet (Chrome / Opera MV3 extension)  
-**Docs snapshot:** **0.11.698**
+**Docs snapshot:** **0.11.698** (stamp **w41**)
 **Last updated:** 2026-09-13  
 **Repository:** Documentation only — extension source is **not** published here.
 
@@ -89,7 +89,7 @@ Swap panel (app.js + swap-manager façade)
 | How many times | **Once per signed payload.** Displayed Smart Wallet fee must match the encoded atomic fee or execute fails closed. |
 | External DEX / Send / History view | **0** Smart Wallet platform fee |
 
-Best-effort platform fees: never block an otherwise-safe swap or bridge solely because a fee insert failed. Never sign malformed, misdirected, or unverifiable fee payloads. Jupiter may rebuild a fresh fee-free quote and sign only that rebuild. LiFi routes have a narrow fee-unavailable carve-out; no client fee-free rebuild yet; never sign a flagged fee payload. There is no post-trade collect and no unpaid-fee obligation.
+Best-effort platform fees (`allowsSignAfterFeeFailure` on Jupiter): never block an otherwise-safe swap or bridge solely because a fee insert failed. Never sign malformed, misdirected, or unverifiable fee payloads. **Jupiter** may rebuild a fresh fee-free quote and sign only that rebuild. **LiFi** has **no** Jupiter-style fee-free rebuild — narrow fee-unavailable carve-out only; never sign a flagged fee payload. There is no post-trade collect and no unpaid-fee obligation.
 
 ---
 

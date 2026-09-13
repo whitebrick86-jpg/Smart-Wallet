@@ -3,14 +3,14 @@
 Apex hosts where Smart Wallet may **inject** the page provider (Wallet Standard / EIP-1193).
 Subdomains of each apex are included (e.g. `app.uniswap.org` under `uniswap.org`).
 
-**Source of truth (extension, not published here):** `inject-allowlist.js` — live product **0.11.698** has **~118** apex hosts.
+**Source of truth (extension, not published here):** `inject-allowlist.js` — live product **0.11.698** (stamp **w41**) has **118** apex hosts.
 **Published table below** is the last enumerated 105-host snapshot (2026-08-18). Extra live apexes are not invented here.
 
 **Production does not inject on** `localhost` or `127.0.0.1`.
 
 ---
 
-**Total apex hosts (live 0.11.698):** ~118  
+**Total apex hosts (live 0.11.698):** **118**  
 **Hosts enumerated in this snapshot:** 105
 
 ## Full list
