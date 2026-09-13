@@ -22,7 +22,6 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 | **[NONCE-GUARD.md](./NONCE-GUARD.md)** | **Nonce Guard:** what an EVM nonce is, pending queues, Wait / Speed Up / Cancel |
 | **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)** | **Error System:** inspect → classify → present → stamp → **Logs** (Log / Errors / Alerts / Connections) |
 | **[INTERNAL-DEX.md](./INTERNAL-DEX.md)** | **Internal DEX:** LiFi Worker quotes, atomic 45 bps in the same tx, disabled 0x/V2/V3 fallbacks |
-| **[MODULES.md](./MODULES.md)** | Full module inventory (network, LiFi proxy transport, managers, UI, inject) |
 | **[Chrome-Web-Store-path.md](./Chrome-Web-Store-path.md)** | Short operator checklist: verify → rebuild zip → screenshots → listing → submit |
 | **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)** | Operator gap analysis for CWS submission / approval (readiness snapshot **0.11.698**; not for reviewers) |
 | **[LOADS.md](./LOADS.md)** | Network loads: comprehensive ping / HTTPS / RPC counts (idle + trading + new EVM nets) |
@@ -37,7 +36,7 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 
 ## Architecture (short)
 
-**Live product: 0.11.698.** Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Current networks: **[CHAINS.md](./CHAINS.md)**. Error System: **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**. Module list: **[MODULES.md](./MODULES.md)**. Key protection: **[Key-protection-in-Smart-Wallet.md](./Key-protection-in-Smart-Wallet.md)**. Store readiness: **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)**.
+**Live product: 0.11.698.** Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Current networks: **[CHAINS.md](./CHAINS.md)**. Error System: **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**. Key protection: **[Key-protection-in-Smart-Wallet.md](./Key-protection-in-Smart-Wallet.md)**. Store readiness: **[CHROME-WEB-STORE-READINESS.md](./CHROME-WEB-STORE-READINESS.md)**.
 
 ```text
 UI (popup / full page)  ←→  Service worker  ←→  Offscreen signer

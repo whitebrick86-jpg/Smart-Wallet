@@ -913,7 +913,6 @@ The injected provider **must not invent `0x1`**. Unknown chain throws. `PROVIDER
 | [INTERNAL-DEX.md](./INTERNAL-DEX.md) | Internal swap architecture (quotes, routers, fee due) |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Whole-wallet build shape |
 | [LOADS.md](./LOADS.md) | Ping / HTTPS / RPC counts |
-| [MODULES.md](./MODULES.md) | Runtime module inventory |
 
 ---
 
