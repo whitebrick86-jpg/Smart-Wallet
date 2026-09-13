@@ -1,7 +1,7 @@
 # Fees and third-party costs
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
-**Last updated:** 2026-08-16  
+**Last updated:** 2026-09-13  
 **Applies to:** In-wallet (internal) Swap and Bridge. External DEX/bridge sites are separate.
 
 This page summarizes **Smart Wallet platform fees** and **current third-party service fees** that can appear on the same atomic transaction. It is not a complete list of every on-chain cost (network gas, DEX impact, relayer fees).
@@ -45,6 +45,8 @@ Combined service/platform fees **exclude** network gas, liquidity effects, price
 
 Failed or rejected fee-bearing transactions complete neither the main action nor the Smart Wallet fee.
 
+**Best-effort platform fees.** Never block solely because fee insert failed if the route is otherwise safe. Never sign malformed / misdirected / unverifiable fee payloads. Jupiter may rebuild a fresh fee-free quote and sign only that rebuild. LiFi: narrow fee-unavailable carve-out; no client fee-free rebuild yet.
+
 ---
 
 ## Summary table
@@ -66,7 +68,7 @@ Smart Wallet fees use integer base units:
 - Swap: `floor(grossInput × 45 / 10000)`
 - Bridge: `floor(grossInput × 85 / 10000)`
 
-Very small inputs can floor to zero; those routes fail closed rather than sending a fee-free internal trade.
+Very small inputs can floor the Smart Wallet fee to zero. Platform fees are **best-effort**: the wallet never blocks an otherwise-safe swap or bridge solely because a fee insert failed, and never signs malformed, misdirected, or unverifiable fee payloads. Jupiter may rebuild a fresh fee-free quote and sign only that rebuild. LiFi routes have a narrow fee-unavailable carve-out; there is no client fee-free rebuild yet; a flagged fee payload is never signed.
 
 LI.FI’s amount is taken from the verified quote (`feeSplit.lifiFee`) when present.
 

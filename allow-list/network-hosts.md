@@ -4,7 +4,7 @@
 `https://*/*` and `wss://*/*` without breaking stock product features.
 
 **Source:** URLs found in `app.js`, `background.js`, `live-feeds.js`, `config.js`,  
-`chain-registry.js`, `inject-allowlist.js`, and related extension files (inject snapshot **0.11.159**; live product **0.11.253**).
+`chain-registry.js`, `inject-allowlist.js`, and related extension files (historical inject snapshot **0.11.159**; **live product 0.11.698** — named `host_permissions` **~360+** after trim).
 
 **Not the same as inject:**  
 - **§A Network hosts** → `host_permissions` (extension fetch / WebSocket)  
@@ -138,7 +138,8 @@ Removed after live probe: `rpc.ankr.com/avalanche` (no `chainId`), `avalanche.pu
 | Host | Role |
 |------|------|
 | `lite-api.jup.ag` | Jupiter swap + prices |
-| `smart-wallet-lifi-proxy-staging.smart-wallet.workers.dev` | Unpacked extension LiFi quote / routes / step-transaction (staging Worker) |
+| `smart-wallet-lifi-proxy.smart-wallet.workers.dev` | Live MODE production LiFi quote / routes / step-transaction |
+| `smart-wallet-lifi-proxy-staging.smart-wallet.workers.dev` | Staging LiFi Worker (explicit developer option; not live MODE) |
 | `li.quest` | LiFi upstream used **by the Worker only**. The extension must not send the integrator key here. |
 | `scan.li.fi` | LiFi status / scan |
 | `li.fi` | LiFi related (if called) |

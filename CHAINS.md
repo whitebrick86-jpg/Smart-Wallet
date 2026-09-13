@@ -1,8 +1,8 @@
 # Supported networks
 
 **Product:** Smart Wallet  
-**Docs snapshot / live product:** **0.11.673**
-**Last updated:** 2026-08-30
+**Docs snapshot / live product:** **0.11.698**
+**Last updated:** 2026-09-13
 **Repository:** Documentation only — extension source is **not** published here.
 
 This is the current account of **which networks the wallet supports** and how they are ordered. It includes **Sonic**, the newest supported EVM network.

@@ -1,8 +1,8 @@
 # Internal DEX
 
 **Product:** Smart Wallet (Chrome / Opera MV3 extension)  
-**Docs snapshot:** **0.11.673**
-**Last updated:** 2026-08-16  
+**Docs snapshot:** **0.11.698**
+**Last updated:** 2026-09-13  
 **Repository:** Documentation only — extension source is **not** published here.
 
 This is the full account of the **Internal DEX**: the in-wallet Swap panel that quotes, independently verifies the atomic platform fee, signs once, broadcasts sequentially, and confirms from a real receipt. Smart Wallet’s swap fee is **0.45%**. On LiFi EVM routes LI.FI currently adds a separate **0.25%** service fee (combined **0.70%**). Those fees are in the same source-chain transaction.
@@ -35,11 +35,11 @@ Swap panel (app.js + swap-manager façade)
         │
         ├─ Solana  → Jupiter lite-api (quote + later swap/build)
         │
-        └─ EVM     → LiFi staging Worker only
+        └─ EVM     → LiFi production Worker (live MODE)
                        │
                        └─ HTTPS Worker /v1/lifi/quote (then routes if needed)
                           0x / official V2 / official V3 stay listed but DISABLED
-                          (no silent fallback, no fee-free path)
+                          (0x/V2/V3 disabled; best-effort fees — see §4)
         │
         ▼
   Preflight caches (gas / fee data / sim / allowance / SOL rent)
@@ -89,7 +89,7 @@ Swap panel (app.js + swap-manager façade)
 | How many times | **Once per signed payload.** Displayed Smart Wallet fee must match the encoded atomic fee or execute fails closed. |
 | External DEX / Send / History view | **0** Smart Wallet platform fee |
 
-EVM LiFi routes that cannot independently prove the 45/85 bps treasury credit fail closed. There is no post-trade collect and no unpaid-fee obligation.
+Best-effort platform fees: never block an otherwise-safe swap or bridge solely because a fee insert failed. Never sign malformed, misdirected, or unverifiable fee payloads. Jupiter may rebuild a fresh fee-free quote and sign only that rebuild. LiFi routes have a narrow fee-unavailable carve-out; no client fee-free rebuild yet; never sign a flagged fee payload. There is no post-trade collect and no unpaid-fee obligation.
 
 ---
 
@@ -107,12 +107,12 @@ EVM LiFi routes that cannot independently prove the 45/85 bps treasury credit fa
 | **Short caches** | Executable pack **8s**. No-route **4s**. |
 | **LiFi cooldown** | On 429 / Retry-After: **20s** default, cap **120s**. Cooldown skips LiFi; next provider may still run. |
 | **Official routers only** | V2 / V3 addresses remain recorded. Direct 0x / V2 / V3 execute paths stay **disabled**. |
-| **No API keys** | Extension talks only to the staging LiFi Worker. The Worker holds `LIFI_API_KEY`. Never put that key in the extension or this repo. |
+| **No API keys** | Live MODE talks to the **production** LiFi Worker. Staging is an explicit developer option. The Worker holds `LIFI_API_KEY`. Never put that key in the extension or this repo. |
 
 ### 5.2 Provider order (same chain)
 
 ```text
-1. LiFi          Staging Worker /v1/lifi/quote (+ routes only if needed)
+1. LiFi          Production Worker /v1/lifi/quote (+ routes only if needed)
                  ← live path for ETH / Polygon / Base / BSC / RH / Arb / OP / Avalanche
 2. 0x            listed — runtime DISABLED (`no_backend` / no silent fallback)
 3. Official V2   recorded — runtime DISABLED

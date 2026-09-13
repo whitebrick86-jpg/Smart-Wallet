@@ -2,7 +2,7 @@
 SMART WALLET -- USER DOCUMENTATION
 ================================================================================
 Product:   Smart Wallet (Chrome / Opera MV3 extension)
-Version:   user-guide snapshot 0.11.72; live product is 0.11.388 (see PRODUCT.md)
+Version:   user-guide snapshot 0.11.72; live product is 0.11.698 (see PRODUCT.md)
 Audience:  Everyday users and operators
 Repo:      Documentation-only (extension source is not published here)
            https://github.com/whitebrick86-jpg/Smart-Wallet
@@ -73,6 +73,7 @@ Supported networks (software / seed wallets):
   * Arbitrum One
   * Optimism
   * Avalanche C-Chain
+  * Sonic
 
 Ledger support is partial -- see section 13.
 
@@ -142,7 +143,7 @@ When you generate or import a seed phrase, Smart Wallet derives keys for:
 
   Solana     -> Solana address
   EVM        -> one key shared by Ethereum, Polygon, Base, BNB, Robinhood ETH,
-                 Arbitrum, Optimism, Avalanche C-Chain
+                 Arbitrum, Optimism, Avalanche C-Chain, Sonic
   Bitcoin    -> native SegWit (bc1...) address
   Sui        -> Sui address
 
@@ -518,7 +519,7 @@ IMPORTANT -- two different Ledger apps:
   * Solana app     -> Solana address / Solana signing
   * Ethereum app   -> one EVM address for Ethereum, Polygon, Base,
                       BNB Smart Chain, Robinhood Ethereum, Arbitrum,
-                      Optimism, Avalanche C-Chain
+                      Optimism, Avalanche C-Chain, Sonic
 
 Opening an app on the Nano by itself does NOT connect Smart Wallet.
 Smart Wallet must read the address (Connect Ledger or Link EVM / chain switch).
@@ -529,7 +530,7 @@ Smart Wallet must read the address (Connect Ledger or Link EVM / chain switch).
 Supported:
   * Solana -- connect + receive + send + many Solana dApp signs
   * Ethereum / Polygon / Base / BNB / Robinhood ETH / Arbitrum /
-    Optimism / Avalanche C-Chain -- after Link EVM
+    Optimism / Avalanche C-Chain / Sonic -- after Link EVM
 
 Not supported yet on Ledger accounts:
   * Bitcoin
@@ -1110,7 +1111,12 @@ built-in flows: the in-wallet Swap screen and the in-wallet Bridge screen.
   * Those Smart Wallet and LI.FI fees are in the same atomic source transaction
   * Network gas, DEX/tool costs, price impact and slippage are separate
   * Failed or rejected fee-bearing swap completes neither the swap nor the fee
-  * Very small sizes can floor the Smart Wallet fee to zero (route unavailable)
+  * Platform fees are best-effort: an otherwise-safe swap is not blocked solely
+    because a fee insert failed. Malformed / misdirected / unverifiable fee
+    payloads are never signed. Jupiter may rebuild a fresh fee-free quote and
+    sign only that rebuild. LiFi has a narrow fee-unavailable carve-out and
+    does not yet rebuild a client fee-free quote
+  * Very small sizes can floor the Smart Wallet fee to zero
   * Auto slippage capped ~5% unless higher manual set
 
 

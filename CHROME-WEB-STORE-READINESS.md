@@ -1,67 +1,68 @@
 # Smart Wallet — Chrome Web Store readiness
 
 **Audience:** Operator / submitter (gap analysis — not marketing copy)  
-**Product:** Smart Wallet (Chrome / Opera MV3)  
-**Readiness snapshot:** **0.11.388** (this reassessment)  
-**Previous snapshot:** 0.11.164  
-**Date:** 2026-08-20  
+**Product:** Smart Wallet (Chrome / Opera MV3) — live experiment tree **Smart Wallet R** (`React-Wallet`)  
+**Readiness snapshot:** **0.11.698** (reassessed **2026-09-13** after hard pass)  
+**Previous snapshot stamps:** 0.11.698 refresh 2026-09-12; body dated 2026-08-20; earlier 0.11.164  
+**Date:** 2026-09-13  
 
 This file compares **current infrastructure** against **Chrome Web Store (CWS) submission + approval expectations**.
 
-**Related public docs:** [HOST-PERMISSIONS.md](./Chrome-extension-store-for-reviewers/HOST-PERMISSIONS.md) · [CONTACTS.md](./Chrome-extension-store-for-reviewers/CONTACTS.md) · [FEE-DISCLOSURE.md](./Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md) · [PRIVACY-POLICY.md](./Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md) · [MESSAGING.md](./MESSAGING.md) · [STORE-LISTING.txt](./STORE-LISTING.txt) · [CHAINS.md](./CHAINS.md)
+**Related public docs:** [HOST-PERMISSIONS.md](./Chrome-extension-store-for-reviewers/HOST-PERMISSIONS.md) · [CONTACTS.md](./Chrome-extension-store-for-reviewers/CONTACTS.md) · [FEE-DISCLOSURE.md](./Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md) · [PRIVACY-POLICY.md](./Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md) · [MESSAGING.md](./MESSAGING.md) · [STORE-LISTING.txt](./STORE-LISTING.txt) · [CHAINS.md](./CHAINS.md) · live `ACTIVE.md` / `HOST-PERMISSIONS-STAGE.md` in the unpacked tree
 
 ---
 
 ## 1. Executive scorecard
 
-| Area | CWS expectation | Status (0.11.388) | Risk if submit now |
-|------|-----------------|-------------------|--------------------|
-| Manifest V3 | Required | **Ready** — MV3, service worker, CSP `script-src 'self'` | Low |
+| Area | CWS expectation | Status (0.11.698 @ 2026-09-13) | Risk if submit now |
+|------|-----------------|--------------------------------|--------------------|
+| Manifest V3 | Required | **Ready** — MV3, service worker, CSP `script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; worker-src 'self'` | Low |
 | Single purpose | Clear, narrow purpose | **Ready** — crypto wallet; optional address messaging is in-product mail, not a second product | Low |
-| Package hygiene | No secrets, no dev junk | **Ready** — verify gate + allowlisted zip + secret scan; **STAGING-NOT-FOR-STORE** trees are refused | Low |
+| Package hygiene | No secrets, no dev junk | **Partial** — packager + secret scan OK; **current** `dist-store` zip is `dirty=True` (~68 dirty files, `-AllowDirty`). Sep 12 freeze zip was verifier-clean — **do not submit today’s dirty zip** | Med |
 | Owner / admin UI | Not in customer zip | **Ready** — store strip removes Owner tools, Broadcast, device-auth, admin-token hooks | Low |
-| Privacy policy URL | Public, accurate, linked | **Ready** — [PRIVACY-POLICY.md](./Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md) updated **2026-08-20** (messaging included) | Low |
-| In-product privacy | Accessible disclosure | **Ready** — `privacy.html` + Settings links + pre-use messaging consent | Low |
-| Permission justification | Every permission justified | **Ready** in [STORE-LISTING.txt](./STORE-LISTING.txt) | Med (process: paste on form) |
-| Host permissions | Minimum necessary | **Improved** — named declared hosts; `https://*/*` + `wss://*/*` **optional**; **localhost / 127.0.0.1 not declared** | Med (optional `*` still scrutinized) |
-| Content scripts | Scope matches purpose | **Strong** — **105** apex inject hosts; not `<all_urls>` | Low–Med |
-| Remote code / eval | Forbidden | **Ready** | Low |
+| Privacy policy URL | Public, accurate, linked | **Ready** — [PRIVACY-POLICY.md](./Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md) (messaging included) | Low |
+| In-product privacy | Accessible disclosure | **Ready** — `privacy.html` + Settings + messaging consent | Low |
+| Permission justification | Every permission justified | **Ready** in [STORE-LISTING.txt](./STORE-LISTING.txt) — must paste on form; update for **optional** `clipboardRead` | Med (process) |
+| Host permissions | Minimum necessary | **Improved** — **363** named declared hosts (Pass 1 shrink); optional `https://*/*` / `wss://*/*` / `http://*/*`; no localhost declared | Med (optional `*` + list size) |
+| Content scripts | Scope matches purpose | **Strong** — **118** inject apexes / **~236** matches; not `<all_urls>` | Low–Med |
+| Remote code / eval | Forbidden | **Ready** — no remote script; `wasm-unsafe-eval` only for vault WASM | Low |
 | Screenshots / listing | Required assets + copy | **Copy ready; screenshots still missing** | **Blocker** |
 | Support contact | Required on form | **Ready on GitHub** — must still paste on CWS form | Low–Med |
-| Security of keys | No exfiltration | **Strong** — encrypted vault / Ledger / JIT secrets | Low |
+| Security of keys | No exfiltration | **Stronger** — Rust refuse-hold + `getSessionVaultPassword`; MessageChannel-only wallet events; failsafe fallbacks; optional clipboardRead + paste-hijack gate (2026-09-13 hard pass) | Low |
 | Fees transparency | Honest disclosure | **Ready** — 45 / 85 bps atomic; LiFi EVM currently +25 bps | Low–Med |
-| Messaging honesty | Buttons must match live servers | **Store UI is customer-safe; production Worker mail-privacy is not deployed yet** | **Blocker for submit** |
+| Messaging honesty | Buttons must match live servers | **Improved vs Aug write-up** — [MESSAGING.md](./MESSAGING.md) says production mail-privacy live on Worker **0.2.20**. Still **operator-smoke** Delete for me / Block / Report / delete-all on production before submit | Low–Med (smoke, not architecture) |
 | Managed RPC | Must not be silently on | **Off / Public RPC** | Low |
+| Listing name vs tree | Matches product | **Check** — unpacked manifest name is **Smart Wallet R**; Store listing should use the customer name (**Smart Wallet**) | Med |
 | Trademarks / icons | Own or licensed | License PDF in repo | Med |
 | Developer account | One-time fee, 2FA | Operator | Process |
+| Cold-path resilience | Functional package | **Usable** — smoke-ready unpacked; `app.js` still ~71k on CORE (panel re-defer parked). Not a CWS reject by itself | Low–Med (reviewer UX) |
 
-**Overall:** The **package architecture is Store-shaped**. First submit is still blocked by **missing listing screenshots**, the need to **rebuild and smoke the freeze zip**, and **production Worker mail-privacy not being live**. Optional `https://*/*` remains a review question, not a free pass. Crypto wallets remain high-scrutiny.
+**Overall:** Architecture remains **Store-shaped**. Hard pass (2026-09-13) improved security / packaging honesty; it did **not** clear listing screenshots. Messaging server-privacy is documented live on **0.2.20** (reassess — was a hard blocker when production was 0.2.12). **Do not submit** the current dirty AllowDirty zip; rebuild from a clean freeze after VERIFY OK.
 
-### Rough readiness (0.11.388)
+### Rough readiness (0.11.698 @ 2026-09-13)
 
 | Lens | Estimate |
 |------|----------|
-| **Package + docs readiness** | **~88–91%** |
-| **Likely first-pass approval** | **~55–65%** once P0 blockers are cleared (wallets often need 1–3 rounds) |
-| **Usable as Load unpacked** | **~90%+** |
+| **Package + docs readiness** | **~90–93%** (was ~88–91% on 09-12 stamp) |
+| **Likely first-pass approval** | **~55–65%** after screenshots + clean zip + messaging smoke (wallets often need 1–3 rounds) |
+| **Usable as Load unpacked** | **~90%+** (operator smoke confirmed post hard pass) |
 
-### What improved since 0.11.164
+### What improved since the 2026-09-12 stamp / 0.11.164 era
 
-- Live unpacked product is **0.11.388** (was 0.11.257 in older README copy).
-- Optional wallet **Messaging / Inbox** with a separate on-device consent notice (**2026-08-20**). See [MESSAGING.md](./MESSAGING.md).
-- Store ZIP **strips** Owner tools, Broadcast announcements composer, owner device-auth script, and admin-token hooks. Customer Inbox, Sent, Compose, Announcements (read), Block, Report, Delete for me, and deletion request remain.
-- Packager **refuses** any tree labeled `STAGING-NOT-FOR-STORE`.
-- Declared hosts no longer include **localhost / 127.0.0.1**.
-- Privacy policy and in-extension privacy page cover messaging: not end-to-end encrypted, Delete for me vs server deletion request, block, report.
-- Secret scan + store-owner-separation tests are part of VERIFY.
-- Canonical unpacked mail host stays **production**; staging is a separate non-store copy only.
+- Hard pass (2026-09-13): failsafe DOM fallbacks; inject apexes covered by hosts; MessageChannel-only wallet events; password read gating; CSP `worker-src 'self'`; `clipboardRead` **optional**; store Include fixed for panel views + `send-asset-ui.js`; `package-report.txt` SHA aligned to zip `91623374…`.
+- Host Pass 1: declared hosts **~396 → 363** (+ Worker hosts); staged plan in `HOST-PERMISSIONS-STAGE.md`.
+- Messaging: production mail-privacy documented on Worker **0.2.20** ([MESSAGING.md](./MESSAGING.md)) — clears the old “stuck on 0.2.12” architecture blocker pending live smoke.
+- Optional wallet Messaging / Inbox with on-device consent; Store ZIP strips Owner/Broadcast/device-auth.
+- Packager refuses `STAGING-NOT-FOR-STORE`; no localhost in declared hosts.
 
 ### What still gates approval
 
-- **Store screenshots are still missing.**
-- **Do not upload a customer zip that exposes Messaging deletion/block/report against production Worker 0.2.12.** Those APIs were proven on staging 0.2.15. Production Worker, production KV, and production Durable Objects were not changed in the staging-acceptance pass.
+- **Store screenshots are still missing** (P0).
+- **Clean freeze zip:** commit/approve baseline → `verify-extension.ps1` VERIFY OK → `build-store-package.ps1` **without** `-AllowDirty` → archive that zip. Today’s zip is dirty.
+- **Messaging production smoke** of server delete/block/report/delete-all against **0.2.20** (doc says live; CWS honesty still needs operator proof).
+- Optional `https://*/*` / `wss://*/*` / `http://*/*` dashboard sentence (Custom RPC / relays only; inject stays allowlisted).
+- Align dashboard listing name with **Smart Wallet** (not “Smart Wallet R” experiment chrome) unless intentional.
 - Crypto wallets remain high-scrutiny.
-- Optional `https://*/*` / `wss://*/*` still need the dashboard sentence: not granted at install; requested only for a user-pasted Custom RPC origin.
 
 ---
 
@@ -103,7 +104,7 @@ Official framing: [Chrome Web Store Program Policies](https://developer.chrome.c
 | Bridge | LiFi (EVM source) via production LiFi proxy | Atomic 0.85% Smart Wallet |
 | History | Public RPC / explorers or optional user Helius key | |
 | WC | Reown / WalletConnect | User Project ID |
-| Messaging | Production RPC gateway mail host | Personal mail only after on-device consent |
+| Messaging | Production RPC gateway mail host | Personal mail only after on-device consent; privacy APIs on Worker **0.2.20** per MESSAGING.md |
 | Logs | None off-device | Local `chrome.storage` only |
 | Managed RPC | **Off** | Public RPC mode |
 
@@ -111,17 +112,17 @@ Official framing: [Chrome Web Store Program Policies](https://developer.chrome.c
 
 ```text
 build-store-package.ps1
-  → refuse STAGING-NOT-FOR-STORE
-  → tools/verify-extension.ps1
-  → copy allowlisted files
+  → refuse STAGING-NOT-FOR-STORE / STORE-FREEZE mismatch
+  → (canonical dist-store only) tools/verify-extension.ps1
+  → copy allowlisted files (Include list)
   → strip owner HTML (Broadcast, Owner tools, device-auth)
   → secret scan
-  → dist-store/Smart-Wallet-chrome-store.zip
+  → dist-store/Smart-Wallet-chrome-store.zip + package-report.txt
 ```
 
 **Must stay out of the zip:** `.env`, `tools/`, recovery artifacts, operator notes, staging copies, owner mutation UI, admin tokens, secrets.
 
-**Do not** create or upload the freeze zip until the operator authorizes it. An older `dist-store` file is not the 0.11.388 freeze.
+**Live package note (2026-09-13):** zip SHA `916233744a7fb2357c27bbc0faa22f19cc3017c7a24049b50d7a275e302bddf3`, `dirty=True`, built with `-AllowDirty` (verify skipped via non-canonical OutDir then copied). **Submission candidate = next clean rebuild only.**
 
 ---
 
@@ -133,35 +134,36 @@ build-store-package.ps1
 |-------------|--------|
 | Manifest V3 | Yes |
 | Service worker | `background.js` |
-| CSP extension pages | `script-src 'self'; object-src 'self'` |
+| CSP extension pages | `script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; worker-src 'self'` |
 | Icons 16/32/48/128 | Present |
-| Version | **0.11.388** — freeze + rebuild zip at submit |
+| Version | **0.11.698** — `STORE-FREEZE.txt` matches; branch name still `fix/opera-resume-transaction-0.11.529` (identity lag, not a CWS field) |
 | Minimum Chrome | 116 |
+| Extension name in manifest | **Smart Wallet R** (experiment) — confirm Store listing title |
 
 ### 4.2 Permissions
 
 | Permission | Why | Reviewer view |
 |------------|-----|----------------|
 | `storage` | Wallet, vault, settings, Logs, messaging consent | Standard |
-| `clipboardWrite` / `clipboardRead` | Copy address; paste guard | Justify |
+| `clipboardWrite` | Copy address | Justify |
+| `clipboardRead` | **Optional** — paste-hijack clear / read only when granted in-flow | Better than install-time; update STORE-LISTING paste |
 | `offscreen` | Local signing | Acceptable |
 | `scripting` | Allowlisted dApp inject only | Tie to dApp connect |
 | `alarms` | Auto-lock | Good security story |
 | `tabs` | Focus wallet for approve / Ledger | Justify |
-| `hid` | Ledger USB | Strong justification |
-| Declared `host_permissions` | Named RPCs, LiFi/Jupiter/CoinGecko, explorers, WC, **production mail gateway** | Keep list honest |
-| Optional `https://*/*`, `wss://*/*` | Custom RPC / extra relays only, requested at runtime | Explain; not install-time |
-| localhost | **Not in declared hosts** | Better than 0.11.164 |
+| Declared `host_permissions` (**363**) | Named RPCs, LiFi/Jupiter/CoinGecko, explorers, WC, production Workers / mail | Keep list honest; Pass 2+ still planned |
+| Optional `https://*/*`, `wss://*/*`, `http://*/*` | Custom RPC / extra relays only, requested at runtime | Explain; not install-time |
+| localhost | **Not in declared hosts** | Good |
 
-Content scripts inject only on **105** apex DEX/DeFi hosts. Optional `*` does **not** inject on every website.
+Content scripts: **118** inject apexes (not every website). Optional `*` does **not** inject everywhere.
 
 ### 4.3 Privacy
 
 | Requirement | Status |
 |-------------|--------|
-| Public privacy policy | 2026-08-20, includes messaging |
+| Public privacy policy | Includes messaging |
 | In-extension privacy | `privacy.html` |
-| Messaging consent | Separate on-device key `smart_wallet_messaging_consent_v1`; never sent to the Worker |
+| Messaging consent | Separate on-device key; never sent to the Worker |
 | No seed to servers | True by design |
 | Logs | Local only |
 | Fees | 45 / 85 bps + current LiFi 0.25% on EVM |
@@ -175,7 +177,7 @@ Content scripts inject only on **105** apex DEX/DeFi hosts. Optional `*` does **
 | Screenshots 1280×800 or 640×400 | **Missing — blocker** |
 | Promo tiles | Prepare if prompted |
 
-Recommended screenshot set: Home, Send, Swap **with fee line**, Settings (Privacy / Contact / Fees), optional History, optional **Inbox** (no message bodies in the capture).
+Recommended screenshot set: Home, Send, Swap **with fee line**, Settings (Privacy / Contact / Fees), optional History, optional **Inbox** (no message bodies in the capture). Capture from the **clean store zip**, not a dirty unpacked profile.
 
 ---
 
@@ -183,18 +185,18 @@ Recommended screenshot set: Home, Send, Swap **with fee line**, Settings (Privac
 
 Customer Messaging **belongs in the Store ZIP**. Owner moderation and Broadcast **do not**.
 
-| Control | Store ZIP | Needs production Worker privacy APIs |
-|---------|-----------|--------------------------------------|
-| Inbox / Sent / Compose / Announcements (read) | Yes | Send/pull/announcements already gated on production 0.2.12 flags |
-| Delete conversation, Delete selected, Clear inbox | Yes | **Local device only** — safe without new Worker routes |
-| Delete for me | Yes | **Server** `/v1/mail/delete-for-me` — staging-proven; **not production-deployed** |
-| Request deletion of my server messages | Yes | **Server** `/v1/mail/delete-all` — staging-proven; **not production-deployed** |
-| Block / Unblock / Blocked addresses | Yes | **Server** block routes — staging-proven; **not production-deployed** |
-| Report message | Yes | **Server** report + coordinator — staging-proven; **not production-deployed** |
+| Control | Store ZIP | Production Worker privacy |
+|---------|-----------|---------------------------|
+| Inbox / Sent / Compose / Announcements (read) | Yes | Send/pull/announcements on production |
+| Delete conversation, Delete selected, Clear inbox | Yes | **Local device only** |
+| Delete for me | Yes | Server `/v1/mail/delete-for-me` — **0.2.20** per MESSAGING.md; **smoke before submit** |
+| Request deletion of my server messages | Yes | Server `/v1/mail/delete-all` — same |
+| Block / Unblock / Blocked addresses | Yes | Server block routes — same |
+| Report message | Yes | Server report — same |
 | Broadcast announcements | **Stripped** | Unpacked owner only |
 | Owner tools / Message reports | **Stripped** | Unpacked owner only |
 
-**Stop condition:** do not submit a customer Store ZIP that invites users to Delete for me, Block, Report, or Request deletion until production Worker mail-privacy is deployed and smoke-tested. Local-only delete conversation may ship earlier; mixed buttons that 404 against production 0.2.12 would fail review honesty.
+**Stop condition:** do not submit until operator smoke proves those server actions against production **0.2.20** (or temporarily ship UI that cannot claim server deletion). Local-only deletes remain safe.
 
 Full control map: [MESSAGING.md](./MESSAGING.md).
 
@@ -204,24 +206,26 @@ Full control map: [MESSAGING.md](./MESSAGING.md).
 
 ### P0 — Blockers before first submit
 
-1. **Screenshots** from the **store zip**, not a dirty unpacked profile.  
-2. **Rebuild + smoke** `build-store-package.ps1` at the freeze version (currently 0.11.388). Do not upload an older zip.  
-3. **Production Worker mail-privacy** (or freeze a zip whose Messaging buttons cannot falsely claim server deletion). Production remains **0.2.12**. Staging is **0.2.15**. Report coordinator production binding is prepared and **not migrated**.  
+1. **Screenshots** from the **clean store zip**.  
+2. **Clean rebuild:** freeze → VERIFY OK → `build-store-package.ps1` (no `-AllowDirty`) → archive; do not upload today’s dirty zip.  
+3. **Messaging production smoke** (Delete for me / Block / Report / delete-all) on Worker **0.2.20**.  
 4. **Paste support contact** on the CWS form — [CONTACTS.md](./Chrome-extension-store-for-reviewers/CONTACTS.md).  
-5. **One paragraph on optional `https://*/*`** — Custom RPC only; inject stays allowlisted.
+5. **One paragraph on optional `*` hosts** — Custom RPC / relays only; inject stays allowlisted.
 
 ### P1 — High value
 
-6. Permission justification paste from STORE-LISTING.txt.  
+6. Permission justification paste from STORE-LISTING.txt (include optional `clipboardRead`).  
 7. Fee + privacy URLs on the form.  
 8. Confirm icon trademark / license.  
-9. Align listing copy with 11 networks, 45/85 bps, optional Helius, optional Inbox.  
-10. Live-click smoke of the **zip**: create/lock, Solana swap, one EVM send, dApp connect, Messaging consent + local delete (server actions only after production mail-privacy).
+9. Align listing copy with networks, 45/85 bps, optional Helius, optional Inbox; listing title **Smart Wallet**.  
+10. Live-click smoke of the **zip**: create/lock, Solana swap, one EVM send, dApp connect, Messaging consent + local delete + server actions.  
+11. Host Pass 2 when review heat on list size matters.
 
 ### P2 — After v1
 
-11. Dedicated store vs unpacked manifest generation (already partly done via strip).  
-12. Public status page.
+12. Further cold-path splits / panel re-defer (reliability, not a CWS checkbox).  
+13. Full password envelope-only redesign (already refuse-hold on Rust).  
+14. Public status page.
 
 ---
 
@@ -229,9 +233,10 @@ Full control map: [MESSAGING.md](./MESSAGING.md).
 
 | Scenario | Likely outcome |
 |----------|----------------|
-| Submit rebuilt zip + screenshots + host essay **after** production mail-privacy | **Possible**, often with a clarification on optional hosts / crypto risk |
+| Clean zip + screenshots + host essay + messaging smoke on 0.2.20 | **Possible**, often with clarification on optional hosts / crypto risk |
 | Submit without screenshots | **Rejected / incomplete** |
-| Submit Messaging server-delete/block/report UI against production 0.2.12 | **Honesty / functionality fail** |
+| Submit today’s dirty AllowDirty zip | **Don’t** — process / trust smell; rebuild clean |
+| Submit Messaging server UI that 404s | **Honesty / functionality fail** |
 | Submit a STAGING-NOT-FOR-STORE tree | Packager **refuses**; do not bypass |
 | Submit with owner tools / Broadcast / admin token | **Reject** — strip already prevents this if the packager is used |
 | Submit secrets or recovery tools | **Reject / trust damage** |
@@ -242,24 +247,24 @@ Plan for **1–3 review iterations**.
 
 ## 8. Recommended submit path
 
-1. Deploy and accept **production** mail-privacy (separate authorized pass). Do not enable Managed RPC.  
-2. Freeze extension version.  
-3. Confirm privacy + fee + contact + [MESSAGING.md](./MESSAGING.md) match the zip.  
+1. Smoke-accept production mail-privacy on **0.2.20** (Delete for me / Block / Report / delete-all). Do not enable Managed RPC.  
+2. Land/commit an approved freeze baseline (clean tree).  
+3. Confirm privacy + fee + contact + [MESSAGING.md](./MESSAGING.md) + STORE-LISTING (`clipboardRead` optional) match the zip.  
 4. `tools\verify-extension.ps1` → **VERIFY OK**.  
-5. `build-store-package.ps1` → archive that zip.  
+5. `build-store-package.ps1` (**no** `-AllowDirty`) → archive that zip; confirm `package-report.txt` SHA matches.  
 6. Capture screenshots from the zip loaded unpacked.  
-7. Smoke: create wallet, lock/unlock, small swap, one send, dApp connect, Inbox consent, local delete, then server delete/block only if production APIs are live.  
-8. Dashboard: zip, listing, permission justifications, privacy URL, support email, fee disclosure URL.  
-9. Review answers: non-custodial, local keys, allowlisted inject, declared hosts, optional `*` only for Custom RPC, Messaging is optional and not E2E encrypted.
+7. Smoke the zip: create wallet, lock/unlock, small swap, one send, dApp connect, Inbox consent, local + server messaging actions.  
+8. Dashboard: zip, listing title **Smart Wallet**, permission justifications, privacy URL, support email, fee disclosure URL.  
+9. Review answers: non-custodial, local keys, allowlisted inject, declared hosts, optional `*` only for Custom RPC, Messaging optional and not E2E encrypted.
 
 ---
 
 ## 9. One-line verdict
 
-**Smart Wallet is an MV3 wallet with a verify-gated, owner-stripped store pipeline, 2026-08-20 privacy/messaging disclosure, no localhost in declared hosts, and eleven networks. Chrome Web Store submit is still gated by missing screenshots, a freeze zip rebuild, and production Worker mail-privacy — not by missing basic extension architecture.**
+**Smart Wallet (0.11.698) is an MV3 wallet with a verify-gated, owner-stripped store pipeline, hardened hard-pass security (2026-09-13), 363 named hosts, optional clipboardRead, and documented production mail-privacy on Worker 0.2.20. Chrome Web Store submit is still gated by missing screenshots and a clean freeze zip (+ messaging smoke) — not by missing basic extension architecture.**
 
-**~90% ready to assemble a complete package after those P0 items; ~55–65% chance of first-pass approve without a revision request (normal for wallets).**
+**~90%+ ready to assemble a complete package after those P0 items; ~55–65% chance of first-pass approve without a revision request (normal for wallets). Load-unpacked daily use: yes. Submit today: no.**
 
 ---
 
-*Not financial advice. Not a guarantee of Chrome Web Store approval. Re-check live CWS policies before each submission. Do not publish extension source.*
+*Not financial advice. Not a guarantee of Chrome Web Store approval. Re-check live CWS policies before each submission. Do not publish extension source. Reassessed from local tree `C:\Users\levyr\Desktop\React-Wallet` on 2026-09-13 (not from GitHub).*

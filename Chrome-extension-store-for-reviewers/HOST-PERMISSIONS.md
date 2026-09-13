@@ -3,9 +3,11 @@
 **Product:** Smart Wallet (Chrome / Opera Manifest V3 extension)  
 **Audience:** Users, operators, security reviewers, Chrome Web Store reviewers  
 **Related code concepts:** `host_permissions` vs content-script `matches` / inject allowlist  
-**Docs snapshot:** 0.11.298
+**Docs snapshot:** 0.11.698
 
-Unpacked production uses one exact Worker host:
+**Live product 0.11.698 (after host trim):** named required `host_permissions` are **~360+**. Inject allowlist is **~118** apex hosts. `clipboardRead` is **optional**. `https://*/*` and `wss://*/*` remain **optional** for user-selected Custom RPC.
+
+Live LiFi MODE is the **production** Worker. Staging is an explicit developer option only.
 
 ```text
 https://smart-wallet-lifi-proxy.smart-wallet.workers.dev/*

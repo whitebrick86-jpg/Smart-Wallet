@@ -1,6 +1,6 @@
 # Chrome Web Store — optional host permission justification
 
-**Product:** Smart Wallet 0.11.298  
+**Product:** Smart Wallet 0.11.698  
 **Manifest keys:** `optional_host_permissions`  
 **Patterns:** `https://*/*`, `wss://*/*`
 
