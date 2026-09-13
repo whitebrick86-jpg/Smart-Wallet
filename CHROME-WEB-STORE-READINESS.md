@@ -189,7 +189,7 @@ Customer Messaging **belongs in the Store ZIP**. Owner moderation and Broadcast 
 |---------|-----------|---------------------------|
 | Inbox / Sent / Compose / Announcements (read) | Yes | Send/pull/announcements on production |
 | Delete conversation, Delete selected, Clear inbox | Yes | **Local device only** |
-| Delete for me | Yes | Server `/v1/mail/delete-for-me` — **0.2.20** per MESSAGING.md; **smoke before submit** |
+| Delete for me | Yes | Server `/v1/mail/delete-for-me` — **0.2.29** per MESSAGING.md; **smoke before submit** |
 | Request deletion of my server messages | Yes | Server `/v1/mail/delete-all` — same |
 | Block / Unblock / Blocked addresses | Yes | Server block routes — same |
 | Report message | Yes | Server report — same |
@@ -233,7 +233,7 @@ Full control map: [MESSAGING.md](./MESSAGING.md).
 
 | Scenario | Likely outcome |
 |----------|----------------|
-| Clean zip + screenshots + host essay + messaging smoke on 0.2.20 | **Possible**, often with clarification on optional hosts / crypto risk |
+| Clean zip + screenshots + host essay + messaging smoke on 0.2.29 | **Possible**, often with clarification on optional hosts / crypto risk |
 | Submit without screenshots | **Rejected / incomplete** |
 | Submit today’s dirty AllowDirty zip | **Don’t** — process / trust smell; rebuild clean |
 | Submit Messaging server UI that 404s | **Honesty / functionality fail** |
