@@ -1,10 +1,10 @@
 # Smart Wallet — Architecture
 
 **Product:** Smart Wallet (Chrome / Opera MV3 extension)  
-**Live product / architecture snapshot:** **0.11.673**
+**Live product / architecture snapshot:** **0.11.698**
 **Repository:** Documentation only — extension source is **not** published here.  
 **Product map:** [PRODUCT.md](./PRODUCT.md) (extension + LiFi Worker are separate folders of the same product)  
-**Last architecture update:** 2026-08-16 (live version / Worker transport noted; 0.11.159 body kept as the shipped-module snapshot)  
+**Last architecture update:** 2026-09-13 (live version / production LiFi MODE; 0.11.159 body kept as the shipped-module snapshot)  
 
 This document describes **what is implemented** in the Load-unpacked product build.  
 Items are marked **Shipped**, **Partial**, or **Planned**. Nothing is labeled shipped unless present in the extension tree and covered by `tools/verify-extension.ps1` syntax/version gates (and unit smoke where noted).
@@ -23,7 +23,7 @@ Items are marked **Shipped**, **Partial**, or **Planned**. Nothing is labeled sh
 | Live data | Idle-first free market WS + Solana mentions; HTTP fallbacks |
 | Platform fees | **0.45%** Smart Wallet swap · **0.85%** Smart Wallet bridge · LiFi currently adds **0.25%** on EVM routes (combined **0.70%** / **1.10%**) · none on Send / external DEX |
 
-**No Smart Wallet cloud custody.** Network calls go from the user’s browser to public RPCs / price APIs / optional user Helius / WalletConnect / Onramper. Unpacked LiFi quote/routes/step go to the **staging Cloudflare Worker**, not to `li.quest` with a key in the extension.
+**No Smart Wallet cloud custody.** Network calls go from the user’s browser to public RPCs / price APIs / optional user Helius / WalletConnect / Onramper. Live LiFi MODE is the **production** Cloudflare Worker `https://smart-wallet-lifi-proxy.smart-wallet.workers.dev`. Staging remains an explicit developer option. The extension never talks to `li.quest` with a key.
 
 ---
 

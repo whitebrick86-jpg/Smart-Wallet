@@ -8,7 +8,6 @@ Folder for **explicit site / host lists** used (or proposed) instead of global
 | [network-hosts.md](./network-hosts.md) | RPC, API, explorer, WC, logo CDN hosts for **`host_permissions`** |
 | [host_permissions-draft.txt](./host_permissions-draft.txt) | Copy-paste permission patterns for `manifest.json` |
 | [inject-dapp-hosts.md](./inject-dapp-hosts.md) | dApp sites where the wallet **provider injects** (page allowlist) |
-| [inject-allowlist-source.js](./inject-allowlist-source.js) | Snapshot of extension `inject-allowlist.js` |
 
 ## Two different lists
 
@@ -19,10 +18,11 @@ Global `https://*/*` is **not** the same as inject-everywhere. Inject is already
 
 ## Status
 
-- **Inject list snapshot:** extension **0.11.298** in `inject-allowlist-source.js`. Localhost and `127.0.0.1` are **not** production inject hosts.  
+- **Inject list:** live product **0.11.698** has **~118** apex hosts. Localhost and `127.0.0.1` are **not** production inject hosts. This folder does **not** republish extension source.  
 - **LiFi network path:** live MODE is production `https://smart-wallet-lifi-proxy.smart-wallet.workers.dev`. The extension does not call `li.quest`.  
 - Required `host_permissions` are named RPC / API / explorer / WC hosts.  
 - **`optional_host_permissions`**: `https://*/*` and `wss://*/*` are optional only. The wallet requests the **exact user-selected** Advanced / custom RPC origin at runtime.  
+- **`clipboardRead`** is **optional**. Named required `host_permissions` are **~360+** after trim.  
 - Content scripts load: `inject-allowlist.js` → `dapp-provider-bridge.js` → `content-script.js`.  
 - Reload the extension after updating for Chrome to re-read the manifest.
 

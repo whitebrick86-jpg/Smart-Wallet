@@ -2,7 +2,7 @@
 
 **Product:** Smart Wallet — Chrome / Opera Manifest V3 non-custodial multi-chain wallet  
 **Audience:** Chrome Web Store reviewers, security reviewers, compliance readers  
-**Docs snapshot:** 0.11.388  
+**Docs snapshot:** 0.11.698  
 
 This folder is a **single place** with the documents most relevant to Chrome Web Store review.  
 You do not need to search the rest of the repository for privacy, fees, host permissions, or contacts.
@@ -79,7 +79,7 @@ These are the **canonical** public privacy, fee, host-permission, and contact do
 | File | Role |
 |------|------|
 | [STORE-LISTING.txt](../STORE-LISTING.txt) | Dashboard paste kit (listing text + permission form answers) |
-| [CHROME-WEB-STORE-READINESS.md](../CHROME-WEB-STORE-READINESS.md) | Internal gap analysis (screenshots, packaging checklist) — **0.11.388** |
+| [CHROME-WEB-STORE-READINESS.md](../CHROME-WEB-STORE-READINESS.md) | Internal gap analysis (screenshots, packaging checklist) — **0.11.698** |
 | [MESSAGING.md](../MESSAGING.md) | Inbox / Messaging controls, including the three delete paths |
 
 ---

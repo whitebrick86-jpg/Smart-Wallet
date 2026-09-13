@@ -1,8 +1,10 @@
 # Smart Wallet — Network Loads (Pings, RPC, APIs)
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
-**Code snapshot:** load-count **0.11.159** · **Live product:** **0.11.660** ([PRODUCT.md](./PRODUCT.md))  
+**Code snapshot:** load-count **0.11.159** (scan body 0.11.660) · **Live product:** **0.11.698** ([PRODUCT.md](./PRODUCT.md))  
 **Last updated:** 2026-08-29 (totals + 1…1M user scale + cap solutions)  
+
+**Live product stamp:** 0.11.698. The §0 max-use tables remain the 0.11.660 code-read; they are not re-HAR'd for 0.11.698.
 
 **Live scan (0.11.660):** max-use numbers in **§0** are a code-read of the live unpacked tree (`manifest.json` **0.11.660**, last committed **0.11.657**). Not a Chrome Network HAR. Typical vs MAX envelopes. Failover multiplies **tries**, not logical rounds, except the 450 ms delayed hedge which can fire host #2 in parallel.
 

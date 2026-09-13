@@ -2,10 +2,10 @@
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
 **Audience:** Users, Chrome Web Store reviewers, operators  
-**Wallet version:** **0.11.673**
+**Wallet version:** **0.11.698**
 **Production mail Worker:** **0.2.29** (`PUBLIC_FULL_SERVICE`; Managed RPC remains separate and off)
 **Consent notice:** 2026-08-20 (`smart_wallet_messaging_consent_v1`)  
-**Updated:** 2026-08-30
+**Updated:** 2026-09-13
 
 This page is the product map for **Inbox / Messaging**: every panel, folder, and button, and the difference between **Delete conversation**, **Delete for me**, and **Request deletion of my server messages**.
 
