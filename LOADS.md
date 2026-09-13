@@ -1,16 +1,30 @@
 # Smart Wallet — Network Loads (Pings, RPC, APIs)
 
 **Product:** Smart Wallet (Chrome / Opera MV3)  
-**Code snapshot:** load-count **0.11.159** (scan body 0.11.660) · **Live product:** **0.11.698** (stamp **w41**) ([PRODUCT.md](./PRODUCT.md))  
-**Last updated:** 2026-08-29 (totals + 1…1M user scale + cap solutions)  
+**Live product:** **0.11.698** (stamp **w41**) — see [PRODUCT.md](./PRODUCT.md)  
+**Last updated:** 2026-09-13 (live-feeds / budget / gateway / WS-health from Code Review sheet)  
 
-**Live product stamp:** 0.11.698 / **w41**. The §0 max-use tables remain the 0.11.660 code-read; they are not re-HAR'd for 0.11.698. **Do not** treat production-managed RPC as live default — it is **blocked**; normal use is **public RPC**.
+**Live product stamp:** **0.11.698 / w41**. Normal use is **public RPC** (production-managed RPC is **blocked** / not the live default). LiFi goes through the **production Worker only** — the extension does **not** call `li.quest` with a key. **No continuous Helius** — History does not poll Helius in the background; optional user **custom Solana RPC** is the supported custom endpoint path.
 
-**Live scan (0.11.660):** max-use numbers in **§0** are a code-read of the live unpacked tree (`manifest.json` **0.11.660**, last committed **0.11.657**). Not a Chrome Network HAR. Typical vs MAX envelopes. Failover multiplies **tries**, not logical rounds, except the 450 ms delayed hedge which can fire host #2 in parallel.
+### Current architecture (0.11.698 code — authoritative)
 
-**Architecture:** Chain RPC goes through **rpc-gateway** (UI + service worker): sequential multi-RPC failover, per-host cooldown after 429, hard timeouts (`eth_getLogs`), in-flight dedupe, provider scoring. **No free-RPC fan-out.** Host lists: **chain-registry**. Popup Solana/EVM JSON-RPC can proxy via the service worker (`smart-wallet-sol-rpc` / `smart-wallet-evm-rpc`); if that transport fails the popup **replays** the same walk (failed path ≈ 2×).
+| Area | Live behavior (code constants / policies) |
+|------|-------------------------------------------|
+| **Market WS (`live-feeds.js`)** | Cascade **Binance → Binance vision → Coinbase**. UI coalesce **~750 ms**. Swap/Bridge use **market-only** mode (no Home HTTP balance/price loops). |
+| **Activity WS → light refresh** | On Solana mention / activity: light balance refresh with **min-gap ~10.5 s**. |
+| **HTTP safety poll** | Fallback balance poll **~5 min (EVM)** / **~10 min (Solana)** when WS path is not carrying the load. |
+| **Price reconcile** | HTTP price reconcile can tick fast (**~5 s**) but is **skipped when market WS is fresh**. |
+| **Request budgets (`sw-request-budget.js`)** | **15 s** window. Per-screen caps (Home 16 / Send 20 / Swap 24 / Bridge 24 / History 12 / Holdings 16 / dApp 20 / Settings 4 / Logs 2). **Critical** send/swap/sign/broadcast/preflight/confirm **always allowed**. |
+| **RPC gateway** | Sequential failover; **429 cooldown ~45 s**; account-read **hedge 450 ms** (host #2 if host #1 still in flight). |
+| **WS health** | Market stale **~45 s**; RPC WS ping **~25 s** / wait **~12 s**. |
+| **Post-tx** | Light burst refreshes after confirmed sends (qualitative; not a HAR). Sync timeouts are qualitative wall-clock stops — do not invent RPM. |
+| **Workers** | Production: LiFi proxy, mail via RPC-gateway Worker, Solana ALT verifier, market-data. Staging is an explicit developer option. |
 
-**0.11.656–657 delayed hedge:** account-family reads (`getBalance`, Solana token accounts, gateway EVM account reads, BTC/Sui REST) start host #2 after **450 ms** if host #1 is still in flight. Happy path **+0**. Slow first host **+1**. Both fail, then the rest of the sequential walk still runs. Home EVM `eth_getBalance` / Multicall use **raw `fetch`** and **do not** take this hedge (or the global inflight 8).
+**Historical note:** §0 max-use tables, §0.3 scale / RPM planning, and older soft-live hour totals below are a **2026-08-29 code-read of product 0.11.660** (and earlier load-count snapshots). They are **historical**. They were **not** re-HAR'd for 0.11.698. **Do not** treat absolute RPM / 1…1M shared-backend tables as live measurements unless a new HAR is attached.
+
+**Architecture (unchanged class):** Chain RPC goes through **rpc-gateway** (UI + service worker): sequential multi-RPC failover, per-host cooldown after 429, hard timeouts (`eth_getLogs`), in-flight dedupe, provider scoring. **No free-RPC fan-out.** Host lists: **chain-registry**. Popup Solana/EVM JSON-RPC can proxy via the service worker (`smart-wallet-sol-rpc` / `smart-wallet-evm-rpc`); if that transport fails the popup **replays** the same walk (failed path ≈ 2×).
+
+**0.11.656–657 delayed hedge (still live):** account-family reads start host #2 after **450 ms** if host #1 is still in flight. Happy path **+0**. Slow first host **+1**. Home EVM `eth_getBalance` / Multicall use **raw `fetch`** and **do not** take this hedge (or the global inflight 8).
 
 **0.11.416+ Solana ALT verifier:** If the local Solana.com + PublicNode lookup-table quorum is unavailable, the extension may POST only ALT public keys (`MAX_KEYS = 8`) to `smart-wallet-solana-alt-verifier.smart-wallet.workers.dev`. Not a general RPC proxy.
 
@@ -30,9 +44,9 @@
 
 ---
 
-## 0. Live scan — 2026-08-29 (product 0.11.660)
+## 0. Historical scan — 2026-08-29 (product 0.11.660) — not re-HAR'd for 0.11.698
 
-Code-read of the live unpacked wallet. **Not** a Chrome DevTools HAR. Numbers are **caps and typical envelopes**.
+**Historical.** Code-read of the then-live unpacked wallet. **Not** a Chrome DevTools HAR. Numbers are **caps and typical envelopes** from that snapshot. Prefer the **Current architecture** table in the header for 0.11.698 behavior.
 
 **Round** = one logical job (one balance, one quote, one History fetch). Failover may add **tries**. Hedge may add **1 parallel try**. `<img>` logos are extra HTTPS, counted separately.
 
@@ -46,6 +60,7 @@ Code-read of the live unpacked wallet. **Not** a Chrome DevTools HAR. Numbers ar
 | Screen budget (non-critical) | Home **16** / Send **20** / Swap **24** / Bridge **24** / History **12** / Holdings **16** / dApp **20** / Settings **4** / Logs **2** per **15 s** | `sw-request-budget.js`. Critical send/swap/sign/broadcast/preflight/confirm **bypass**. **Only Home live-balance currently calls `allow()`** — other screens are not actually gated by this table |
 | RPC walk | Sequential; Solana **≤7 hosts / 3 attempts**; EVM gateway **≤3**; raw EVM `eth_call` **≤4** | No `Promise.all` fan-out of free RPCs |
 | Account-read hedge | **450 ms** | Host #2 starts if host #1 still pending (`rpc-gateway.js`, BTC/Sui in `app.js`) |
+| RPC 429 cooldown | **~45 s** | Per-host cooldown after rate-limit (`rpc-gateway` / health policy) — live 0.11.698 |
 | Confirm (EVM) | Poll **~0.4–1.5 s**, overall **~90 s**, **maxHosts 2–5** (BSC **2**) | Then stop; timeout stays **pending**, not failed |
 | Confirm (Solana) | **≤16** `getSignatureStatuses` (`default 8`) | Shared `waitSolConfirmed` |
 | Price batch | **≤50** mints / Jupiter Price v3 | One HTTPS round |
@@ -65,7 +80,7 @@ Idle Home timers: price **90 s**, balance **105 s**, Solana+WS safety **4 min**,
 
 ### 0.2 Max usage by surface (one action)
 
-**11 display chains:** Solana, Ethereum, Bitcoin, Polygon, Sui, Robinhood, Base, BSC, Arbitrum, Optimism, Avalanche.
+**12 display chains (live 0.11.698):** Solana, Ethereum, Bitcoin, Polygon, Sui, Robinhood, Base, BSC, Arbitrum, Optimism, Avalanche, **Sonic**. (The historical §0 tables below may still say 11 — treat chain-count rows there as historical.)
 
 | Surface | Typical HTTP/RPC rounds | MAX one action | Extra / notes |
 |---------|-------------------------|----------------|---------------|
@@ -175,7 +190,7 @@ Closed popup: **0 pings** (except a due swap-await / fee-residual). Receive pane
 
 Public APIs (Jupiter, CoinGecko, DexScreener, public RPC) are **per user IP**. They do **not** add together on one quota when user count grows. **Workers and LiFi `li.quest` (from the Worker’s IP)** are **shared** — that is what 10 / 100 / 1M people stress.
 
-### 0.3b Scale: 1 → 10 → 100 → 1k → 10k → 100k → 1M people
+### 0.3b Scale: 1 → 10 → 100 → 1k → 10k → 100k → 1M people (**historical planning — not a live HAR**)
 
 **N = daily active wallets** (people who actually open the extension that day). Installed-but-closed copies are **0**. If only 10% of N have Home open at once, divide the “all N idle 1 hour at once” column by 10.
 
@@ -219,7 +234,7 @@ Heavy-trading DAU is ~**6×** the typical Worker column (≈200 Worker pings/use
 
 Cloudflare Workers Paid (public 2026-08-28): **$5/mo**, **10 million requests included**, then **$0.30 per extra million**. Subrequests from the Worker to LiFi/Jupiter are **not** billed as extra Worker requests. KV: Free 100k reads/day; Paid 10M reads/mo.
 
-### 0.3c Solutions when amounts cap
+### 0.3c Solutions when amounts cap (**historical planning**)
 
 Do these in order. None of them require putting API keys in the extension.
 
@@ -405,7 +420,7 @@ This was the **first** idle-first design (still quieter than pre-0.10). Kept for
 
 ## 4. Current load model (0.11.0+ — event-driven + cache)
 
-**0.11.660 live numbers are in §0.** This section is the idle-first design. Quote debounce in live code is **180 ms** (not the ~450 ms shown in older rows below).
+**§0 is historical (0.11.660).** This section tracks the **0.11.698** idle-first + live-feeds design (see header table). Quote debounce in live code is **180 ms** (not the ~450 ms shown in older comparison rows below).
 
 **Architecture:** WebSocket / event → **cache** → **UI**, with HTTP as **authoritative reconcile**, not continuous UI polling.
 
@@ -422,28 +437,25 @@ HTTP balance safety           Quote API (0 if idle)
   ~90–120s if WS down         Execute: fresh quote/build
 ```
 
-### 4.1 Continuous while Home open (current code)
+### 4.1 Continuous while Home open (current code — 0.11.698)
 
 | Load | Cadence / rule | Endpoints | Idle behavior |
 |------|----------------|-----------|---------------|
-| **Holdings USD (HTTP)** | Reconcile tick **~90s**, min gap **~90s** | Jupiter Price, ≤50 mints | **Skipped** if holdings cache still fresh |
-| **Balances (HTTP)** | Fallback tick **~105s** | Chain multi-RPC (≤~4 tries) | Skips if sticky native <25s |
-| **Balances w/ Solana activity WS live** | Safety net **~4 min** (3–5 min band) | Same RPC | **Much quieter** if WS is healthy |
-| **Majors (HTTP)** | Min **~2 min** | CoinGecko | **Skipped** when market WS / majors stamp is fresh |
-| **Market WS** | **1** Binance ticker (active chain only) | `wss://stream.binance.com…` | UI/cache push if move ≥**~0.2%**, coalesce ≥**~2s** |
-| **Solana RPC WS** | `logsSubscribe` **mentions your address** | publicnode / custom / etc. | **Silent** until a tx hits you |
-| **EVM RPC WS** | **Not used** | — | No every-block spam |
-| **On Solana activity** | Debounce **~2.5s**, min gap **~8s** | One **deduped** light balance (+ soft reprice only if price cache stale) | Only on real txs |
-| **Chart** | Cache **~15 min** | CoinGecko | Unchanged class |
-| **PnL** | Local | — | No network |
-| **Stables (USDC…)** | Pinned ~$1 | — | No price ping |
+| **Holdings USD (HTTP)** | Reconcile can tick **~5 s** but is **skipped when market WS is fresh** | Jupiter Price, ≤50 mints | Idle-first: WS carries price; HTTP only when stale |
+| **Balances (HTTP safety)** | **~5 min (EVM)** / **~10 min (Solana)** | Chain multi-RPC (sequential) | Much quieter when activity WS is healthy |
+| **Market WS** | Cascade **Binance → vision → Coinbase** (active chain) | `live-feeds.js` | UI coalesce **~750 ms** |
+| **Solana activity WS** | `logsSubscribe` mentions your address | public / **optional custom Solana RPC** | **Silent** until a tx hits you |
+| **EVM RPC WS** | **Not used** for every-block spam | — | Safety poll covers EVM |
+| **On Solana activity** | Light refresh **min-gap ~10.5 s** | One **deduped** light balance (+ soft reprice if price cache stale) | Only on real txs |
+| **Helius** | **None continuous** | — | No background Helius. Optional custom Solana RPC only for user endpoint override; History refresh remains on-demand when that panel is open |
+| **Chart / PnL / stables** | Chart cache local/HTTP; PnL local; stables pinned | — | Unchanged class |
 
 **Live modes (no duplicate timer stacks):**
 
 | Mode | When | WS | HTTP price loop | HTTP balance loop |
 |------|------|----|-----------------|-------------------|
-| **home** | Home panel visible | Market + Solana activity | Yes (~90s reconcile) | Yes (WS safety / fallback) |
-| **market** | Swap or Bridge visible | Market only | **No** | **No** |
+| **home** | Home panel visible | Market + Solana activity | Yes (skipped when WS fresh) | Yes (5m / 10m safety) |
+| **market** | Swap or Bridge visible | **Market only** | **No** | **No** |
 | **off** | Other panels / hidden | **None** | **No** | **No** |
 
 Timers / feeds **stop** when:
@@ -452,15 +464,17 @@ Timers / feeds **stop** when:
 - User leaves Home **and** is not on Swap/Bridge (market-only)  
 - Full Sync is busy (soft ticks skip)
 
-### 4.2 Live price & balance frequency (current targets)
+**Post-tx:** after a confirmed send/swap the wallet may run a **light burst** of balance/receipt checks. Sync timeouts are **qualitative** wall-clock stops — do not invent new RPM without a HAR.
+
+### 4.2 Live price & balance frequency (0.11.698 targets)
 
 | Channel | Frequency | Role |
 |---------|-----------|------|
-| **Market WebSocket** | Continuous stream; UI on meaningful move | Makes native price **feel live** without HTTP |
-| **HTTP price reconcile** | **Every ~60–120s** (implemented tick **~90s** + min gap **~90s**) | Authoritative holdings/majors when cache stale |
-| **Balance activity (Solana)** | Event → **~2.5s** debounce → light refresh | Immediate after your txs |
-| **Balance safety (WS healthy)** | **~3–5 min** (implemented **~4 min**) | Catch missed logs without spam |
-| **Balance fallback (no WS / EVM)** | **~90–120s** (implemented **~105s**) | Controlled poll, not uncontrolled retry |
+| **Market WebSocket** | Continuous; UI coalesce **~750 ms**; cascade Binance → vision → Coinbase | Makes native price **feel live** without HTTP |
+| **HTTP price reconcile** | Fast tick allowed (**~5 s**) but **skipped when WS fresh** | Authoritative holdings/majors when cache stale |
+| **Balance activity (Solana)** | Event → light refresh **min-gap ~10.5 s** | Immediate after your txs, without spam |
+| **Balance safety poll** | **~5 min EVM** / **~10 min Solana** | Catch misses without continuous polling |
+| **WS health** | Market stale **~45 s**; RPC ping **~25 s** / wait **~12 s** | Decide when to fall back to HTTP |
 | **UI paint** | Immediate from **cache / WS / sticky** | Does **not** require a new HTTP to redraw |
 
 ### 4.3 On-demand (current)
@@ -629,15 +643,15 @@ Normal UI debounces and empty-amount quote skip reduce this heavily.
 
 | Feature | Idle | Active use |
 |---------|------|------------|
-| **Home prices** | Market WS live; HTTP reconcile **~90s** if stale | Force on Sync |
-| **Home balances** | Activity-driven; safety **~4 min** or fallback **~105s** | Force on Sync / activity |
-| **Live market WS** | 1 socket; UI on meaningful moves | Same on Home + Swap/Bridge display |
-| **Solana activity WS** | 1 socket on Home; silent | 1 light refresh per activity burst |
+| **Home prices** | Market WS (Binance→vision→Coinbase); HTTP reconcile **skipped when WS fresh** | Force on Sync |
+| **Home balances** | Activity-driven; safety **~5 min EVM / ~10 min Solana** | Force on Sync / activity |
+| **Live market WS** | 1 socket; coalesce **~750 ms** | Same on Home + Swap/Bridge (**market-only**) |
+| **Solana activity WS** | 1 socket on Home; silent | Light refresh **min-gap ~10.5 s** |
 | **Internal Swap (open, no amount)** | **0 quotes** | — |
-| **Internal Swap (typing)** | — | 1 quote / ~450ms pause |
+| **Internal Swap (typing)** | — | 1 quote / **~180 ms** debounce |
 | **Internal Swap (execute)** | — | Fresh build + fee USDC path |
 | **Internal Bridge** | 0 continuous | Quotes + execute + fee + status polls |
-| **History** | 0 | Helius 1 request / refresh, or multi getTransaction |
+| **History** | **0** (no continuous Helius) | On panel open/refresh only; public RPC or optional custom Solana RPC |
 | **Send** | 0 | 1–few RPC + broadcast |
 | **dApp** | 0 continuous from wallet | Sign path RPCs as needed |
 | **WC** | 0 unless paired | Relay while session live |

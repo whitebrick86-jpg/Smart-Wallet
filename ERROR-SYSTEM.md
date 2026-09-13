@@ -1,7 +1,7 @@
 # Error System
 
 **Product:** Smart Wallet (Chrome / Opera MV3 extension)  
-**Error-system snapshot:** **0.11.616** (Logs tab membership: Log / Errors / Alerts / Warnings / Connections)  
+**Error-system snapshot:** **0.11.698** (stamp **w41**; Logs tabs: Log / Errors / Alerts / **Warnings** / Connections)  
 **Live product:** **0.11.698** (stamp **w41**) — see [PRODUCT.md](./PRODUCT.md)
 **Original architecture snapshot:** **0.11.159** (inspect → classify → present → stamp)  
 **Later additions (not in 0.11.159):** Logs store **0.11.145**; in-wallet Log / Errors / Alerts UI **0.11.191–0.11.197**; **Connections** tab **0.11.204**; newest-first **0.11.205**; Connections-only rows **0.11.206**; tab-scoped Clear **0.11.208**; SW-serialized log writes + `originalErr` isolation **0.11.209**; external DEX swap failures in Logs **0.11.210**; external DEX failure **reason** on the Swap row **0.11.211**; external dApp **intent** (not hostname=swap) + RPC host-failure rows **0.11.212**; expanded structured diagnostic catalog + 500/1000 cap + recovery **0.11.213**; four-level severity (critical/error/warning/info) **0.11.214**; muted four-color palette **0.11.215**; dApp **Warnings** tab **0.11.216**; vault / seed-reveal / unrecognized-outgoing Warnings **0.11.217**; muted palette + red Connections disconnect **0.11.218**; Home critical-warning badge **0.11.219**; badge copy **review logs** **0.11.220**; Error System docs: selected-tab Clear, plaintext-boundary claim, Ledger seed-warning guidance **0.11.220**; Logs UI chrome polish **0.11.221**; light-mode Logs canvas fill + banner removed **0.11.222**; Logs leftover `#3d3e46`, dock/home/send/history/accounts untouched **0.11.223**; Logs top-chip hover stays Home plates **0.11.224**; Logs gold tab / `#3d4d60` box border restored **0.11.225**; Logs rounded `#121a24` shell **0.11.226**; leftover `#121a24` / inner outline `#3d3e46` **0.11.227**; vault-watcher false-positive fix **0.11.228**; scoped vault-write protocol **0.11.229**; unauthorized vault warning no longer pauses signing **0.11.230**; owner-write stamp so only non-owner vault changes warn **0.11.231**; critical tx mismatches ask to proceed **0.11.232**; Logs Settings switches persist across popup close **0.11.233**; Error System §9.3.1 documents **Hide routine success**; Error System §9.7 **Warnings that may be triggered by owner** **2026-08-16**; Logs tab membership separated **0.11.616** (**2026-08-27**)  
@@ -22,19 +22,23 @@ The Error System is a **layered pipeline**. These paths are **verified** to go t
 Raw failure (ethers / JSON-RPC / Ledger / provider / revert bytes)
         │
         ▼
-  1. Inspect     walk nested objects + embedded JSON; extract facts; redact secrets
+  1. Inspect + classify     evm-error-classify.js  (SmartWalletEvmErrors)
         │
         ▼
-  2. Classify    one canonical code (sticky vs RPC vs delivery vs lifecycle)
+  2. Present + stamp        tx-error-present.js    (SmartWalletTxPresent.presentCaughtError)
         │
         ▼
-  3. Present     one user message + one lifecycle truth sentence
+  3. Evidence record        tx-evidence-record.js  (SmartWalletTxEvidence) — PROVEN / LIKELY / UNCERTAIN
         │
         ▼
-  4. Stamp       mark already-presented so later catches do not rewrite or double-append
+  4. Diagnostic event       diag-events.js → diag-severity.js → sw-diag-log.js  (local Logs only)
         │
         ▼
-  5. Surface     toast / send-form / swap-outcome / Logs (local only)
+  5. Surface                toast / send-form / swap-outcome / Settings → Logs
+
+dApp / EIP-1193 path (parallel owners):
+  provider-error.js + dapp-provider-bridge.js + background.js / injected page
+        → same Logs pipeline for named provider codes (4001 / 4100 / 4200 / 4901 / 4902 / -32000)
 ```
 
 **Inspect and classify do not talk to the network.** Sequential RPC callers decide failover. The Error System only **names** what already happened and **stops** callers from treating infrastructure failures as “not enough coins,” or a submitted hash as “failed.”
@@ -43,13 +47,26 @@ Raw failure (ethers / JSON-RPC / Ledger / provider / revert bytes)
 
 ## 2. Modules (runtime)
 
+Pipeline owners (Send / Swap / Bridge / Ledger catch path):
+
+| Module | Global / entry | Role |
+|--------|----------------|------|
+| `evm-error-classify.js` | `SmartWalletEvmErrors` | Inspect + classify. No user copy. No secrets. |
+| `tx-error-present.js` | `SmartWalletTxPresent` · **`presentCaughtError`** | User-facing wording + lifecycle truth + stamp. |
+| `tx-evidence-record.js` | `SmartWalletTxEvidence` | Durable evidence / identity for a signed or broadcast tx. Grades: **PROVEN** / **LIKELY** / **UNCERTAIN**. Not always on-chain truth. |
+| `diag-events.js` | (event catalog) | Structured diagnostic event shapes for Logs. |
+| `diag-severity.js` | `severityForDiagnostic` | Four-level severity mapper (`critical` / `error` / `warning` / `info`). |
+| `sw-diag-log.js` | `SmartWalletDiagLog` | Privacy-safe **Logs** page. Local `chrome.storage.local`. Never uploaded. **Copy diagnostic report** is sanitized (no secrets / raw / keys). |
+
+Related (not the same pipeline step, but wired):
+
 | Module | Global | Role |
 |--------|--------|------|
-| `evm-error-classify.js` | `SmartWalletEvmErrors` | Inspect + classify. No user copy. No secrets. |
-| `tx-error-present.js` | `SmartWalletTxPresent` | User-facing wording + lifecycle truth + stamp. |
 | `evm-revert-decoder.js` | (consumed by swap-outcome) | Decode allowlisted ERC-20 / router revert selectors. Does **not** render copy. |
 | `swap-outcome.js` | `SmartWalletSwapOutcome` | Internal-DEX state machine + swap-specific codes + DevTools journal. |
-| `sw-diag-log.js` | `SmartWalletDiagLog` | Privacy-safe **Logs** page. Local `chrome.storage.local`. Never uploaded. |
+| `provider-error.js` | (EIP-1193 / provider codes) | Maps provider failures to wallet codes (see §5.6). |
+| `dapp-provider-bridge.js` | (isolated-world bridge) | Provider result replay / ack between page and extension. |
+| `background.js` (+ injected) | service worker | dApp message settle, RPC proxy, approve lifecycle; emits / forwards provider settle codes. |
 
 `app.js` keeps **thin wrappers** (`presentSendCaughtError`, `friendlySendError`, …) that inject `activeChain(STATE)` and call `SmartWalletTxPresent`. Extraction Batch 1 (**0.11.154**) moved the remaining send presentation body out of `app.js` without changing classification or wording.
 
@@ -59,7 +76,7 @@ Raw failure (ethers / JSON-RPC / Ledger / provider / revert bytes)
 
 1. **Classifier names; caller failovers.** Never start a new RPC from the presenter.
 2. **One request, one healthy host.** Sequential only. A deterministic account reject **stops** the host walk.
-3. **Sticky codes stay sticky.** `PENDING_BALANCE_RESERVED`, `INSUFFICIENT_CONFIRMED_BALANCE`, user-reject, nonce/revert codes are not remapped because a later host returned `429` or a truncated string.
+3. **Sticky codes stay sticky.** `PENDING_BALANCE_RESERVED`, `INSUFFICIENT_CONFIRMED_BALANCE`, user-reject, nonce/revert codes are not remapped because a later host returned `429` or a truncated string. **SW restart / orphan / timeout = `4901`, never `4001`.**
 4. **Hash present = submitted.** Lookup miss / empty receipt / RPC lag is `CONFIRMATION_DELAYED`, never automatic `FAILED`.
 5. **Ambiguous timeout after a signed broadcast = `BROADCAST_UNCERTAIN`.** Do not re-sign. Do not invent a second payload. Check History / explorer before retry.
 6. **One lifecycle sentence.** Later catches that see `isPresentedTxError` **pass through**.
@@ -158,6 +175,31 @@ If confirmed balance does **not** cover `txCost`, the code is `INSUFFICIENT_CONF
 | Code | Meaning |
 |------|---------|
 | `UNKNOWN` | Could not name it. Presenter still must **not** dump raw RPC. |
+
+### 5.6 Provider / EIP-1193 codes (dApp path)
+
+These are the **provider** numeric codes the wallet surfaces on the dApp / injected path (`provider-error.js`, `dapp-provider-bridge.js`, `background.js` / injected). They are **not** interchangeable with sticky account codes in §5.1.
+
+| Code | Meaning | Notes |
+|------|---------|--------|
+| **`4001`** | User rejected the request | True user cancel / reject in the approve UI. Maps to `USER_REJECTED` class. |
+| **`4100`** | Unauthorized | Requested account / capability is not authorized for this origin. |
+| **`4200`** | Unsupported method | Method not implemented for this provider / chain. |
+| **`4901`** | SW restart / orphan / timeout | Service-worker restart, orphaned port, or request timeout. **Not** a user reject. **Do not** map restart / orphan / timeout to `4001`. |
+| **`4902`** | Unrecognized chain | Chain not added / not recognized (`UNAUTHORIZED_CHAIN_REQUEST` class). |
+| **`-32000`** | Transport / JSON-RPC server error | Still used on the transport layer for generic server/invalid-input style failures. |
+
+**Rule:** a closed message port, service-worker restart, or orphaned approve after SW sleep is **`4901` / timeout class**, never **`4001`**. Only an explicit user Cancel / Reject is `4001`.
+
+### 5.7 Evidence grades (`SmartWalletTxEvidence`)
+
+| Grade | Meaning |
+|-------|---------|
+| **PROVEN** | Evidence identity is durable and consistent with a known signed/broadcast payload. |
+| **LIKELY** | Strong circumstantial match; not full proof. |
+| **UNCERTAIN** | Ambiguous (timeout, missing hash, conflicting hosts). Check History / explorer before retry. |
+
+**Copy diagnostic report** (Logs) exports a **sanitized** snapshot only. Evidence grades and Logs rows are **not** always on-chain truth — they describe what the wallet observed locally.
 
 ---
 
@@ -357,7 +399,9 @@ This tab is the dApp connection history. It is **not** a live list of who is con
 
 Those DApp rows appear **only** on **Connections**. They do **not** appear on **Log**, **Errors**, **Alerts**, or **Warnings**.
 
-**Privacy:** Connections is **local dApp connection history** on this device (which sites you connected or disconnected). It is **never uploaded**. Clear the Connections tab to delete that history. The Logs banner states this.
+**Privacy:** Connections is **local dApp connection history on this device** (which sites you connected or disconnected via inject or WalletConnect). It is **never uploaded**. Clear the Connections tab to delete that history. The Logs banner states this.
+
+**Not the WalletConnect Settings list:** Connections is a Logs tab of historical connect/disconnect events. It is **not** the live paired-session list in Settings → WalletConnect (or equivalent). Pairing / session management stays in Settings; Connections only records history rows.
 
 **Log tab colors** (four-level, 0.11.214):
 
