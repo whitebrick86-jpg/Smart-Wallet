@@ -108,7 +108,7 @@ Report lists and ordinary operator views do not include message bodies. A specif
 - **Sent** means Smart Wallet infrastructure confirmed storage of the message and its recipient Inbox reference.
 - **Not delivered** means the request failed because of a network, authorization, quota, storage, validation, or server error.
 
-Sent does not mean Delivered or Read. Smart Wallet does not display a sender-visible Delivered or Read claim without an authenticated recipient acknowledgment. Failed sends are not automatically retried when retrying could create a duplicate.
+**Sent** is the normal success state after the relay confirms storage. Smart Wallet does not present **Delivered** as a usual sender-visible outcome, and does not display Delivered or Read without an authenticated recipient acknowledgment. Failed sends are not automatically retried when retrying could create a duplicate.
 
 ### Blocking, reporting, and deletion
 

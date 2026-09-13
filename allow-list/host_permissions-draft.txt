@@ -1,6 +1,7 @@
-# NOTE (0.11.698): live named host_permissions after trim are ~360+.
+# NOTE (0.11.698): live named host_permissions after trim are **367**.
 # This draft is a historical/partial paste list, not the complete live set.
-# https://*/* and wss://*/* remain optional for Custom RPC. clipboardRead is optional.
+# https://*/* , wss://*/* , and http://*/* remain optional for Custom RPC. clipboardRead is optional.
+# Count: 367 named required host_permissions; 118 inject apexes.
 # Live LiFi MODE: https://smart-wallet-lifi-proxy.smart-wallet.workers.dev/*
 #
 # Draft host_permissions entries (replace https://*/* and wss://*/*)

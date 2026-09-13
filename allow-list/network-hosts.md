@@ -4,7 +4,7 @@
 `https://*/*` and `wss://*/*` without breaking stock product features.
 
 **Source:** URLs found in `app.js`, `background.js`, `live-feeds.js`, `config.js`,  
-`chain-registry.js`, `inject-allowlist.js`, and related extension files (historical inject snapshot **0.11.159**; **live product 0.11.698** — named `host_permissions` **~360+** after trim).
+`chain-registry.js`, `inject-allowlist.js`, and related extension files (historical inject snapshot **0.11.159**; **live product 0.11.698** — named `host_permissions` **367** after trim).
 
 **Not the same as inject:**  
 - **§A Network hosts** → `host_permissions` (extension fetch / WebSocket)  

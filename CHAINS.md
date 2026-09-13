@@ -1,7 +1,7 @@
 # Supported networks
 
 **Product:** Smart Wallet  
-**Docs snapshot / live product:** **0.11.698**
+**Docs snapshot / live product:** **0.11.698** (stamp **w41**) · **12** chains
 **Last updated:** 2026-09-13
 **Repository:** Documentation only — extension source is **not** published here.
 

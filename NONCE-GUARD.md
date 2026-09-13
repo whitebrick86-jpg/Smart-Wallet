@@ -4,6 +4,7 @@
 **Applies to:** Ethereum and the other supported EVM networks  
 **Does not apply to:** Solana, Bitcoin, or Sui  
 **Repository:** Documentation only — extension source is **not** published here.
+**Live product:** **0.11.698** (stamp **w41**)
 
 This document explains **what a nonce is**, why EVM wallets must treat it carefully, and **what Smart Wallet’s Nonce Guard does** when you send, swap, bridge, approve a token, or confirm a dApp transaction.
 

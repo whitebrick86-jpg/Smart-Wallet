@@ -2,7 +2,7 @@
 SMART WALLET -- USER DOCUMENTATION
 ================================================================================
 Product:   Smart Wallet (Chrome / Opera MV3 extension)
-Version:   user-guide snapshot 0.11.72; live product is 0.11.698 (see PRODUCT.md)
+Version:   user-guide snapshot 0.11.72; live product is 0.11.698 stamp w41 (see PRODUCT.md)
 Audience:  Everyday users and operators
 Repo:      Documentation-only (extension source is not published here)
            https://github.com/whitebrick86-jpg/Smart-Wallet
@@ -1113,9 +1113,9 @@ built-in flows: the in-wallet Swap screen and the in-wallet Bridge screen.
   * Failed or rejected fee-bearing swap completes neither the swap nor the fee
   * Platform fees are best-effort: an otherwise-safe swap is not blocked solely
     because a fee insert failed. Malformed / misdirected / unverifiable fee
-    payloads are never signed. Jupiter may rebuild a fresh fee-free quote and
-    sign only that rebuild. LiFi has a narrow fee-unavailable carve-out and
-    does not yet rebuild a client fee-free quote
+    payloads are never signed. Jupiter (allowsSignAfterFeeFailure) may rebuild
+    a fresh fee-free quote and sign only that rebuild. LiFi has a narrow
+    fee-unavailable carve-out and does NOT do a Jupiter-style fee-free rebuild
   * Very small sizes can floor the Smart Wallet fee to zero
   * Auto slippage capped ~5% unless higher manual set
 

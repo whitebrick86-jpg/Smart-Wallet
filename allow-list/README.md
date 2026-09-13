@@ -18,11 +18,11 @@ Global `https://*/*` is **not** the same as inject-everywhere. Inject is already
 
 ## Status
 
-- **Inject list:** live product **0.11.698** has **~118** apex hosts. Localhost and `127.0.0.1` are **not** production inject hosts. This folder does **not** republish extension source.  
+- **Inject list:** live product **0.11.698** (stamp **w41**) has **118** apex hosts. Localhost and `127.0.0.1` are **not** production inject hosts. This folder does **not** republish extension source.  
 - **LiFi network path:** live MODE is production `https://smart-wallet-lifi-proxy.smart-wallet.workers.dev`. The extension does not call `li.quest`.  
 - Required `host_permissions` are named RPC / API / explorer / WC hosts.  
-- **`optional_host_permissions`**: `https://*/*` and `wss://*/*` are optional only. The wallet requests the **exact user-selected** Advanced / custom RPC origin at runtime.  
-- **`clipboardRead`** is **optional**. Named required `host_permissions` are **~360+** after trim.  
+- **`optional_host_permissions`**: `https://*/*`, `wss://*/*`, and `http://*/*` are optional only. The wallet requests the **exact user-selected** Advanced / custom RPC origin at runtime.  
+- **`clipboardRead`** is **optional**. Named required `host_permissions` are **367** after trim.  
 - Content scripts load: `inject-allowlist.js` → `dapp-provider-bridge.js` → `content-script.js`.  
 - Reload the extension after updating for Chrome to re-read the manifest.
 

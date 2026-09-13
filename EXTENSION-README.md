@@ -1,6 +1,6 @@
 # Smart Wallet
 
-**Current checkpoint:** **0.11.698**. Production LiFi Worker is **1.6.4**. Store ZIP is built locally and is not published in this repository.
+**Current checkpoint:** **0.11.698** (stamp **w41**). Production LiFi Worker is **1.6.4**. Store ZIP is built locally and is not published in this repository.
 
 Non-custodial multi-chain **Chrome / Opera MV3** browser wallet.
 
