@@ -1,0 +1,9 @@
+# Documentation repository. Local operator material is not published.
+.DS_Store
+Thumbs.db
+*.zip
+*.bundle
+*.map
+.env
+.env.*
+node_modules/

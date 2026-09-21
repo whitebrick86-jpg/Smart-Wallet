@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Wallet — Privacy</title>
+    <link rel="icon" type="image/png" data-sw-logo="favicon" href="./icons/smart-wallet.png?v=35" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0a1324;
+        --ink: #f4f1fa;
+        --muted: #a8a0b8;
+        --link: #3b82f6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.5;
+        padding: 24px 18px 48px;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.35rem;
+        margin: 0 0 8px;
+        font-weight: 600;
+      }
+      h2 {
+        font-size: 1.05rem;
+        margin: 1.4rem 0 0.5rem;
+        font-weight: 600;
+      }
+      p,
+      li {
+        color: var(--muted);
+        font-size: 0.92rem;
+        font-weight: 400;
+      }
+      a {
+        color: var(--link);
+        font-weight: 400;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      a:hover {
+        color: #60a5fa;
+      }
+      .meta {
+        font-size: 0.8rem;
+        opacity: 0.85;
+        font-weight: 400;
+      }
+      ul {
+        padding-left: 1.2rem;
+      }
+      .links-row {
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Smart Wallet — Privacy</h1>
+      <p class="meta">Last updated: 2026-08-20 · Non-custodial browser wallet</p>
+
+      <h2>Messaging</h2>
+      <p>
+        Optional wallet-to-wallet messaging stores message contents, public addresses, timestamps,
+        IP address, and security metadata on Smart Wallet infrastructure. Messages are encrypted in
+        transit and at rest, but are <strong>not end-to-end encrypted</strong>. Authorized
+        infrastructure can process contents for delivery, security, abuse prevention, and legal
+        compliance. “Sent” means storage was confirmed, not that the recipient opened the message.
+        Delete for me, block sender, and report apply only after you enable messaging.
+      </p>
+
+      <h2>Non-custodial design</h2>
+      <ul>
+        <li>We do not operate a Smart Wallet cloud account that stores your seed phrase or private keys.</li>
+        <li>We do not intentionally transmit seed phrases, private keys, passwords, or decrypted vault contents to Smart Wallet servers.</li>
+        <li>Smart Wallet infrastructure cannot approve or sign transactions for you.</li>
+        <li>We do not sell personal information or use wallet activity for personalized advertising.</li>
+      </ul>
+
+      <h2>RPC routing</h2>
+      <p>
+        Blockchain requests may use built-in public RPC, a Custom RPC endpoint you configure, or
+        developer-managed RPC infrastructure. An authorized operator may choose Managed RPC or
+        Public RPC for reliability, security, maintenance, availability, or capacity. That
+        operator cannot access seed phrases or private wallet keys and cannot approve or sign
+        transactions for you. Disabling Managed RPC does not remotely turn off a Custom RPC you
+        configured.
+      </p>
+
+      <h2>Device authentication</h2>
+      <p>
+        After you agree, Smart Wallet may silently create a unique non-exportable
+        device-authentication key. The private device-authentication key stays on this device.
+        Only the public key and a derived device identifier are sent to Smart Wallet
+        infrastructure. That identifier is not your seed phrase or wallet private key.
+      </p>
+
+      <h2>What Managed RPC may process</h2>
+      <p>
+        When Managed RPC is used, Smart Wallet infrastructure may process the selected network,
+        RPC method and parameters, public addresses, transaction hashes, signed transaction data
+        submitted for broadcasting, IP address, timestamps, and security or diagnostic metadata.
+      </p>
+
+      <h2>What stays on your device</h2>
+      <p>
+        Addresses, encrypted vault data, settings, Custom RPC configuration, caches, dApp
+        permissions, and a non-exportable Managed RPC device-authentication key stay in your
+        browser profile. Seed phrases and private wallet keys are not included in Managed RPC
+        registration.
+      </p>
+
+      <h2>Network requests</h2>
+      <p>
+        Your browser may contact Managed RPC infrastructure, public or Custom RPC providers,
+        Helius, Jupiter, CoinGecko, LiFi-related services, WalletConnect/Reown, on-ramps,
+        explorers, and dApps you connect. Those parties may see public addresses, request
+        contents, and ordinary web metadata such as IP address.
+      </p>
+      <p>
+        Automatic blockchain requests are limited to the selected network, except for explicit
+        features such as bridge, swap, authorized dApp requests, transaction confirmation, or an
+        all-network balance view you open.
+      </p>
+
+      <h2>Permissions (plain language)</h2>
+      <ul>
+        <li>Storage — encrypted wallet state, settings, and local registration state</li>
+        <li>Clipboard — copy address; paste-safety checks on Send/Bridge</li>
+        <li>Websites / scripting — inject a standard wallet provider on allowlisted dApp hosts</li>
+        <li>Tabs — open or focus the wallet for approvals and Ledger</li>
+        <li>Alarms — auto-lock and bounded maintenance</li>
+        <li>Offscreen — local signing helper</li>
+        <li>HID — Ledger hardware over USB</li>
+      </ul>
+
+      <h2>Full policy, fees &amp; contact</h2>
+      <p class="links-row">
+        <a
+          href="https://github.com/whitebrick86-jpg/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/PRIVACY-POLICY.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Privacy Policy</a
+        >
+        ·
+        <a
+          href="https://github.com/whitebrick86-jpg/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/FEE-DISCLOSURE.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Fee disclosure</a
+        >
+        ·
+        <a
+          href="https://github.com/whitebrick86-jpg/Smart-Wallet/blob/main/Chrome-extension-store-for-reviewers/CONTACTS.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Contact</a
+        >
+        ·
+        <a
+          href="https://github.com/whitebrick86-jpg/Smart-Wallet"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Documentation</a
+        >
+      </p>
+    </main>
+    <script src="./ui/ui-logo.js"></script>
+  </body>
+</html>
