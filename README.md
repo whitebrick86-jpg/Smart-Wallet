@@ -18,6 +18,7 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 | File | Description |
 |------|-------------|
 | **[PRODUCT.md](./PRODUCT.md)** | **Canonical product map:** extension + LiFi Worker folders, staging URL, fee classes, no API key in the extension |
+| **[SECURITY.md](./SECURITY.md)** | **How Smart Wallet protects your keys** (user-facing security overview) |
 | **[MESSAGING.md](./MESSAGING.md)** | Inbox / Messaging: folders, buttons, Delete conversation vs Delete for me vs server deletion request |
 | **[Chrome-extension-store-for-reviewers/](./Chrome-extension-store-for-reviewers/)** | **CWS reviewer pack** (privacy, fees, host permissions, contacts) |
 | **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Build architecture: surfaces, storage, signing, live feeds, dApp inject, fees, security, packaging |
@@ -34,7 +35,7 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 
 ## Architecture (short)
 
-**Live product: 0.11.698** (stamp **w289**). Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Current networks: **[CHAINS.md](./CHAINS.md)**. Error Console: **[ERROR-CONSOLE.md](./ERROR-CONSOLE.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**.
+**Live product: 0.11.698** (stamp **w289**). Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Current networks: **[CHAINS.md](./CHAINS.md)**. Error Console: **[ERROR-CONSOLE.md](./ERROR-CONSOLE.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**. Keys: **[SECURITY.md](./SECURITY.md)**.
 
 ```text
 UI (popup / full page)  ←→  Service worker  ←→  Offscreen signer
