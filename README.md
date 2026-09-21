@@ -20,7 +20,7 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 | **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Build architecture: surfaces, storage, signing, live feeds, dApp inject, fees, security, packaging |
 | **[CHAINS.md](./CHAINS.md)** | **Networks:** current 12-chain list, including Sonic |
 | **[NONCE-GUARD.md](./NONCE-GUARD.md)** | **Nonce Guard:** what an EVM nonce is, pending queues, Wait / Speed Up / Cancel |
-| **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)** | **Error System:** inspect → classify → present → stamp → **Logs** (Log / Errors / Alerts / Connections) |
+| **[ERROR-CONSOLE.md](./ERROR-CONSOLE.md)** | **Error Console:** inspect → classify → present → stamp → **Logs** (Log / Errors / Alerts / Connections) |
 | **[INTERNAL-DEX.md](./INTERNAL-DEX.md)** | **Internal DEX:** EVM quote order LiFi (45 bps) → 0x → Uni V2 → V3; Jupiter best-effort / fee-free rebuild OK; LiFi carve-out only |
 | **[LOADS.md](./LOADS.md)** | Network loads: comprehensive ping / HTTPS / RPC counts (idle + trading + new EVM nets) |
 | **[allow-list/](./allow-list/)** | Inject + network host lists (**118** apex inject hosts; live LiFi MODE is the **production** Worker, not direct `li.quest`) |
@@ -32,7 +32,7 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 
 ## Architecture (short)
 
-**Live product: 0.11.698** (stamp **w289**). Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Current networks: **[CHAINS.md](./CHAINS.md)**. Error System: **[ERROR-SYSTEM.md](./ERROR-SYSTEM.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**.
+**Live product: 0.11.698** (stamp **w289**). Folder map and fee classes: **[PRODUCT.md](./PRODUCT.md)**. Full detail: **[ARCHITECTURE.md](./ARCHITECTURE.md)**. Current networks: **[CHAINS.md](./CHAINS.md)**. Error Console: **[ERROR-CONSOLE.md](./ERROR-CONSOLE.md)**. Nonce Guard: **[NONCE-GUARD.md](./NONCE-GUARD.md)**. Internal DEX: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**. Messaging: **[MESSAGING.md](./MESSAGING.md)**.
 
 ```text
 UI (popup / full page)  ←→  Service worker  ←→  Offscreen signer
@@ -65,7 +65,7 @@ UI (popup / full page)  ←→  Service worker  ←→  Offscreen signer
 9. **Fees** — Jupiter swap **0.45%** · LiFi EVM swap currently **0.70%** combined (0.45% + LI.FI 0.25%) · LiFi EVM-source bridge currently **1.10%** (0.85% + 0.25%) · none on Send / external DEX  
 10. **Logo** — in-app product mark centralized in `ui/ui-logo.js` (toolbar icons remain separate)
 
-**Deep dive:** [ARCHITECTURE.md](./ARCHITECTURE.md) · [CHAINS.md](./CHAINS.md) · [ERROR-SYSTEM.md](./ERROR-SYSTEM.md) · [INTERNAL-DEX.md](./INTERNAL-DEX.md) · user-facing short form: **DOCUMENTATION §6**.
+**Deep dive:** [ARCHITECTURE.md](./ARCHITECTURE.md) · [CHAINS.md](./CHAINS.md) · [ERROR-CONSOLE.md](./ERROR-CONSOLE.md) · [INTERNAL-DEX.md](./INTERNAL-DEX.md) · user-facing short form: **DOCUMENTATION §6**.
 
 ## Quick map (DOCUMENTATION.txt)
 

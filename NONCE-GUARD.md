@@ -351,6 +351,6 @@ The Nonce Guard exists so a stuck nonce `28` cannot quietly become a pile of lat
 ## Related docs
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — how signing and RPC are layered  
-- [ERROR-SYSTEM.md](./ERROR-SYSTEM.md) — how “pending reserved,” underpriced, and nonce errors are named  
+- [ERROR-CONSOLE.md](./ERROR-CONSOLE.md) — how “pending reserved,” underpriced, and nonce errors are named  
 - [CHAINS.md](./CHAINS.md) — supported networks  
 - [INTERNAL-DEX.md](./INTERNAL-DEX.md) — swap confirm truth (approval must confirm before a dependent swap signs)  

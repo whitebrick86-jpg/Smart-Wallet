@@ -1,22 +1,22 @@
-# Error System
+# Error Console
 
 **Product:** Smart Wallet (Chrome / Opera MV3 extension)  
-**Error-system snapshot:** **0.11.698** (stamp **w289**; Logs tabs: Log / Errors / Alerts / **Warnings** / Connections)  
+**Error-console snapshot:** **0.11.698** (stamp **w289**; Logs tabs: Log / Errors / Alerts / **Warnings** / Connections)  
 **Live product:** **0.11.698** (stamp **w289**) — see [PRODUCT.md](./PRODUCT.md)
 **Original architecture snapshot:** **0.11.159** (inspect → classify → present → stamp)  
-**Later additions (not in 0.11.159):** Logs store **0.11.145**; in-wallet Log / Errors / Alerts UI **0.11.191–0.11.197**; **Connections** tab **0.11.204**; newest-first **0.11.205**; Connections-only rows **0.11.206**; tab-scoped Clear **0.11.208**; SW-serialized log writes + `originalErr` isolation **0.11.209**; external DEX swap failures in Logs **0.11.210**; external DEX failure **reason** on the Swap row **0.11.211**; external dApp **intent** (not hostname=swap) + RPC host-failure rows **0.11.212**; expanded structured diagnostic catalog + 500/1000 cap + recovery **0.11.213**; four-level severity (critical/error/warning/info) **0.11.214**; muted four-color palette **0.11.215**; dApp **Warnings** tab **0.11.216**; vault / seed-reveal / unrecognized-outgoing Warnings **0.11.217**; muted palette + red Connections disconnect **0.11.218**; Home critical-warning badge **0.11.219**; badge copy **review logs** **0.11.220**; Error System docs: selected-tab Clear, plaintext-boundary claim, Ledger seed-warning guidance **0.11.220**; Logs UI chrome polish **0.11.221**; light-mode Logs canvas fill + banner removed **0.11.222**; Logs leftover `#3d3e46`, dock/home/send/history/accounts untouched **0.11.223**; Logs top-chip hover stays Home plates **0.11.224**; Logs gold tab / `#3d4d60` box border restored **0.11.225**; Logs rounded `#121a24` shell **0.11.226**; leftover `#121a24` / inner outline `#3d3e46` **0.11.227**; vault-watcher false-positive fix **0.11.228**; scoped vault-write protocol **0.11.229**; unauthorized vault warning no longer pauses signing **0.11.230**; owner-write stamp so only non-owner vault changes warn **0.11.231**; critical tx mismatches ask to proceed **0.11.232**; Logs Settings switches persist across popup close **0.11.233**; Error System §9.3.1 documents **Hide routine success**; Error System §9.7 **Warnings that may be triggered by owner** **2026-08-16**; Logs tab membership separated **0.11.616** (**2026-08-27**)  
+**Later additions (not in 0.11.159):** Logs store **0.11.145**; in-wallet Log / Errors / Alerts UI **0.11.191–0.11.197**; **Connections** tab **0.11.204**; newest-first **0.11.205**; Connections-only rows **0.11.206**; tab-scoped Clear **0.11.208**; SW-serialized log writes + `originalErr` isolation **0.11.209**; external DEX swap failures in Logs **0.11.210**; external DEX failure **reason** on the Swap row **0.11.211**; external dApp **intent** (not hostname=swap) + RPC host-failure rows **0.11.212**; expanded structured diagnostic catalog + 500/1000 cap + recovery **0.11.213**; four-level severity (critical/error/warning/info) **0.11.214**; muted four-color palette **0.11.215**; dApp **Warnings** tab **0.11.216**; vault / seed-reveal / unrecognized-outgoing Warnings **0.11.217**; muted palette + red Connections disconnect **0.11.218**; Home critical-warning badge **0.11.219**; badge copy **review logs** **0.11.220**; Error Console docs: selected-tab Clear, plaintext-boundary claim, Ledger seed-warning guidance **0.11.220**; Logs UI chrome polish **0.11.221**; light-mode Logs canvas fill + banner removed **0.11.222**; Logs leftover `#3d3e46`, dock/home/send/history/accounts untouched **0.11.223**; Logs top-chip hover stays Home plates **0.11.224**; Logs gold tab / `#3d4d60` box border restored **0.11.225**; Logs rounded `#121a24` shell **0.11.226**; leftover `#121a24` / inner outline `#3d3e46` **0.11.227**; vault-watcher false-positive fix **0.11.228**; scoped vault-write protocol **0.11.229**; unauthorized vault warning no longer pauses signing **0.11.230**; owner-write stamp so only non-owner vault changes warn **0.11.231**; critical tx mismatches ask to proceed **0.11.232**; Logs Settings switches persist across popup close **0.11.233**; Error Console §9.3.1 documents **Hide routine success**; Error Console §9.7 **Warnings that may be triggered by owner** **2026-08-16**; Logs tab membership separated **0.11.616** (**2026-08-27**)  
 **Last updated:** 2026-08-27  
 **Repository:** Documentation only — extension source is **not** published here.
 
-This is the account of the **in-wallet Error System**: how a raw RPC, Ledger, provider, or contract failure becomes a named code, a single honest user sentence, a privacy-safe diagnostic, and (on the verified paths below) a local Logs row.
+This is the account of the **in-wallet Error Console**: how a raw RPC, Ledger, provider, or contract failure becomes a named code, a single honest user sentence, a privacy-safe diagnostic, and (on the verified paths below) a local Logs row.
 
 It is **not** a crash reporter, **not** a `console.log` interceptor, and **not** uploaded anywhere.
 
 ---
 
-## 1. What the Error System is
+## 1. What the Error Console is
 
-The Error System is a **layered pipeline**. These paths are **verified** to go through it today: **Send**, **internal Swap**, **external dApp** send/sign/message-signing failures, **RPC host** failover / exhaustion, **internal Bridge**, and **Ledger** connect / broadcast-proof. Other subsystems are listed in §9.2 as not wired. This document does **not** claim every catch in the wallet uses the shared system.
+The Error Console is a **layered pipeline**. These paths are **verified** to go through it today: **Send**, **internal Swap**, **external dApp** send/sign/message-signing failures, **RPC host** failover / exhaustion, **internal Bridge**, and **Ledger** connect / broadcast-proof. Other subsystems are listed in §9.2 as not wired. This document does **not** claim every catch in the wallet uses the shared system.
 
 ```text
 Raw failure (ethers / JSON-RPC / Ledger / provider / revert bytes)
@@ -41,7 +41,7 @@ dApp / EIP-1193 path (parallel owners):
         → same Logs pipeline for named provider codes (4001 / 4100 / 4200 / 4901 / 4902 / -32000)
 ```
 
-**Inspect and classify do not talk to the network.** Sequential RPC callers decide failover. The Error System only **names** what already happened and **stops** callers from treating infrastructure failures as “not enough coins,” or a submitted hash as “failed.”
+**Inspect and classify do not talk to the network.** Sequential RPC callers decide failover. The Error Console only **names** what already happened and **stops** callers from treating infrastructure failures as “not enough coins,” or a submitted hash as “failed.”
 
 ---
 
@@ -129,7 +129,7 @@ Long hex (`0x` + ≥20 hex chars) is treated as opaque, not an amount. Amounts a
 | `TRANSACTION_ALREADY_KNOWN` | Mempool already has this exact payload | Submitted — do not send again |
 | `USER_REJECTED` | User / Ledger cancelled | Cancelled; nothing submitted |
 
-**This pair is the heart of the Error System.** Live Polygon Ledger (0.11.139–0.11.144) had ~274 POL confirmed, this send needed ~264 POL, and the RPC said `queued cost: 273.8` vs `tx cost: 263.8`. A regex on `insufficient funds for gas * price + value` used to show **Not enough POL**. That is **false**. The wallet had the coins; another pending tx had reserved them.
+**This pair is the heart of the Error Console.** Live Polygon Ledger (0.11.139–0.11.144) had ~274 POL confirmed, this send needed ~264 POL, and the RPC said `queued cost: 273.8` vs `tx cost: 263.8`. A regex on `insufficient funds for gas * price + value` used to show **Not enough POL**. That is **false**. The wallet had the coins; another pending tx had reserved them.
 
 `PENDING_BALANCE_RESERVED` is raised only when:
 
@@ -306,7 +306,7 @@ dApp / injected provider
 
 ## 8. Swap-specific layer (`swap-outcome.js`)
 
-Internal DEX has its **own** state machine and codes (quote / route / allowance / fee settlement). It **reuses** the Error System for funds, RPC, broadcast, and lifecycle. It does **not** invent a second presenter.
+Internal DEX has its **own** state machine and codes (quote / route / allowance / fee settlement). It **reuses** the Error Console for funds, RPC, broadcast, and lifecycle. It does **not** invent a second presenter.
 
 Representative swap codes (not a second classification universe — they map onto the same user rules):
 
@@ -328,7 +328,7 @@ Full quote/execute architecture: **[INTERNAL-DEX.md](./INTERNAL-DEX.md)**.
 
 ## 9. Logs
 
-Settings → **Logs** → **Open** is the in-wallet error console. It is part of the Error System (step 5 — Surface). It is **not** a crash reporter, **not** a `console.log` interceptor, and **not** uploaded anywhere.
+Settings → **Logs** → **Open** is the in-wallet error console. It is part of the Error Console (step 5 — Surface). It is **not** a crash reporter, **not** a `console.log` interceptor, and **not** uploaded anywhere.
 
 Open stays **inside the wallet** (`#panel-logs`). There is no separate browser window.
 
@@ -892,7 +892,7 @@ The injected provider **must not invent `0x1`**. Unknown chain throws. `PROVIDER
 | `tools/test-vault-security-warnings.js` | Vault / seed-reveal / unrecognized-outgoing Warnings (mocked) |
 | `tools/test-tx-lifecycle.js` | Hash identity + CONFIRMING ≠ FAILED |
 
-`tools/verify-extension.ps1` is the operator gate after any Error System edit.
+`tools/verify-extension.ps1` is the operator gate after any Error Console edit.
 
 **Mocked versus live:** `test-diag-severity.js`, `test-diag-logs.js`, `test-diag-coverage.js`, and `test-rpc-host-logs.js` are fully mocked (in-memory store, no network). Send / Swap / Bridge / Ledger / RPC / nonce / History suites remain mocked except where a script already labels a live estimate. 0.11.214 does not add RPC calls or live telemetry.
 

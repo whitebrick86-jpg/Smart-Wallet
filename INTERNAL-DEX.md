@@ -20,7 +20,7 @@ It is **not** Uniswap / PancakeSwap / Jupiter **in a browser tab**. Those are **
 | **External DEX** | uniswap.org, pancakeswap.finance, jup.ag, … | The site | **None** from Smart Wallet |
 | **Send** | Smart Wallet → **Send** | Wallet | **None** |
 
-Internal DEX is a **same-chain swap**. Bridge is a different product path that shares fee helpers and the Error System, not this quote coordinator.
+Internal DEX is a **same-chain swap**. Bridge is a different product path that shares fee helpers and the Error Console, not this quote coordinator.
 
 ---
 
@@ -71,7 +71,7 @@ Swap panel (app.js + swap-manager façade)
 | `swap-outcome.js` | `SmartWalletSwapOutcome` | State machine + swap codes + privacy-safe DevTools journal. |
 | `evm-revert-decoder.js` | (swap-outcome only) | Allowlisted revert selectors. No user copy. |
 | `fee-helpers.js` | `FeeHelpers` | Pure math: swap **45** bps · bridge **85** bps. |
-| `tx-error-present.js` | `SmartWalletTxPresent` | Broadcast / funds / RPC wording (see [ERROR-SYSTEM.md](./ERROR-SYSTEM.md)). |
+| `tx-error-present.js` | `SmartWalletTxPresent` | Broadcast / funds / RPC wording (see [ERROR-CONSOLE.md](./ERROR-CONSOLE.md)). |
 | `app.js` | execute / fee ledger | Execute, Jupiter fee stages, later-receipt queue, history row. |
 | `background.js` | SW probe | `eth_getTransactionReceipt` + `sw-swap-await-confirm` alarm. **No sign. No rebroadcast.** |
 
@@ -329,7 +329,7 @@ Internal DEX does **not** have a second user-copy system.
 | Layer | Who names it |
 |-------|----------------|
 | Quote / route / allowance / sim revert | `swap-outcome.js` + revert decoder |
-| Funds / pending reserved / RPC / Ledger / broadcast | [Error System](./ERROR-SYSTEM.md) |
+| Funds / pending reserved / RPC / Ledger / broadcast | [Error Console](./ERROR-CONSOLE.md) |
 | Confirm / fee due | later-receipt machine above |
 
 A LiFi “no route” is `NO_ROUTE`, not “not enough BNB.”  
@@ -402,7 +402,7 @@ After a **confirmed** internal swap or bridge, leftover USDC that should have go
 
 | File | Role |
 |------|------|
-| [ERROR-SYSTEM.md](./ERROR-SYSTEM.md) | Inspect / classify / present / Logs |
+| [ERROR-CONSOLE.md](./ERROR-CONSOLE.md) | Inspect / classify / present / Logs |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Whole-wallet build |
 | [CHAINS.md](./CHAINS.md) | Arb / OP / Avalanche tokens and RPC |
 | [LOADS.md](./LOADS.md) | Quote / probe / fee HTTPS + RPC counts |

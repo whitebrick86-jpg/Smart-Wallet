@@ -895,7 +895,7 @@ Pending-reserved / insufficient-confirmed / nonce / revert: **stop**. That is of
 | Item | Why |
 |------|-----|
 | Settings → Logs | `chrome.storage.local` only |
-| Error System inspect/classify/present | CPU only |
+| Error Console inspect/classify/present | CPU only |
 | Auto-lock / session gen | local |
 | Product logo / theme | local assets |
 | Vault encrypt / decrypt | local |
@@ -936,7 +936,7 @@ Pending-reserved / insufficient-confirmed / nonce / revert: **stop**. That is of
 
 ### Multipliers (still true)
 
-1. RPC failover × **1–4** on 429/dead host — **unless** the Error System names a sticky account reject, then × **1**.
+1. RPC failover × **1–4** on 429/dead host — **unless** the Error Console names a sticky account reject, then × **1**.
 2. History without Helius = `getTransaction` fan-out.
 3. Fee USDC path = +1–2 txs **per confirmed internal trade only**.
 4. Bridge status ~10 s until done.
@@ -971,7 +971,7 @@ Dead hosts that were **not** left in the walk (they would have been wasted failo
 |------|------|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design |
 | [CHAINS.md](./CHAINS.md) | Arb / OP / Avalanche registry + tokens |
-| [ERROR-SYSTEM.md](./ERROR-SYSTEM.md) | Why sticky rejects stop RPC walks |
+| [ERROR-CONSOLE.md](./ERROR-CONSOLE.md) | Why sticky rejects stop RPC walks |
 | [INTERNAL-DEX.md](./INTERNAL-DEX.md) | Quote / execute / later-receipt jobs |
 | [DOCUMENTATION.txt](./DOCUMENTATION.txt) §19 | User-facing load pings table |
 

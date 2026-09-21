@@ -342,7 +342,7 @@ Public GitHub repo remains **docs only**.
 | `history-manager.js` | History façade + durable cache |
 | `swap-manager.js` | Swap façade + 0.45% fee math |
 | `evm-swap-providers.js` | Sequential Internal DEX quotes (see [INTERNAL-DEX.md](./INTERNAL-DEX.md)) |
-| `evm-error-classify.js` / `tx-error-present.js` | Error System (see [ERROR-SYSTEM.md](./ERROR-SYSTEM.md)) |
+| `evm-error-classify.js` / `tx-error-present.js` | Error Console (see [ERROR-CONSOLE.md](./ERROR-CONSOLE.md)) |
 | `bridge-manager.js` | Bridge façade + 0.85% fee math |
 | `manager-bootstrap.js` | Adapter wiring after app.js |
 | `app.js` | UI + most product logic |
@@ -393,7 +393,7 @@ Public GitHub repo remains **docs only**.
 | Document | Contents |
 |----------|----------|
 | [CHAINS.md](./CHAINS.md) | Networks order + Arbitrum / Optimism / Avalanche |
-| [ERROR-SYSTEM.md](./ERROR-SYSTEM.md) | Inspect / classify / present / Logs |
+| [ERROR-CONSOLE.md](./ERROR-CONSOLE.md) | Inspect / classify / present / Logs |
 | [INTERNAL-DEX.md](./INTERNAL-DEX.md) | In-wallet Swap: sequential quotes, confirm truth, 45 bps |
 | [LOADS.md](./LOADS.md) | Network load / idle-first pings / comprehensive RPC counts |
 | [Chrome-extension-store-for-reviewers/](./Chrome-extension-store-for-reviewers/) | CWS reviewer pack |
