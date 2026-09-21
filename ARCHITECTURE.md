@@ -398,7 +398,6 @@ Public GitHub repo remains **docs only**.
 | [LOADS.md](./LOADS.md) | Network load / idle-first pings / comprehensive RPC counts |
 | [Chrome-extension-store-for-reviewers/](./Chrome-extension-store-for-reviewers/) | CWS reviewer pack |
 | [DOCUMENTATION.txt](./DOCUMENTATION.txt) | Full user guide |
-| [EXTENSION-README.md](./EXTENSION-README.md) | Install / package / Helius |
 
 ---
 

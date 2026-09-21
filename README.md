@@ -27,7 +27,6 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 | [DOCUMENTATION.txt](./DOCUMENTATION.txt) | Full user guide |
 | [HOW-TO-MULTIPLE-LEDGER-WALLETS.txt](./HOW-TO-MULTIPLE-LEDGER-WALLETS.txt) | Ledger multi-wallet how-to |
 | **[TERMS-OF-SERVICE.md](./TERMS-OF-SERVICE.md)** | Terms of Service |
-| [EXTENSION-README.md](./EXTENSION-README.md) | Install, store package, optional Helius |
 | [license-bird-colorful-logo-gradient-vector-28267842.pdf](./license-bird-colorful-logo-gradient-vector-28267842.pdf) | Logo / brand license PDF |
 
 ## Architecture (short)
