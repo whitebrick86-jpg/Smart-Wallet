@@ -1,5 +1,8 @@
 # Smart Wallet
 
+![Smart Wallet small promo](./screenshots/small-promo-440x280-blackhole-v2.png)
+
+
 **Documentation-only repository.**
 
 User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 extension). Extension source code is **not** published in this repo.
