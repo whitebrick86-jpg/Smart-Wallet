@@ -16,7 +16,7 @@
 | **Activity WS → light refresh** | On Solana mention / activity: light balance refresh with **min-gap ~10.5 s**. |
 | **HTTP safety poll** | Fallback balance poll **~5 min (EVM)** / **~10 min (Solana)** when WS path is not carrying the load. |
 | **Price reconcile** | HTTP price reconcile can tick fast (**~5 s**) but is **skipped when market WS is fresh**. |
-| **Request budgets (`sw-request-budget.js`)** | **15 s** window. Caps: home **16** / send **24** / swap **24** / bridge **24** / history **48** / holdings **48** / dapp **64** / settings **4** / logs **2** / refresh **24** / wallet **32** / solana **32**; `ORIGIN_CAP` **80** / `WALLET_CAP` **80**. **Critical** always allowed (`send`, `swap-exec`, `bridge-exec`, `sign`, `broadcast`, `preflight`, `confirm`, `fee-collect`, `sendRaw`, `sendTransaction`). EVM `DAPP_QUOTE_READ` + Solana `SOLANA_DAPP_QUOTE_READ` exempt from screen/origin burn. Over budget → fail-closed `RPC_SCREEN_BUDGET` / `RPC_ORIGIN_BUDGET` / `RPC_WALLET_BUDGET` (soft ops skipped). Gating: `rpc-gateway` `applyRequestBudget`, `rpc-network-host` `B.allow`, Home live-balance tick (not Home-only). |
+| **Request budgets (`sw-request-budget.js`)** | **15 s** window. Caps: home **16** / send **24** / swap **24** / bridge **24** / history **48** / holdings **48** / dapp **64** / dappQuote **192** / settings **4** / logs **2** / refresh **24** / wallet **32** / solana **32**; `ORIGIN_CAP` **80** / `WALLET_CAP` **80**. **Critical** always allowed (`send`, `swap-exec`, `bridge-exec`, `sign`, `broadcast`, `preflight`, `confirm`, `fee-collect`, `sendRaw`, `sendTransaction`). EVM `DAPP_QUOTE_READ` + Solana `SOLANA_DAPP_QUOTE_READ` exempt from screen/origin burn. Over budget → fail-closed `RPC_SCREEN_BUDGET` / `RPC_ORIGIN_BUDGET` / `RPC_WALLET_BUDGET` (soft ops skipped). Gating: `rpc-gateway` `applyRequestBudget`, `rpc-network-host` `B.allow`, Home live-balance tick (not Home-only). |
 | **RPC gateway** | Sequential failover; **429 cooldown ~45 s**; account-read **hedge 450 ms** (host #2 if host #1 still in flight). |
 | **WS health** | Market stale **~45 s**; RPC WS ping **~25 s** / wait **~12 s**. |
 | **Post-tx** | Light burst refreshes after confirmed sends (qualitative; not a HAR). Sync timeouts are qualitative wall-clock stops — do not invent RPM. |
@@ -61,7 +61,7 @@
 | Global inflight | **8** | `rpc-active-network.js` `GLOBAL_MAX` — gateway/automatic chain work |
 | Per-chain inflight | **4** | `PER_CHAIN_MAX` |
 | Networks picker | **2** concurrent | `PORTFOLIO_MAX`; lease 45 s; cancelled on close |
-| Screen budget (non-critical) | home **16** / send **24** / swap **24** / bridge **24** / history **48** / holdings **48** / dapp **64** / settings **4** / logs **2** / refresh **24** / wallet **32** / solana **32** per **15 s**; `ORIGIN_CAP` **80** / `WALLET_CAP` **80** | `sw-request-budget.js`. Critical send/swap-exec/bridge-exec/sign/broadcast/preflight/confirm/fee-collect/sendRaw/sendTransaction **bypass**. EVM+Solana dApp quote-read exemptions. Soft over-budget → `RPC_*_BUDGET` fail-closed. Gating via `rpc-gateway` `applyRequestBudget`, `rpc-network-host` `B.allow`, and Home live-balance tick — **not** Home-only. Solana bucket keeps EVM holdings from starving SPL discovery. |
+| Screen budget (non-critical) | home **16** / send **24** / swap **24** / bridge **24** / history **48** / holdings **48** / dapp **64** / settings **4** / logs **2** / refresh **24** / wallet **32** / solana **32** per **15 s**; `ORIGIN_CAP` **80** / `WALLET_CAP` **80**; dApp quote reads: `ORIGIN_QUOTE_CAP` **240** / `WALLET_QUOTE_CAP` **240** | `sw-request-budget.js`. Critical send/swap-exec/bridge-exec/sign/broadcast/preflight/confirm/fee-collect/sendRaw/sendTransaction **bypass**. EVM+Solana dApp quote-read exemptions. Soft over-budget → `RPC_*_BUDGET` fail-closed. Gating via `rpc-gateway` `applyRequestBudget`, `rpc-network-host` `B.allow`, and Home live-balance tick — **not** Home-only. Solana bucket keeps EVM holdings from starving SPL discovery. |
 | RPC walk | Sequential; Solana **≤7 hosts / 3 attempts**; EVM gateway **≤3**; raw EVM `eth_call` **≤4** | No `Promise.all` fan-out of free RPCs |
 | Account-read hedge | **450 ms** | Host #2 starts if host #1 still pending (`rpc-gateway.js`, BTC/Sui in `app.js`) |
 | RPC 429 cooldown | **~45 s** | Per-host cooldown after rate-limit (`rpc-gateway` / health policy) — live 0.11.698 |
@@ -742,7 +742,7 @@ EVM Home (no activity WS): replace row 4 with balance fallback ~**105s** → **~
 
 Sliding **15 s** window from live `sw-request-budget.js` (Code Review 2026-09-21 @ `9c3734e`). **Critical** ops (`send`, `swap-exec`, `bridge-exec`, `sign`, `broadcast`, `preflight`, `confirm`, `fee-collect`, `sendRaw`, `sendTransaction`) are **always allowed** and do **not** consume the cap. EVM `DAPP_QUOTE_READ` and Solana `SOLANA_DAPP_QUOTE_READ` are **exempt** from screen/origin burn during quote sims. Over budget → fail-closed `RPC_SCREEN_BUDGET` / `RPC_ORIGIN_BUDGET` / `RPC_WALLET_BUDGET` (soft ops skipped; last cache stays).
 
-Also: `ORIGIN_CAP` **80**, `WALLET_CAP` **80**.
+Also: `ORIGIN_CAP` **80**, `WALLET_CAP` **80**; `ORIGIN_QUOTE_CAP` **240**, `WALLET_QUOTE_CAP` **240** (dApp quote reads).
 
 | Screen | Cap / 15s | Typical consumer |
 |--------|-----------|------------------|
@@ -753,6 +753,7 @@ Also: `ORIGIN_CAP` **80**, `WALLET_CAP` **80**.
 | history | 48 | pagination / extra rows |
 | holdings | 48 | token discovery / enrich |
 | dapp | 64 | chainId / accounts-class soft reads; quote-read exemptions apply |
+| dappQuote | 192 | dApp quote-read traffic (own bucket; origin quote cap 240, wallet quote cap 240) |
 | settings | 4 | almost nothing |
 | logs | 2 | none (local) |
 | refresh | 24 | explicit Refresh / force paths |
