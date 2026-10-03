@@ -954,7 +954,7 @@ Adding three EVM nets **does not** triple idle Home. The wallet still talks to *
 | Idle Home on Solana | **0** | Same 45–70/hr + 2 WS |
 | Idle Home on Arb or OP | Same as Base EVM idle | No Solana mentions WS → balance fallback ~**105s** → **~60–85** HTTPS+RPC/hr + **1** ETHUSDT WS |
 | Idle Home on Avalanche | Same EVM idle class | **1** AVAXUSDT WS (replaces ETHUSDT, not a second socket). CoinGecko still **1** majors HTTPS (now includes `avalanche-2`) |
-| Open Networks picker | **+3 native balance RPC** (one per new chain) | Sequential per chain, not a fan-out of hosts. One-shot on open, not a timer |
+| Open Networks picker (0.11.715) | Reads **cached** balances through a shared memoized cache; a forced refresh on open is throttled to **once per 12 s**. A cold chain can still cost **+1 native balance RPC** (up to +3 for three new chains) | Sequential per chain, not a fan-out of hosts. One-shot on open, not a timer. Reopening the picker within 12 s does not refetch |
 | Internal swap quote (Arb/OP/AVAX) | **1 HTTPS** if LiFi wins | Live-probed. Same debounce ~450 ms; **0** while amount empty |
 | Internal swap execute | **~15–35** like other EVM | LiFi quote/build + atomic fee verify + send + receipt |
 | History on Arb/OP | Blockscout + optional logs | Prefer Tenderly/drpc/official first (publicnode last for topic-only logs) |

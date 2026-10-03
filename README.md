@@ -24,7 +24,7 @@ User and architecture documentation for **Smart Wallet** (Chrome / Opera MV3 ext
 | **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Build architecture: surfaces, storage, signing, live feeds, dApp inject, fees, security, packaging |
 | **[CHAINS.md](./CHAINS.md)** | **Networks:** current 12-chain list, including Sonic |
 | **[NONCE-GUARD.md](./NONCE-GUARD.md)** | **Nonce Guard:** what an EVM nonce is, pending queues, Wait / Speed Up / Cancel |
-| **[ERROR-CONSOLE.md](./ERROR-CONSOLE.md)** | **Error Console:** inspect → classify → present → stamp → **Logs** (Log / Errors / Alerts / Connections) |
+| **[ERROR-CONSOLE.md](./ERROR-CONSOLE.md)** | **Error Console:** inspect → classify → present → stamp → **Logs** (Log / Errors / Alerts / Connections); §9.8 **iDEX swap/bridge warning codes** |
 | **[INTERNAL-DEX.md](./INTERNAL-DEX.md)** | **Internal DEX:** EVM quote order LiFi (45 bps) → 0x → Uni V2 → V3; Jupiter best-effort / fee-free rebuild OK; LiFi carve-out only |
 | **[LOADS.md](./LOADS.md)** | Network loads: comprehensive ping / HTTPS / RPC counts (idle + trading + new EVM nets) |
 | **[allow-list/](./allow-list/)** | Inject + network host lists (**118** apex inject hosts; live LiFi MODE is the **production** Worker, not direct `li.quest`) |
