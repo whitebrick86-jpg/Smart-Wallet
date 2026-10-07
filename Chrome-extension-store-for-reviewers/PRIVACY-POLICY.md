@@ -1,6 +1,6 @@
 # Smart Wallet — Privacy Policy
 
-**Last updated:** August 20, 2026
+**Last updated:** October 7, 2026
 
 Smart Wallet is a non-custodial browser extension for managing cryptocurrency wallets, interacting with supported blockchain networks and decentralized applications, and using optional wallet-address messaging and service announcements.
 
@@ -187,7 +187,27 @@ For supported Solana Jupiter transactions, Smart Wallet may contact the dedicate
 
 The ALT verifier does not receive the user's wallet address, swap amount, signed transaction, signature, seed phrase, or private key. It may query independent public Solana RPC providers and a server-held Helius RPC fallback to verify public lookup-table account data. Helius receives the public lookup-table query from Smart Wallet infrastructure rather than a user-held Helius credential.
 
-## 9. Other providers
+## 9. Smart Wallet data server
+
+Smart Wallet uses its own data server, **smart-wallet-data** (a Cloudflare Worker at `https://smart-wallet-data.smart-wallet.workers.dev`), by default for every user. The wallet uses it to load token prices, swap quotes, token logos, transaction history, and trending tokens.
+
+To provide those features, the wallet sends the data server:
+
+- the public wallet addresses you use (for transaction history);
+- the token mint or contract addresses you hold (for prices and logos); and
+- swap quote parameters: the from and to tokens, amount, slippage, and fee.
+
+Requests are signed with the installation's device-authentication key (Section 6). Cloudflare processes your device's IP address as part of the connection and for rate limiting.
+
+The data server **never** receives your seed phrase, private keys, wallet password, or signed transactions.
+
+If the data server is unavailable, the wallet automatically falls back to its direct public providers (such as Jupiter, CoinGecko, DexScreener, Blockscout, and public RPC providers). Those providers then receive the request directly, as described in Section 10.
+
+There is no separate switch to turn the data server off; it is part of how the wallet loads this information.
+
+**Retention:** the data server keeps short-lived caches only. Prices are cached briefly. The newest page of transaction history is cached for about 12 seconds, and finalized history pages for up to 6 hours. Token logos are cached. Data-server information is not sold and is not used for advertising.
+
+## 10. Other providers
 
 Depending on the feature used, information may be sent to:
 
@@ -207,7 +227,7 @@ Depending on the feature used, information may be sent to:
 
 Third-party providers process information under their own privacy and retention practices.
 
-## 10. Operational diagnostics and monitoring
+## 11. Operational diagnostics and monitoring
 
 Smart Wallet may process privacy-limited operational information to maintain security, availability, capacity, and reliability. This may include endpoint category, safe error code, HTTP status class, latency, timeout/retry count, cache result, aggregate quota utilization, provider category, Worker version, deployment identifier, and a random correlation ID.
 
@@ -215,7 +235,7 @@ Operational monitoring is not used for personalized advertising. Message bodies,
 
 The wallet may show a short service-availability message to users. Detailed infrastructure warnings, provider failures, quota status, and exception information remain in private operator systems.
 
-## 11. How information is used
+## 12. How information is used
 
 Smart Wallet uses information only as reasonably necessary to:
 
@@ -232,7 +252,7 @@ Smart Wallet uses information only as reasonably necessary to:
 - diagnose failures and measure service security, performance, and reliability; and
 - comply with applicable legal obligations.
 
-## 12. Sharing and human access
+## 13. Sharing and human access
 
 Smart Wallet shares information with infrastructure and service providers only when necessary to provide, secure, maintain, measure, or troubleshoot disclosed wallet functions, or when required by law.
 
@@ -247,7 +267,7 @@ Human access to user data is restricted to:
 
 Public blockchain information remains subject to the permanent and public nature of the applicable blockchain.
 
-## 13. Retention
+## 14. Retention
 
 Retention depends on the type and purpose of the record:
 
@@ -263,10 +283,13 @@ Retention depends on the type and purpose of the record:
 | Blocked-address list | Until the controlling wallet unblocks the address or completes verified delete-all; no routine 365-day expiry |
 | Announcements | Until deleted by an authorized owner, expired, or retired from the service |
 | Device authorization/revocation records | As long as reasonably necessary to provide and protect infrastructure authorization |
+| Data-server price cache | Briefly (short-lived cache) |
+| Data-server transaction-history cache | About 12 seconds for the newest page; up to 6 hours for finalized pages |
+| Data-server token-logo cache | Cached to avoid refetching logos |
 
 Provider-managed backups or replicas may persist for a limited period after deletion from active storage. Third-party services determine their own retention periods.
 
-## 14. User deletion and privacy requests
+## 15. User deletion and privacy requests
 
 Depending on applicable law, users may request access to, correction of, or deletion of personal information controlled by Smart Wallet.
 
@@ -276,7 +299,7 @@ Certain body-less security, replay, fraud-prevention, legal, or dispute records 
 
 Requests may be submitted through the contact information below or through a supported verified in-wallet deletion-request function.
 
-## 15. Browser permissions
+## 16. Browser permissions
 
 | Permission | Purpose |
 | --- | --- |
@@ -290,13 +313,13 @@ Requests may be submitted through the contact information below or through a sup
 
 Smart Wallet requests permissions only for its disclosed wallet functions.
 
-## 16. Security
+## 17. Security
 
 Smart Wallet uses measures intended to protect wallet and service operations, including local vault encryption, HTTPS/WSS, provider encryption at rest, signed requests, body-hash binding, timestamps and nonces, replay prevention, rate limits, bounded concurrency, device revocation, method and chain allowlists, transaction-broadcast protections, and separation between customer and administrative permissions.
 
 No system is completely secure. Users are responsible for protecting their device, password, seed phrase, private keys, Ledger device, recovery information, active sessions, and transaction approvals. Cryptocurrency transactions may be irreversible.
 
-## 17. User choices
+## 18. User choices
 
 Users may:
 
@@ -314,7 +337,7 @@ Users may:
 
 A recipient may receive a server-stored message addressed to a public wallet address before accepting an invitation. The wallet does not retrieve that Inbox until the applicable signed retrieval and messaging-consent requirements are satisfied.
 
-## 18. Chrome Web Store Limited Use
+## 19. Chrome Web Store Limited Use
 
 Smart Wallet limits collection, use, and transfer of user data to providing, maintaining, securing, and measuring the performance and reliability of its disclosed single purpose as a non-custodial cryptocurrency wallet, including directly related wallet-address communication and service-notice functions.
 
@@ -324,21 +347,21 @@ Smart Wallet does not use or transfer user data for personalized advertising, cr
 
 This policy does not replace a prominent in-product disclosure or affirmative consent required before a materially different data practice begins.
 
-## 19. International processing
+## 20. International processing
 
 Smart Wallet infrastructure and providers may process information in countries other than the user's country. Those countries may have different data-protection laws. Smart Wallet applies safeguards where required by applicable law.
 
 Smart Wallet messaging should not be used for emergencies or communications that must remain available in every country. Availability may be affected by network restrictions, local law, infrastructure, or provider reachability.
 
-## 20. Children
+## 21. Children
 
 Smart Wallet is not directed to children under 13 or the minimum age required in the user's jurisdiction. Do not use Smart Wallet messaging to collect children's personal information contrary to applicable law.
 
-## 21. Changes to this policy
+## 22. Changes to this policy
 
 Smart Wallet may update this policy when functionality, infrastructure, providers, law, or data practices change. The Last updated date will be revised. Materially different data practices will receive any additional notice or consent required by law or platform policy.
 
-## 22. Contact
+## 23. Contact
 
 | Role | Address |
 | --- | --- |

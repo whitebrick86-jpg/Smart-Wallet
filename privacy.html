@@ -69,7 +69,7 @@
   <body>
     <main>
       <h1>Smart Wallet — Privacy</h1>
-      <p class="meta">Last updated: 2026-08-20 · Non-custodial browser wallet</p>
+      <p class="meta">Last updated: 2026-10-07 · Non-custodial browser wallet</p>
 
       <h2>Messaging</h2>
       <p>
@@ -122,10 +122,25 @@
         registration.
       </p>
 
+      <h2>Smart Wallet data server</h2>
+      <p>
+        By default, Smart Wallet loads token prices, swap quotes, token logos, transaction
+        history, and trending tokens from its own data server, smart-wallet-data (a Cloudflare
+        Worker). To do that, the wallet sends your public wallet addresses (for history), the token
+        mint or contract addresses you hold (for prices and logos), and swap quote parameters
+        (from/to token, amount, slippage, fee). Requests are signed with this device's
+        authentication key, and Cloudflare processes your IP address for the connection and rate
+        limiting. The data server never receives your seed phrase, private keys, password, or
+        signed transactions. It keeps short-lived caches only (prices briefly, newest history about
+        12 seconds, finalized history up to 6 hours, logos cached) and nothing is sold or used for
+        advertising. If it is unavailable, the wallet falls back automatically to its direct public
+        providers.
+      </p>
+
       <h2>Network requests</h2>
       <p>
-        Your browser may contact Managed RPC infrastructure, public or Custom RPC providers,
-        Helius, Jupiter, CoinGecko, LiFi-related services, WalletConnect/Reown, on-ramps,
+        Your browser may contact the Smart Wallet data server, Managed RPC infrastructure, public or Custom RPC providers,
+        Helius, Jupiter, CoinGecko, DexScreener, Blockscout, LiFi-related services, WalletConnect/Reown, on-ramps,
         explorers, and dApps you connect. Those parties may see public addresses, request
         contents, and ordinary web metadata such as IP address.
       </p>
