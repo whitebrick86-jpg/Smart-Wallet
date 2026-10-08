@@ -1,6 +1,6 @@
 # Smart Wallet — Privacy Policy
 
-**Last updated:** October 7, 2026
+**Last updated:** October 8, 2026
 
 Smart Wallet is a non-custodial browser extension for managing cryptocurrency wallets, interacting with supported blockchain networks and decentralized applications, and using optional wallet-address messaging and service announcements.
 
@@ -197,7 +197,9 @@ To provide those features, the wallet sends the data server:
 - the token mint or contract addresses you hold (for prices and logos); and
 - swap quote parameters: the from and to tokens, amount, slippage, and fee.
 
-Requests are signed with the installation's device-authentication key (Section 6). Cloudflare processes your device's IP address as part of the connection and for rate limiting.
+Requests are signed with a separate data-server device key (Section 6) that the wallet creates and registers automatically on every installation, without a prompt. It is non-exportable, it is not a wallet key, it cannot sign transactions, and it only has read access to the data server (`data:read`). There is no setting to turn it off. Registration sends only the public key and a proof that the device holds the matching private key. The data server stores the public key with its status and sign-up time (no wallet address and no IP address) and keeps that record until the key is revoked; a revoked record stays marked as revoked.
+
+Rate limiting: device sign-up is limited using a salted hash of the device's IP address (for IPv6, of its network prefix) that changes every UTC day and is kept only as counters for up to two days. Every data request is also limited per minute; that limit uses the IP address (for IPv6, its /64 network) as a counter key that lasts about one minute in the data server's memory and in Cloudflare's rate limiter. Raw IP addresses are not written to Smart Wallet storage or logs. Cloudflare processes your device's IP address as part of each connection.
 
 The data server **never** receives your seed phrase, private keys, wallet password, or signed transactions.
 
@@ -205,7 +207,7 @@ If the data server is unavailable, the wallet automatically falls back to its di
 
 There is no separate switch to turn the data server off; it is part of how the wallet loads this information.
 
-**Retention:** the data server keeps short-lived caches only. Prices are cached briefly. The newest page of transaction history is cached for about 12 seconds, and finalized history pages for up to 6 hours. Token logos are cached. Data-server information is not sold and is not used for advertising.
+**Retention:** the data server keeps short-lived caches only. Prices are cached briefly. The newest page of transaction history is cached for about 12 seconds, and finalized history pages for up to 24 hours. Token logos are cached. Data-server information is not sold and is not used for advertising.
 
 ## 10. Other providers
 
@@ -284,8 +286,10 @@ Retention depends on the type and purpose of the record:
 | Announcements | Until deleted by an authorized owner, expired, or retired from the service |
 | Device authorization/revocation records | As long as reasonably necessary to provide and protect infrastructure authorization |
 | Data-server price cache | Briefly (short-lived cache) |
-| Data-server transaction-history cache | About 12 seconds for the newest page; up to 6 hours for finalized pages |
+| Data-server transaction-history cache | About 12 seconds for the newest page; up to 24 hours for finalized pages |
 | Data-server token-logo cache | Cached to avoid refetching logos |
+| Data-server device record | Until the key is revoked; a revoked record stays marked as revoked |
+| Data-server rate-limit counters | About one minute (per-request limit); up to two days (salted sign-up hash) |
 
 Provider-managed backups or replicas may persist for a limited period after deletion from active storage. Third-party services determine their own retention periods.
 
