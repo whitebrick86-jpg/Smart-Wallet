@@ -203,6 +203,17 @@ Rate limiting: device sign-up is limited using a salted hash of the device's IP 
 
 The data server **never** receives your seed phrase, private keys, wallet password, or signed transactions.
 
+**Providers the data server contacts.** To answer a request, the data server contacts third-party data providers on your behalf, from Cloudflare's network:
+
+- **Prices, charts, logos and market data:** CoinMarketCap, Mobula, CoinGecko, and GeckoTerminal.
+- **Solana prices, trending tokens and swap quotes:** Raydium, Orca, and Jupiter.
+- **Token logos:** the Trust Wallet asset list (on GitHub), the Uniswap and 1inch token lists, and the token's own metadata host (such as IPFS or Arweave).
+- **Transaction history:** public Solana RPC providers (Solana Foundation, PublicNode, Solana Vibe Station, Pocket Network) and Blockscout block explorers for EVM chains.
+
+Each provider receives only what that request needs: token addresses, swap quote parameters, or, for transaction history, the public wallet address being looked up. Providers see the data server's network address, not your IP address or your device key. The data server does not send them your seed phrase, private keys, password, signed transactions, or any identifier for your device. Those providers' own privacy policies apply to the data they receive.
+
+**"Data backend" indicator.** The data server exists to make your balance faster and more accurate: it serves token prices, token logos, charts, transaction history, and other balance data, shares cached answers, and switches between several providers so this data keeps loading when a public provider is slow or rate-limited. The "Data backend" indicator on the balance card shows only that the wallet's own signed requests for this data succeeded within the last 5 minutes. It reads the wallet's local state; it sends no extra request and collects nothing. When it is hidden, the wallet has not needed the data server recently or could not reach it, and loads that data directly from public providers instead.
+
 If the data server is unavailable, the wallet automatically falls back to its direct public providers (such as Jupiter, CoinGecko, DexScreener, Blockscout, and public RPC providers). Those providers then receive the request directly, as described in Section 10.
 
 There is no separate switch to turn the data server off; it is part of how the wallet loads this information.
