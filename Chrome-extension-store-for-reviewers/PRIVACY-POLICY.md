@@ -206,9 +206,10 @@ The data server **never** receives your seed phrase, private keys, wallet passwo
 **Providers the data server contacts.** To answer a request, the data server contacts third-party data providers on your behalf, from Cloudflare's network:
 
 - **Prices, charts, logos and market data:** CoinMarketCap, Mobula, CoinGecko, and GeckoTerminal.
+- **EVM token prices (last fallback):** KyberSwap, plus PublicNode to read a token's number of decimal places.
 - **Solana prices, trending tokens and swap quotes:** Raydium, Orca, and Jupiter.
-- **Token logos:** the Trust Wallet asset list (on GitHub), the Uniswap and 1inch token lists, and the token's own metadata host (such as IPFS or Arweave).
-- **Transaction history:** public Solana RPC providers (Solana Foundation, PublicNode, Solana Vibe Station, Pocket Network) and Blockscout block explorers for EVM chains.
+- **Token logos:** the Trust Wallet asset list (on GitHub), the SmolDapp token-asset list (served through jsDelivr), the Uniswap and 1inch token lists, Helius (Solana token metadata), and the token's own metadata host (such as IPFS or Arweave).
+- **Transaction history:** Solana RPC providers (Solana Foundation, PublicNode, Solana Vibe Station, Pocket Network, and Helius) and Blockscout block explorers for EVM chains.
 
 Each provider receives only what that request needs: token addresses, swap quote parameters, or, for transaction history, the public wallet address being looked up. Providers see the data server's network address, not your IP address or your device key. The data server does not send them your seed phrase, private keys, password, signed transactions, or any identifier for your device. Those providers' own privacy policies apply to the data they receive.
 

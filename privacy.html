@@ -139,10 +139,11 @@
       <p>
         To answer these requests, the data server contacts data providers on your behalf from
         Cloudflare’s network: CoinMarketCap, Mobula, CoinGecko, and GeckoTerminal (prices, charts,
-        logos, market data); Raydium, Orca, and Jupiter (Solana prices, trending tokens, swap
-        quotes); the Trust Wallet, Uniswap, and 1inch token lists and a token’s own metadata host
-        such as IPFS or Arweave (logos); and public Solana RPC providers and Blockscout explorers
-        (transaction history). Each receives only what the request needs (token addresses, quote
+        logos, market data); KyberSwap, with PublicNode for a token’s decimal places (EVM token
+        prices, last fallback); Raydium, Orca, and Jupiter (Solana prices, trending tokens, swap
+        quotes); the Trust Wallet, SmolDapp (served through jsDelivr), Uniswap, and 1inch token
+        lists, Helius, and a token’s own metadata host such as IPFS or Arweave (logos); and Solana
+        RPC providers including Helius, and Blockscout explorers (transaction history). Each receives only what the request needs (token addresses, quote
         parameters, or the public wallet address being looked up) and sees the data server’s
         network address, not your IP address or device key.
       </p>
